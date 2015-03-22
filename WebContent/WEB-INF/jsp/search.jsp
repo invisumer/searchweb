@@ -10,6 +10,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Searchweb - Results</title>
 <link href="<c:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet">
+<style>
+	.footer {
+	   position: absolute;
+	   bottom: 0px;
+	   width: 100%;
+	   height: 60px;
+	   background-color: #F5F5F5;
+	}
+	
+	.text-muted {
+	    margin: 20px 0px;
+	    color: #777;
+	}
+</style>
 </head>
 <body>
 
@@ -75,6 +89,14 @@
 			</div>
 		</div>
 	</div>
+	
+	<br>
+	
+	<footer class="footer">
+      <div class="container">
+        <p class="text-muted">Performed by BPR Search Engine.</p>
+      </div>
+    </footer>
 
 	<!-- scripts -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
