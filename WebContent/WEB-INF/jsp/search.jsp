@@ -7,6 +7,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Searchweb - Results</title>
 <link href="<c:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet">
 </head>
@@ -52,7 +53,7 @@
 		<br>
 		
 		<div class="row">
-			<div class="col-md-6">
+			<div class="col-md-6 col-xs-12">
 				<ul class="list-unstyled">
 					<c:forEach var="result" items="${results}">
 						<li style="margin-bottom: 30px;">
