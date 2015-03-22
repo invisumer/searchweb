@@ -11,23 +11,21 @@
 </head>
 <body>
 
-	<header
-		class="navbar navbar navbar-inverse navbar-static-top bs-docs-nav"
-		id="top" role="banner">
+	<header class="navbar navbar-inverse">
 	<div class="container">
 		<div class="navbar-header">
-			<button class="navbar-toggle collapsed" type="button"
-				data-toggle="collapse" data-target=".bs-navbar-collapse">
-				<span class="sr-only">Toggle navigation</span> <span
-					class="icon-bar"></span> <span class="icon-bar"></span> <span
-					class="icon-bar"></span>
+ 			<button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+				<span class="sr-only">Toggle navigation</span> 
+				<span class="icon-bar"></span> <span class="icon-bar">
+				</span> <span class="icon-bar"></span>
 			</button>
-			<a href="<c:url value="/" />" class="navbar-brand">SearchWeb</a>
+			
+			<a href="<c:url value="/" />" class="navbar-brand"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> SearchWeb</a>
 		</div>
 		<nav class="collapse navbar-collapse bs-navbar-collapse">
-		<ul class="nav navbar-nav navbar-right">
-			<li><a href="#">Help</a></li>
-		</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="active"><a href="#">Help</a></li>
+			</ul>
 		</nav>
 	</div>
 	</header>
@@ -45,7 +43,6 @@
 					<input type="text" class="form-control" placeholder="Search for...">
 					<span class="input-group-btn">
 						<button class="btn btn-default" type="button">
-							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 							Search
 						</button>
 					</span>
@@ -55,8 +52,7 @@
 	</div>
 
 	<!-- scripts -->
-	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="<c:url value="/resources/js/bootstrap.min.js" />"></script>
 
 </body>
