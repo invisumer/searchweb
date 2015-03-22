@@ -34,7 +34,7 @@
 
 	<div class="container">
 		<div class="row">
-			<div class="col-md-2 col-md-offset-5 col-sm-2 col-sm-offset-5 col-xs-6 col-xs-offset-3">
+			<div class="col-md-4 col-md-offset-4 col-xs-6 col-xs-offset-3">
 				<img src="<c:url value="/resources/img/logo.png" />" alt="..." class="img-responsive center-block" />
 			</div>
 		</div>
