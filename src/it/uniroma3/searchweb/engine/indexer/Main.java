@@ -1,11 +1,13 @@
 package it.uniroma3.searchweb.engine.indexer;
 
 import it.uniroma3.searchweb.config.EngineConfig;
+import it.uniroma3.searchweb.engine.analyzer.StripperHTMLAnalyzer;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
@@ -29,7 +31,7 @@ public class Main {
 			EngineConfig engineConfig = EngineConfig.getInstance();
 			
 			/* create a standard analyzer */
-			StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
 			/* create the index in the pathToFolder or in RAM (choose one) */
 			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
 			/* set an index congif */
@@ -43,7 +45,7 @@ public class Main {
 			String textdoc1 = "The captain of Liverpool football club Steven " + "Gerrard announce he will leave the club";
 			String title2 = "Liverpool - Wikipedia";
 			String url2 = "https://it.wikipedia.org/wiki/Liverpool";
-			String textdoc2 = "Liverpool e' una città di 466 415 abitanti (censimento 2012) del Regno Unito, " + 
+			String textdoc2 = "<h1>Liverpool</h1> e' una città di 466 415 abitanti (censimento 2012) del Regno Unito, " + 
 			                  "capoluogo dell'omonimo distretto metropolitano e della contea metropolitana inglese " + 
 					          "del Merseyside. Sorge lungo l'estuario della Mersey e affaccia sul Mare d'Irlanda, non" + 
 			                  " lontano dal confine con il Galles." +
