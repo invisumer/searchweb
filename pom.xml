@@ -77,26 +77,25 @@
 			<artifactId>lucene-suggest</artifactId>
 			<version>4.6.0</version>
 		</dependency>
-		
 		<dependency>
 		    <groupId>org.jwat</groupId>
 		    <artifactId>jwat-common</artifactId>
-		    <version>0.9.1</version>
+		    <version>1.0.2</version>
 		  </dependency>
 		  <dependency>
 		    <groupId>org.jwat</groupId>
 		    <artifactId>jwat-gzip</artifactId>
-		    <version>0.9.1</version>
+		    <version>1.0.2</version>
 		  </dependency>
 		  <dependency>
 		    <groupId>org.jwat</groupId>
 		    <artifactId>jwat-arc</artifactId>
-		    <version>0.9.1</version>
+		    <version>1.0.2</version>
 		  </dependency>
 		  <dependency>
 		    <groupId>org.jwat</groupId>
 		    <artifactId>jwat-warc</artifactId>
-		    <version>0.9.1</version>
+		    <version>1.0.2</version>
 		  </dependency>
 	</dependencies>
 
