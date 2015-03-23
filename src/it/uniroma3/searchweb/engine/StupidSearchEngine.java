@@ -32,7 +32,7 @@ public class StupidSearchEngine implements SearchEngine {
 			EngineConfig engineConfig = EngineConfig.getInstance();
 			
 			/* create the index in the pathToFolder or in RAM (choose one) */
-			Directory index = FSDirectory.open(new File(engineConfig.getPath()));
+			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
 			/* create a standard analyzer */
 			StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
 			/* set the maximum number of results */

@@ -10,14 +10,16 @@ public class EngineConfig {
 	private static final Logger logger = Logger.getLogger(EngineConfig.class.getName()); 
 	private static EngineConfig instance;
 	private static String propertyPath = "META-INF/config.properties";
-	private String path;
+	private String indexPath;
+	private String datasetPath;
 	
 	private EngineConfig() {
 		try {
 			Properties prop = new Properties();
 			prop.load(this.getClass().getClassLoader().getResourceAsStream(propertyPath));
 
-			this.path = prop.getProperty("index.path");
+			this.indexPath = prop.getProperty("index.path");
+			this.datasetPath = prop.getProperty("dataset.path");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			logger.severe("Property file could not be found: " + e.getMessage());
@@ -35,12 +37,20 @@ public class EngineConfig {
 		propertyPath = path;
 	}
 	
-	public String getPath() {
-		return path;
+	public String getIndexPath() {
+		return indexPath;
 	}
 	
-	public void setPath(String path) {
-		this.path = path;
+	public void setIndexPath(String path) {
+		this.indexPath = path;
+	}
+	
+	public String getDatasetPath() {
+		return datasetPath;
+	}
+	
+	public void setDatasetPath(String datasetPath) {
+		this.datasetPath = datasetPath;
 	}
 
 	/** Return the singleton object of this Factory.
