@@ -13,13 +13,25 @@ import org.jwat.warc.WarcRecord;
 import it.uniroma3.searchweb.config.EngineConfig;
 
 public class WarcParser {
+	private String datasetPath;
 	
-	public WarcParser(){}
+	public WarcParser(){
+		EngineConfig config = EngineConfig.getInstance();
+		this.datasetPath = config.getDatasetPath();	
+	}
 	
-	static EngineConfig engineConfig = EngineConfig.getInstance();
-	static String warcFile = engineConfig.getDatasetPath()+"/example.warc";
+	public String getDatasetPath() {
+		return datasetPath;
+	}
+	
+	public void setDatasetPath(String datasetPath) {
+		this.datasetPath = datasetPath;
+	}
+	
 	public static void main(String[] args) {
-        File file = new File( warcFile );
+		WarcParser parser = new WarcParser();
+        File file = new File( parser.getDatasetPath() + "/example.warc" );
+        
         try {
             InputStream in = new FileInputStream( file );
  
