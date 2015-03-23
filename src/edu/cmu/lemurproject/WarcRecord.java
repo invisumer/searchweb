@@ -64,15 +64,15 @@ import java.util.Set;
  */
 public class WarcRecord {
 
-  // public static final Log LOG = LogFactory.getLog(WarcRecord.class);
+//   public static final Log LOG = LogFactory.getLog(WarcRecord.class);
   
-  public static String WARC_VERSION = "WARC/";
-  public static String WARC_VERSION_LINE = "WARC/0.18\n";
+//  public static String WARC_VERSION = "WARC/";
+//  public static String WARC_VERSION_LINE = "WARC/0.18\n";
 
-  ////public static String WARC_VERSION = "WARC/1.0";
-  //public static String WARC_VERSION = "WARC/0.18";
-  ////public static String WARC_VERSION_LINE = "WARC/1.0\n";
-  //public static String WARC_VERSION_LINE = "WARC/0.18\n";
+  public static String WARC_VERSION = "WARC/1.0";
+//  public static String WARC_VERSION = "WARC/0.18";
+  public static String WARC_VERSION_LINE = "WARC/1.0\n";
+//  public static String WARC_VERSION_LINE = "WARC/0.18\n";
   private static String NEWLINE="\n";
   private static String CR_NEWLINE="\r\n";
   
