@@ -1,86 +1,119 @@
 package it.uniroma3.searchweb.engine.indexer;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Arrays;
+import java.util.zip.GZIPInputStream;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.safety.Whitelist;
-import org.jsoup.select.Elements;
-import org.jwat.warc.WarcReader;
-import org.jwat.warc.WarcReaderFactory;
-import org.jwat.warc.WarcRecord;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.Field.Store;
 
+import edu.cmu.lemurproject.WarcHTMLResponseRecord;
+import edu.cmu.lemurproject.WarcRecord;
 import it.uniroma3.searchweb.config.EngineConfig;
 
 public class WarcParser {
-	
-	public WarcParser(){}
-	public static void main(String[] args) {
-		EngineConfig engineConfig = EngineConfig.getInstance();
-		String warcFile = engineConfig.getDatasetPath()+"/example.warc";
-		File file = new File( warcFile );
-	    try {
-	        InputStream in = new FileInputStream( file );
-	
-	        int records = 0;
-	        int errors = 0;
-	
-	        WarcReader reader = WarcReaderFactory.getReader( in );
-	        WarcRecord record;
-	
-	        while ( (record = reader.getNextRecord()) != null ) {
-	            printRecord(record);
-	
-	            ++records;
-	
-	           
-	        }
-	
-	        System.out.println("--------------");
-	        System.out.println("       Records: " + records);
-	        System.out.println("        Errors: " + errors);
-	        reader.close();
-	        in.close();
-	    }
-	    catch (FileNotFoundException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-	    }
-	    catch (IOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-	    }
+	private String dataset;
+	private DataInputStream stream;
+	private WarcRecord cur;
+
+	public WarcParser() {
+		EngineConfig config = EngineConfig.getInstance();
+		this.dataset = config.getDatasetPath();
 	}
 
-	public static void printRecord(WarcRecord record) {
-	    System.out.println("--------------");
-//	    System.out.println("       Version: " + record.bMagicIdentified + " " + record.bVersionParsed + " " + record.major + "." + record.minor);
-//	    System.out.println("       TypeIdx: " + record.warcTypeIdx);
-//	    System.out.println("          Type: " + record.warcTypeStr);
-//	    System.out.println("      Filename: " + record.warcFilename);
-//	    System.out.println("     Record-ID: " + record.warcRecordIdUri);
-//	    System.out.println("          Date: " + record.warcDate);
-//	    System.out.println("Content-Length: " + record.contentLength);
-//	    System.out.println("  Content-Type: " + record.contentType);
-//	    System.out.println("     Truncated: " + record.warcTruncatedStr);
-//	    System.out.println("   InetAddress: " + record.warcInetAddress);
-//	    System.out.println("  ConcurrentTo: " + record.warcConcurrentToUriList);
-//	    System.out.println("      RefersTo: " + record.warcRefersToUri);
-//	    System.out.println("     TargetUri: " + record.warcTargetUriUri);
-//	    System.out.println("   WarcInfo-Id: " + record.warcWarcInfoIdUri);
-//	    System.out.println("   BlockDigest: " + record.warcBlockDigest);
-//	    System.out.println(" PayloadDigest: " + record.warcPayloadDigest);
-//	    System.out.println("IdentPloadType: " + record.warcIdentifiedPayloadType);
-//	    System.out.println("       Profile: " + record.warcProfileStr);
-//	    System.out.println("      Segment#: " + record.warcSegmentNumber);
-//	    System.out.println(" SegmentOrg-Id: " + record.warcSegmentOriginIdUrl);
-//	    System.out.println("SegmentTLength: " + record.warcSegmentTotalLength);
-//	    System.out.
+	public WarcParser(String datasetPath) {
+		this.dataset = datasetPath;
 	}
+
+	public String getDatasetPath() {
+		return dataset;
+	}
+
+	public void setDatasetPath(String datasetPath) {
+		this.dataset = datasetPath;
+	}
+
+	public void open(String file) throws FileNotFoundException, IOException {
+		String filepath = this.getDatasetPath() + "/" + file;
+		GZIPInputStream gzInputStream = new GZIPInputStream(
+				new FileInputStream(filepath));
+		this.stream = new DataInputStream(gzInputStream);
+	}
+
+	public void close() throws IOException {
+		this.stream.close();
+	}
+
+	public Document next() throws IOException {
+		this.cur = WarcRecord.readNextWarcRecord(this.stream);
+
+		while (this.cur != null) {
+			if (this.cur.getHeaderRecordType().equals("response"))
+				return this.createDocument();
+			this.cur = WarcRecord.readNextWarcRecord(this.stream);
+		}
+
+		return null;
+	}
+
+	public String[] getWarcFiles() {
+		File datasetFolder = new File(this.getDatasetPath());
+		File[] warcFiles = datasetFolder.listFiles();
+		String[] filenames = new String[warcFiles.length];
+
+		for (int i = 0; i < warcFiles.length; i++) {
+			filenames[i] = warcFiles[i].getName();
+		}
+
+		Arrays.sort(filenames);
+
+		return filenames;
+	}
+
+	private Document createDocument() {
+		WarcHTMLResponseRecord htmlRecord = new WarcHTMLResponseRecord(this.cur);
+		String url = htmlRecord.getTargetURI();
+		String body = htmlRecord.getRawRecord().getContentUTF8();
+
+		Document record = new Document();
+		record.add(new StringField("url", url, Store.YES));
+		record.add(new TextField("body", body, Store.YES));
+
+		return record;
+	}
+
+	public static void main(String[] args) throws FileNotFoundException,
+			IOException {
+
+		WarcParser parser = new WarcParser();
+		String[] files = parser.getWarcFiles();
+
+		System.out.println("Warcfile: " + parser.getDatasetPath() + "/"
+				+ files[0] + "\n");
+		parser.open(files[0]);
+
+		int i = 0;
+		int ndocs = 10;
+
+		while (i < ndocs) {
+			Document doc = parser.next();
+			if (doc != null) {
+				System.out.println("---------- Response " + (i+1) + " ----------");
+				System.out.println(doc.get("url"));
+				System.out.println();
+//				System.out.println(doc.get("body"));
+//				System.out.println();
+			}
+			i++;
+		}
+
+		parser.close();
+	}
+
 }
