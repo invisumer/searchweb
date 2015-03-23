@@ -49,6 +49,8 @@ public class WarcHTMLResponseRecord {
   
   private WarcRecord warcRecord=new WarcRecord();
   
+  private static String SINGLE_SPACE=" ";
+  
   private static Pattern ALL_HTML_TAGS=Pattern.compile("<(.*?)>");
   private static Pattern A_HREF_PATTERN=Pattern.compile("[aA].+?[hH][rR][eE][fF]=['\"](.+?)['\"].*?");
   private static Pattern AREA_HREF_PATTERN=Pattern.compile("[aA][rR][eE][aA].+?[hH][rR][eE][fF]=['\"](.*?)['\"].*?");

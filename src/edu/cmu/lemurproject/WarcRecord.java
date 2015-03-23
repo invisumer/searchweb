@@ -66,12 +66,12 @@ public class WarcRecord {
 
   // public static final Log LOG = LogFactory.getLog(WarcRecord.class);
   
-//  public static String WARC_VERSION = "WARC/";
-//  public static String WARC_VERSION_LINE = "WARC/0.18\n";
+  public static String WARC_VERSION = "WARC/";
+  public static String WARC_VERSION_LINE = "WARC/0.18\n";
 
-  public static String WARC_VERSION = "WARC/1.0";
+  ////public static String WARC_VERSION = "WARC/1.0";
   //public static String WARC_VERSION = "WARC/0.18";
-  public static String WARC_VERSION_LINE = "WARC/1.0\n";
+  ////public static String WARC_VERSION_LINE = "WARC/1.0\n";
   //public static String WARC_VERSION_LINE = "WARC/0.18\n";
   private static String NEWLINE="\n";
   private static String CR_NEWLINE="\r\n";
@@ -433,6 +433,7 @@ public class WarcRecord {
   }
   
   public void addHeaderMetadata(String key, String value) {
+    //System.out.println("+-- WarRecord.addHeaderMetadata key=" + key + " value=" + value);
     // don't allow addition of known keys
     if (key.equals("WARC-Type")) { return; }
     if (key.equals("WARC-Date")) { return; }
@@ -453,7 +454,7 @@ public class WarcRecord {
   }
   
   public String getHeaderMetadataItem(String key) {
-    
+    //System.out.println("+++ WarRecord.getHeaderMetadataItem key=" + key);  // WARC-Target-URI
     if (key.equals("WARC-Type")) { return warcHeader.recordType; }
     if (key.equals("WARC-Date")) { return warcHeader.dateString; }
     if (key.equals("WARC-Record-ID")) { return warcHeader.UUID; }
