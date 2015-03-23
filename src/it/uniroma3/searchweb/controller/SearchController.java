@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import it.uniroma3.searchweb.engine.StupidSearchEngine;
+import it.uniroma3.searchweb.engine.searcher.StupidSearchEngine;
 import it.uniroma3.searchweb.model.QueryForm;
 import it.uniroma3.searchweb.model.Result;
 

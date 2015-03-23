@@ -1,4 +1,4 @@
-package it.uniroma3.searchweb.engine;
+package it.uniroma3.searchweb.engine.indexer;
 
 import it.uniroma3.searchweb.config.EngineConfig;
 
