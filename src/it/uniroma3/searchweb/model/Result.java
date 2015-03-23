@@ -8,13 +8,6 @@ public class Result {
 	private Date date;
 	private String snippet;
 	
-	public Result(String title, String url, Date date, String snippet) {
-		this.title = title;
-		this.url = url;
-		this.date = date;
-		this.snippet = snippet;
-	}
-	
 	public String getTitle() {
 		return title;
 	}

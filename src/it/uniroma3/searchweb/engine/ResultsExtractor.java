@@ -54,10 +54,13 @@ public class ResultsExtractor {
 					}
 				}
 				
-				Result result = new Result(doc.get("title"), doc.get("url"), null, snippet);
+				Result result = new Result();
+				result.setTitle(doc.get("title"));
+				result.setUrl(doc.get("url"));
+				result.setDate(null);
+				result.setSnippet(snippet);
 				results.add(result);
 			}
-
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
