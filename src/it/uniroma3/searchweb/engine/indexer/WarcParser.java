@@ -12,6 +12,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.Field.Store;
+import org.jsoup.Jsoup;
 
 import edu.cmu.lemurproject.WarcHTMLResponseRecord;
 import edu.cmu.lemurproject.WarcRecord;
@@ -79,9 +80,15 @@ public class WarcParser {
 	private Document createDocument() {
 		WarcHTMLResponseRecord htmlRecord = new WarcHTMLResponseRecord(this.cur);
 		String url = htmlRecord.getTargetURI();
-		String body = htmlRecord.getRawRecord().getContentUTF8();
+		
+		// extract body and title
+		String html = htmlRecord.getRawRecord().getContentUTF8();
+		html = html.substring(html.indexOf("<?xml"), html.length());
+		String body = Jsoup.parse(html).body().text();
+		String title = Jsoup.parse(html).title();
 
 		Document record = new Document();
+		record.add(new StringField("title", title, Store.YES));
 		record.add(new StringField("url", url, Store.YES));
 		record.add(new TextField("body", body, Store.YES));
 
@@ -99,7 +106,7 @@ public class WarcParser {
 		parser.open(files[0]);
 
 		int i = 0;
-		int ndocs = 10;
+		int ndocs = 2;
 
 		while (i < ndocs) {
 			Document doc = parser.next();
@@ -107,8 +114,10 @@ public class WarcParser {
 				System.out.println("---------- Response " + (i+1) + " ----------");
 				System.out.println(doc.get("url"));
 				System.out.println();
-//				System.out.println(doc.get("body"));
-//				System.out.println();
+				System.out.println(doc.get("title"));
+				System.out.println();
+				System.out.println(doc.get("body"));
+				System.out.println();
 			}
 			i++;
 		}
