@@ -12,7 +12,6 @@ isPartOf: liveweb
 format: WARC file version 1.0
 conformsTo: http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf
 
-
 WARC/1.0
 WARC-Type: response
 WARC-Record-ID: <urn:uuid:6d058047-ede2-4a13-be79-90c17c631dd4>
@@ -88,7 +87,6 @@ Connection: close
 </body>
 </html>
 
-
 WARC/1.0
 WARC-Type: request
 WARC-Record-ID: <urn:uuid:9a3ffea5-9556-4790-a6bf-c15231fd6b97>
@@ -105,7 +103,6 @@ Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0
 Accept-Language: en-US,en;q=0.8
 User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36 (via Wayback Save Page)
 Host: example.com
-
 
 WARC/1.0
 WARC-Type: revisit
@@ -134,8 +131,6 @@ x-ec-custom-error: 1
 Content-Length: 1270
 Connection: close
 
-
-
 WARC/1.0
 WARC-Type: request
 WARC-Record-ID: <urn:uuid:c59f3330-b241-4fca-8513-d687cd85bcfb>
@@ -152,7 +147,6 @@ Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0
 Accept-Language: en-US,en;q=0.8
 User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36 (via Wayback Save Page)
 Host: example.com
-
 
 WARC/1.0
 WARC-Type: response
