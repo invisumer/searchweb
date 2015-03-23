@@ -1,5 +1,7 @@
 package it.uniroma3.searchweb.engine;
 
+import it.uniroma3.searchweb.config.EngineConfig;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -23,10 +25,13 @@ public class Main {
 	public static void main(String[] args) {
 
 		try {
+			/* Get Engine configurations */
+			EngineConfig engineConfig = EngineConfig.getInstance();
+			
 			/* create a standard analyzer */
 			StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
 			/* create the index in the pathToFolder or in RAM (choose one) */
-			Directory index = FSDirectory.open(new File("/home/redox/index"));
+			Directory index = FSDirectory.open(new File(engineConfig.getPath()));
 			/* set an index congif */
 			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
 			config.setOpenMode(OpenMode.CREATE);

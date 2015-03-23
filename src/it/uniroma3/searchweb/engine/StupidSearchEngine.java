@@ -1,5 +1,6 @@
 package it.uniroma3.searchweb.engine;
 
+import it.uniroma3.searchweb.config.EngineConfig;
 import it.uniroma3.searchweb.model.Result;
 
 import java.io.File;
@@ -27,8 +28,11 @@ public class StupidSearchEngine implements SearchEngine {
 		List<Result> results = null;
 		
 		try {
+			/* Get Engine configurations */
+			EngineConfig engineConfig = EngineConfig.getInstance();
+			
 			/* create the index in the pathToFolder or in RAM (choose one) */
-			Directory index = FSDirectory.open(new File("/home/redox/index"));
+			Directory index = FSDirectory.open(new File(engineConfig.getPath()));
 			/* create a standard analyzer */
 			StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
 			/* set the maximum number of results */
