@@ -54,7 +54,6 @@ public class ResultsExtractor {
 					}
 				}
 				
-				System.out.println(snippet);
 				Result result = new Result(doc.get("title"), doc.get("url"), null, snippet);
 				results.add(result);
 			}

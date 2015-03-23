@@ -24,9 +24,6 @@ public class SearchController {
 	public String search(@ModelAttribute QueryForm query, ModelMap model) {
 		model.addAttribute("queryForm", query);
 		
-		if (model.containsAttribute("results"))
-			System.out.println("ECHO");
-		
 	    return "search";
 	}
 	
