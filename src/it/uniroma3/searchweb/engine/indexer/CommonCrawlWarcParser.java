@@ -1,6 +1,7 @@
 package it.uniroma3.searchweb.engine.indexer;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
@@ -28,9 +29,27 @@ public class CommonCrawlWarcParser {
 		this.datasetPath = datasetPath;
 	}
 	
+	public void parse() {
+		
+	}
+	
+	public String[] getWarcFiles() {
+		File datasetFolder = new File(this.getDatasetPath());
+		File[] warcFiles = datasetFolder.listFiles();
+		String[] filenames = new String[warcFiles.length];
+		
+		for (int i=0; i < warcFiles.length; i++) {
+			filenames[i] = warcFiles[i].getName();
+		}
+		
+		return filenames;
+	}
+	
 	public static void main(String[] args) throws IOException, SAXException, TikaException {
+		CommonCrawlWarcParser parser = new CommonCrawlWarcParser();
+		String[] files = parser.getWarcFiles();
 		// use a callback class for handling WARC record data:
-		String inputWarcFile="/home/redox/Scaricati/CC-MAIN-20140820021320-00000-ip-10-180-136-8.ec2.internal.warc.gz";
+		String inputWarcFile=parser.getDatasetPath() + "/" + files[0];
 		GZIPInputStream gzInputStream=new GZIPInputStream(new FileInputStream(inputWarcFile));
 		DataInputStream inStream=new DataInputStream(gzInputStream);
 		WarcRecord thisWarcRecord;
