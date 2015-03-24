@@ -55,8 +55,11 @@ public class WarcParser {
 		this.cur = WarcRecord.readNextWarcRecord(this.stream);
 
 		while (this.cur != null) {
+			Document doc = null;
 			if (this.cur.getHeaderRecordType().equals("response"))
-				return this.createDocument();
+				doc = this.createDocument();
+			if (doc != null)
+				return doc;
 			this.cur = WarcRecord.readNextWarcRecord(this.stream);
 		}
 
@@ -77,13 +80,20 @@ public class WarcParser {
 		return filenames;
 	}
 
-	private Document createDocument() {
+	private Document createDocument() throws IOException {
 		WarcHTMLResponseRecord htmlRecord = new WarcHTMLResponseRecord(this.cur);
 		String url = htmlRecord.getTargetURI();
 		
 		// extract body and title
 		String html = htmlRecord.getRawRecord().getContentUTF8();
-		html = html.substring(html.indexOf("<?xml"), html.length());
+		html = html.substring(html.indexOf("\n\r\n")+3, html.length());
+
+		if (Jsoup.parse(html).body() == null)
+			return null;
+		
+		if (Jsoup.parse(html).title() == null)
+			return null;
+		
 		String body = Jsoup.parse(html).body().text();
 		String title = Jsoup.parse(html).title();
 
@@ -101,12 +111,12 @@ public class WarcParser {
 		WarcParser parser = new WarcParser();
 		String[] files = parser.getWarcFiles();
 
-		System.out.println("Warcfile: " + parser.getDatasetPath() + "/"
+		System.out.println("Parsing: " + parser.getDatasetPath() + "/"
 				+ files[0] + "\n");
 		parser.open(files[0]);
 
 		int i = 0;
-		int ndocs = 2;
+		int ndocs = 10;
 
 		while (i < ndocs) {
 			Document doc = parser.next();
