@@ -15,6 +15,7 @@ public class EngineConfig {
 	private String indexPath = "index";
 	private String datasetPath = "dataset";
 	private String dictionaryPath = "dictionary";
+	private String plainPath = "plain";
 	private OpenMode indexOpenMode = OpenMode.APPEND;
 	private double RAMBufferSize = 16;
 	private boolean debugMode = false;
@@ -28,7 +29,8 @@ public class EngineConfig {
 			// mandatory properties
 			this.indexPath = prop.getProperty("index.path");
 			this.datasetPath = prop.getProperty("dataset.path");
-			this.dictionaryPath = prop.getProperty("dictionary.path");
+			this.dictionaryPath = prop.getProperty("lucene.dictionary.path");
+			this.plainPath = prop.getProperty("lucene.plain.path");
 			
 			// open mode
 			String mode = prop.getProperty("index.openmode");
@@ -76,6 +78,19 @@ public class EngineConfig {
 		}
 	}
 	
+
+	public void setDictionaryPath(String dictionaryPath) {
+		this.dictionaryPath = dictionaryPath;
+	}
+
+	public String getPlainPath() {
+		return plainPath;
+	}
+
+	public void setPlainPath(String plainPath) {
+		this.plainPath = plainPath;
+	}
+
 	public static String getPropertyPath() {
 		return propertyPath;
 	}
@@ -90,14 +105,6 @@ public class EngineConfig {
 	
 	public void setIndexPath(String path) {
 		this.indexPath = path;
-	}
-	
-	public String getSpellCheckerPath() {
-		return dictionaryPath;
-	}
-
-	public void setSpellCheckerPath(String spellCheckerPath) {
-		this.dictionaryPath = spellCheckerPath;
 	}
 
 	public String getDatasetPath() {
@@ -148,6 +155,10 @@ public class EngineConfig {
 		if (instance==null) 
 			instance = new EngineConfig();
 		return instance;
+	}
+
+	public String getDictionaryPath() {
+		return this.dictionaryPath;
 	}
 	
 }
