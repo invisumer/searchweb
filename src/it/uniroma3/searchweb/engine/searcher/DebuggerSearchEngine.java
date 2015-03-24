@@ -55,7 +55,7 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	public abstract List<Result> extract(Analyzer a, Query q, ScoreDoc[] hits, String field);
 	
 	public void explain(Query query, ScoreDoc[] hits) throws IOException {
-		for (int i=0; i<TOP_SCORES; i++) {
+		for (int i=0; i<TOP_SCORES && i< hits.length; i++) {
 			Explanation expl = this.searcher.explain(query, hits[i].doc);
 			logger.info("Match " + (i+1) + " explanation:\n" + expl.toString());
 		}

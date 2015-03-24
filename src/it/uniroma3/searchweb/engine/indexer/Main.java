@@ -45,7 +45,7 @@ public class Main {
 			String textdoc1 = "The captain of Liverpool football club Steven " + "Gerrard announce he will leave the club";
 			String title2 = "Liverpool - Wikipedia";
 			String url2 = "https://it.wikipedia.org/wiki/Liverpool";
-			String textdoc2 = "<h1>Liverpool</h1> e' una città di 466 415 abitanti (censimento 2012) del Regno Unito, " + 
+			String textdoc2 = "Liverpool e' una città di 466 415 abitanti (censimento 2012) del Regno Unito, " + 
 			                  "capoluogo dell'omonimo distretto metropolitano e della contea metropolitana inglese " + 
 					          "del Merseyside. Sorge lungo l'estuario della Mersey e affaccia sul Mare d'Irlanda, non" + 
 			                  " lontano dal confine con il Galles." +
