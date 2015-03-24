@@ -90,6 +90,7 @@ public class WarcParser {
 		html = html.substring(html.indexOf("\n\r\n")+3, html.length());
 		org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
 		
+		// TODO how to solve non correctly indexed documents?
 		String title = htmlDoc.title();
 		if (htmlDoc.title() == null || htmlDoc.title().isEmpty())
 			return null;
