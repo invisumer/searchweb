@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface SearchEngine {
 	
-	public List<Result> getResults(String query);
+	public List<Result> getResults(String query, String[] fields);
 
 }

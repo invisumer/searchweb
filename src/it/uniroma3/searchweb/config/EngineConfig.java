@@ -16,6 +16,7 @@ public class EngineConfig {
 	private String datasetPath;
 	private OpenMode indexOpenMode;
 	private double RAMBufferSize;
+	private boolean debugMode;
 	
 	private EngineConfig() {
 		try {
@@ -45,10 +46,17 @@ public class EngineConfig {
 			if (size != null)
 				this.RAMBufferSize = Double.parseDouble(size);
 			
+			// Debug mode
+			this.debugMode = false;
+			String debug = prop.getProperty("searcher.debugmode");
+			if (debug != null)
+				this.debugMode = Boolean.parseBoolean(debug);
+			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
 			logger.info("Index open mode: " + this.indexOpenMode);
 			logger.info("RAM buffer size: " + this.RAMBufferSize);
+			logger.info("Query explanation enabled: " + this.debugMode);
 		} catch (FileNotFoundException e) {
 			this.indexPath = "index";
 			this.datasetPath = "dataset";
@@ -100,6 +108,14 @@ public class EngineConfig {
 	
 	public void setRAMBufferSize(double rAMBufferSize) {
 		RAMBufferSize = rAMBufferSize;
+	}
+	
+	public boolean isDebugMode() {
+		return debugMode;
+	}
+	
+	public void setDebugMode(boolean debugMode) {
+		this.debugMode = debugMode;
 	}
 
 	/** Return the singleton object of this Factory.

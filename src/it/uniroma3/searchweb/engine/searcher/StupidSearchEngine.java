@@ -6,7 +6,9 @@ import it.uniroma3.searchweb.model.Result;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.index.DirectoryReader;
@@ -21,46 +23,52 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
-public class StupidSearchEngine implements SearchEngine {
+public class StupidSearchEngine extends DebuggerSearchEngine {
+	private static final Logger logger = Logger.getLogger(StupidSearchEngine.class.getName());
 	
-	@Override
-	public List<Result> getResults(String query) {
-		List<Result> results = null;
-		
+	public StupidSearchEngine(boolean debugMode, int topScores) {
+		super(debugMode, topScores);
+
 		try {
-			/* Get Engine configurations */
 			EngineConfig engineConfig = EngineConfig.getInstance();
-			
-			/* create the index in the pathToFolder or in RAM (choose one) */
 			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
-			/* create a standard analyzer */
-			StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
-			/* set the maximum number of results */
-			int maxHits = 10;
-			/* open a directory reader and create searcher and topdocs */
 			IndexReader reader = DirectoryReader.open(index);
 			IndexSearcher searcher = new IndexSearcher(reader);
-			TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true);
-			TopScoreDocCollector.create(maxHits, true);
-			/* create the query parser */
-			QueryParser qp = new QueryParser(Version.LUCENE_46, "body", analyzer);
-			/* query string */
-			Query q = qp.parse(query);
-			/* search into the index */
-			searcher.search(q, collector);
-			
-			ScoreDoc[] hits = collector.topDocs().scoreDocs;
-			ResultsExtractor extractor = new ResultsExtractor(searcher, analyzer, q);
-			results = extractor.getResults(hits, "body");
+			this.setSearcher(searcher);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.severe(e.getMessage());
 		}
+
+	}
+
+	@Override
+	public Analyzer getAnalyzer() {
+		return new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
+	}
+
+	@Override
+	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
+		QueryParser qp = new QueryParser(Version.LUCENE_46, "body", analyzer);
+		Query q = qp.parse(query);
+		return q;
+	}
+
+	@Override
+	public ScoreDoc[] search(Query query) throws IOException {
+		int maxHits = 10;
+		TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true);
+		TopScoreDocCollector.create(maxHits, true);
+		this.getSearcher().search(query, collector);
+		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		
-		return results;
+		return hits;
+	}
+
+	@Override
+	public List<Result> extract(Analyzer a, Query q, ScoreDoc[] hits,
+			String field) {
+		ResultsExtractor extractor = new ResultsExtractor(this.getSearcher(), a, q);
+		return extractor.getResults(hits, field);
 	}
 	
 }
