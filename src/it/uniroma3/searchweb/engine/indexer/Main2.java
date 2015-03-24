@@ -31,7 +31,7 @@ public class Main2 {
 			
 			WarcParser parser = new WarcParser();
 			String[] files = parser.getWarcFiles();
-			parser.open(files[1]);
+			parser.open(files[0]);
 			
 			int counter = 1;
 			long start = System.currentTimeMillis();

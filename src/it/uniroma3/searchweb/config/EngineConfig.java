@@ -14,11 +14,11 @@ public class EngineConfig {
 	private static String propertyPath = "META-INF/config.properties";
 	private String indexPath = "index";
 	private String datasetPath = "dataset";
-	private String spellCheckerPath = "spellChecker";
+	private String dictionaryPath = "dictionary";
 	private OpenMode indexOpenMode = OpenMode.APPEND;
 	private double RAMBufferSize = 16;
 	private boolean debugMode = false;
-	private int numTopScoreExplantion = 0;
+	private int numTopScoreExplanation = 0;
 	
 	private EngineConfig() {
 		try {
@@ -28,7 +28,7 @@ public class EngineConfig {
 			// mandatory properties
 			this.indexPath = prop.getProperty("index.path");
 			this.datasetPath = prop.getProperty("dataset.path");
-			this.spellCheckerPath = prop.getProperty("spellChecker.path");
+			this.dictionaryPath = prop.getProperty("dictionary.path");
 			
 			// open mode
 			String mode = prop.getProperty("index.openmode");
@@ -56,16 +56,17 @@ public class EngineConfig {
 			// Number of top score explanation
 			String num = prop.getProperty("debug.numexplanations");
 			if (this.debugMode)
-				this.numTopScoreExplantion = 10;
+				this.numTopScoreExplanation = 10;
 			if (this.debugMode && num != null)
-				this.numTopScoreExplantion = Integer.parseInt(num);
+				this.numTopScoreExplanation = Integer.parseInt(num);
 			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
+			logger.info("Dictionary path: " + this.dictionaryPath);
 			logger.info("Index open mode: " + this.indexOpenMode);
 			logger.info("RAM buffer size: " + this.RAMBufferSize);
 			logger.info("Query explanation enabled: " + this.debugMode);
-			logger.info("Number of score explanation: " + this.numTopScoreExplantion);
+			logger.info("Number of score explanation: " + this.numTopScoreExplanation);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			logger.severe("Property file could not be found: " + e.getMessage());
@@ -92,11 +93,11 @@ public class EngineConfig {
 	}
 	
 	public String getSpellCheckerPath() {
-		return spellCheckerPath;
+		return dictionaryPath;
 	}
 
 	public void setSpellCheckerPath(String spellCheckerPath) {
-		this.spellCheckerPath = spellCheckerPath;
+		this.dictionaryPath = spellCheckerPath;
 	}
 
 	public String getDatasetPath() {
@@ -132,11 +133,11 @@ public class EngineConfig {
 	}
 	
 	public int getNumTopScoreExplantion() {
-		return numTopScoreExplantion;
+		return numTopScoreExplanation;
 	}
 	
 	public void setNumTopScoreExplantion(int numTopScoreExplantion) {
-		this.numTopScoreExplantion = numTopScoreExplantion;
+		this.numTopScoreExplanation = numTopScoreExplantion;
 	}
 
 	/** Return the singleton object of this Factory.
