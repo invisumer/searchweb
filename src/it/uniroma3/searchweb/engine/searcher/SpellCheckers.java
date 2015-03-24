@@ -19,14 +19,12 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 public class SpellCheckers {
-	Logger logger;
-	static EngineConfig engineConfig;
 	
 	public SpellCheckers() {
-		engineConfig = EngineConfig.getInstance();
 	}
 	
 	public static void populateLuceneDictionary() throws CorruptIndexException, IOException {
+		EngineConfig engineConfig = EngineConfig.getInstance();
 		Directory spellCheckerDir = FSDirectory.open(new File(engineConfig.getDictionaryPath()));
 		SpellChecker spellchecker = new SpellChecker(spellCheckerDir);
 		Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
@@ -36,28 +34,37 @@ public class SpellCheckers {
         IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
 		spellchecker.indexDictionary(new LuceneDictionary(reader, "body"),config,true);
 		// To index a file containing words:
-		spellchecker.indexDictionary(new PlainTextDictionary(new File("dictionaryEN.txt")),config,true);
+		spellchecker.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/en.txt")),config,true);
 		spellchecker.close();
 	}
 	
 	public static void main(String[] args) throws Exception {
+		EngineConfig engineConfig = EngineConfig.getInstance();
+//		populateLuceneDictionary();
 		Directory spellCheckerDir = FSDirectory.open(new File(engineConfig.getDictionaryPath()));
 		SpellChecker spellchecker = new SpellChecker(spellCheckerDir);
-		populateLuceneDictionary();
-		String wordForSuggestions = "ronaldo";
-		int suggestionsNumber = 1;
-		if (spellchecker.exist(wordForSuggestions)) {
-			System.out.println("ok");
-		} else {
-			String[] suggestions = spellchecker.suggestSimilar(wordForSuggestions, suggestionsNumber,2f);
-			if (suggestions!=null && suggestions.length>0) {
-				for (String word : suggestions) {
-					System.out.println("Did you mean:" + word);
-				}
-			} else {
-				System.out.println("No suggestions found for word:"+wordForSuggestions);
+		String wordForSuggestions = "cristiano ronaldo";
+		int suggestionsNumber = 5;
+		String[] suggestions = spellchecker.suggestSimilar(wordForSuggestions, suggestionsNumber);
+		if (suggestions!=null && suggestions.length>0) {
+			for (String word : suggestions) {
+				System.out.println("Did you mean:" + word);
 			}
+		} else {
+			System.out.println("No suggestions found for word:"+wordForSuggestions);
 		}
+//		if (spellchecker.exist(wordForSuggestions)) {
+//			System.out.println("ok");
+//		} else {
+//			String[] suggestions = spellchecker.suggestSimilar(wordForSuggestions, suggestionsNumber,2f);
+//			if (suggestions!=null && suggestions.length>0) {
+//				for (String word : suggestions) {
+//					System.out.println("Did you mean:" + word);
+//				}
+//			} else {
+//				System.out.println("No suggestions found for word:"+wordForSuggestions);
+//			}
+//		}
 		spellchecker.close();
 	}
 
