@@ -11,7 +11,6 @@ import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -26,29 +25,29 @@ public class Main2 {
 			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
 			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
 			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
-			config.setOpenMode(OpenMode.APPEND);
+			config.setRAMBufferSizeMB(engineConfig.getRAMBufferSize());
+			config.setOpenMode(engineConfig.getIndexOpenMode());
 			IndexWriter writer = new IndexWriter(index, config);
 			
-			int batch = 10000;
-			boolean docFinished = false;
 			WarcParser parser = new WarcParser();
 			String[] files = parser.getWarcFiles();
 			parser.open(files[1]);
 			
-			while (!docFinished) {
-				for (int i=0; i<batch; i++) {
-					Document doc = parser.next();
+			int counter = 1;
+			long start = System.currentTimeMillis();
+			while (true) {
+				Document doc = parser.next();
+				
+				if (doc == null)
+					break;
 					
-					if (doc == null) {
-						docFinished = true;
-						break;
-					}
-						
-					writer.addDocument(doc);
-				}
-				System.out.println("Batch committed");
-				writer.commit();
+				writer.addDocument(doc);
+				counter++;
 			}
+			long stop = System.currentTimeMillis();
+			// TODO logger for index time
+			double time = (stop-start)/1000.0;
+			System.out.println(counter + " document(s) added in " + time + " sec");
 			
 			parser.close();
 			writer.close();
