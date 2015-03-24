@@ -37,8 +37,10 @@ public class SearchController {
 		}
 		
 		// some logic
-		if (!query.getQuery().isEmpty())
+		if (!query.getQuery().isEmpty()) {
 			flash.addFlashAttribute("results", this.search(query.getQuery()));
+			flash.addFlashAttribute("queryForm", query);
+		}
 		
 	    return "redirect:/search";
 	}
