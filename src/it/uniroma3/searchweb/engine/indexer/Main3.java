@@ -48,15 +48,13 @@ public class Main3 {
 				int start = i;
 				int stop = (i+filePerThread) > nfiles ? nfiles : i+filePerThread;
 				
-				System.out.println(start + " " + stop);
 				WarcParserTask task = new WarcParserTask(writer, start, stop);
 				executor.submit(task);
 			}
 			
 			int counter = 0;
-			for (int i=0; i<nfiles; i+=(filePerThread)) {
+			for (int i=0; i<nfiles; i+=(filePerThread))
 				counter += executor.take().get();
-			}
 			
 			writer.close();
 			
