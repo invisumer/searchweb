@@ -63,6 +63,11 @@ public class EngineConfig {
 			if (this.debugMode && num != null)
 				this.numTopScoreExplanation = Integer.parseInt(num);
 			
+			// Max number of results
+			String max = prop.getProperty("searcher.maxhits");
+			if (max != null)
+				this.maxHits = Integer.parseInt(max);
+			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
 			logger.info("Dictionary path: " + this.dictionaryPath);
@@ -70,6 +75,7 @@ public class EngineConfig {
 			logger.info("RAM buffer size: " + this.RAMBufferSize);
 			logger.info("Query explanation enabled: " + this.debugMode);
 			logger.info("Number of score explanation: " + this.numTopScoreExplanation);
+			logger.info("Max number of hits: " + this.maxHits);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			logger.severe("Property file could not be found: " + e.getMessage());
@@ -79,6 +85,9 @@ public class EngineConfig {
 		}
 	}
 	
+	public String getDictionaryPath() {
+		return this.dictionaryPath;
+	}
 
 	public void setDictionaryPath(String dictionaryPath) {
 		this.dictionaryPath = dictionaryPath;
@@ -147,6 +156,14 @@ public class EngineConfig {
 	public void setNumTopScoreExplantion(int numTopScoreExplantion) {
 		this.numTopScoreExplanation = numTopScoreExplantion;
 	}
+	
+	public int getMaxHits() {
+		return maxHits;
+	}
+
+	public void setMaxHits(int maxHits) {
+		this.maxHits = maxHits;
+	}
 
 	/** Return the singleton object of this Factory.
 	 * 
@@ -156,20 +173,6 @@ public class EngineConfig {
 		if (instance==null) 
 			instance = new EngineConfig();
 		return instance;
-	}
-
-	public String getDictionaryPath() {
-		return this.dictionaryPath;
-	}
-
-
-	public int getMaxHits() {
-		return maxHits;
-	}
-
-
-	public void setMaxHits(int maxHits) {
-		this.maxHits = maxHits;
 	}
 	
 }
