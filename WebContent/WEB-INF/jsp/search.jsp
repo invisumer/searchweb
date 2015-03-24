@@ -100,7 +100,15 @@ code {
 						<li style="margin-bottom: 30px;">
 							<h4>
 							<a href="${result.url}">
-								${fn:substring(result.title, 0, 65)}<c:if test="${fn:length(result.title) > 65}">...</c:if>
+								<c:choose>
+								    <c:when test="${empty result.title}">
+								        Title not found
+								    </c:when>
+								    <c:otherwise>
+								        ${fn:substring(result.title, 0, 55)}
+								        <c:if test="${fn:length(result.title) > 65}">...</c:if>
+								    </c:otherwise>
+								</c:choose>
 							</a>
 							</h4>
 							<p>
