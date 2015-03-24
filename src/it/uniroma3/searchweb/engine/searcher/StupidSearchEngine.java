@@ -26,11 +26,11 @@ import org.apache.lucene.util.Version;
 public class StupidSearchEngine extends DebuggerSearchEngine {
 	private static final Logger logger = Logger.getLogger(StupidSearchEngine.class.getName());
 	
-	public StupidSearchEngine(boolean debugMode, int topScores) {
-		super(debugMode, topScores);
+	public StupidSearchEngine() {
+		super();
 
 		try {
-			EngineConfig engineConfig = EngineConfig.getInstance();
+			EngineConfig engineConfig = this.getConfig();
 			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
 			IndexReader reader = DirectoryReader.open(index);
 			IndexSearcher searcher = new IndexSearcher(reader);

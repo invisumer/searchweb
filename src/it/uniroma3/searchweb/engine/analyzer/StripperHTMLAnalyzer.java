@@ -18,7 +18,6 @@ import org.apache.lucene.util.Version;
 
 public class StripperHTMLAnalyzer extends Analyzer {
 	public static final CharArraySet STOP_WORDS_SET = StopAnalyzer.ENGLISH_STOP_WORDS_SET; 
-	private static int MAX_TOKEN_LENGTH = 255;
 	private Version version;
 	
 	 public StripperHTMLAnalyzer(Version version) {

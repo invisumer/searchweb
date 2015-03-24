@@ -1,5 +1,6 @@
 package it.uniroma3.searchweb.engine.searcher;
 
+import it.uniroma3.searchweb.config.EngineConfig;
 import it.uniroma3.searchweb.model.Result;
 
 import java.io.IOException;
@@ -16,12 +17,13 @@ import org.apache.lucene.search.ScoreDoc;
 public abstract class DebuggerSearchEngine implements SearchEngine {
 	private static final Logger logger = Logger.getLogger(DebuggerSearchEngine.class.getName());
 	private static int TOP_SCORES = 10;
+	private EngineConfig config = EngineConfig.getInstance();
 	private IndexSearcher searcher = null;
-	private boolean debugMode = true;
+	private boolean debugMode = false;
 	
-	public DebuggerSearchEngine(boolean debugMode, int topScores) {
-		this.debugMode = debugMode;
-		TOP_SCORES = topScores;
+	public DebuggerSearchEngine() {
+		this.debugMode = this.config.isDebugMode();
+		TOP_SCORES = config.getNumTopScoreExplantion();
 	}
 
 	@Override
@@ -67,6 +69,14 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	
 	public void setSearcher(IndexSearcher searcher) throws IOException {
 		this.searcher = searcher;
+	}
+	
+	public EngineConfig getConfig() {
+		return config;
+	}
+	
+	public void setConfig(EngineConfig config) {
+		this.config = config;
 	}
 
 }

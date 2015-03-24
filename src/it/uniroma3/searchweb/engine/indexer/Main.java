@@ -1,7 +1,6 @@
 package it.uniroma3.searchweb.engine.indexer;
 
 import it.uniroma3.searchweb.config.EngineConfig;
-import it.uniroma3.searchweb.engine.analyzer.StripperHTMLAnalyzer;
 
 import java.io.File;
 import java.io.IOException;

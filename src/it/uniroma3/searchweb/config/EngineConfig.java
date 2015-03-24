@@ -12,11 +12,12 @@ public class EngineConfig {
 	private static final Logger logger = Logger.getLogger(EngineConfig.class.getName()); 
 	private static EngineConfig instance;
 	private static String propertyPath = "META-INF/config.properties";
-	private String indexPath;
-	private String datasetPath;
-	private OpenMode indexOpenMode;
-	private double RAMBufferSize;
-	private boolean debugMode;
+	private String indexPath = "index";
+	private String datasetPath = "dataset";
+	private OpenMode indexOpenMode = OpenMode.APPEND;
+	private double RAMBufferSize = 16;
+	private boolean debugMode = false;
+	private int numTopScoreExplantion = 0;
 	
 	private EngineConfig() {
 		try {
@@ -41,30 +42,32 @@ public class EngineConfig {
 				this.indexOpenMode = OpenMode.APPEND; // default
 			
 			// RAM buffer size
-			this.RAMBufferSize = 16;
 			String size = prop.getProperty("index.rambuffersize");
 			if (size != null)
 				this.RAMBufferSize = Double.parseDouble(size);
 			
 			// Debug mode
-			this.debugMode = false;
 			String debug = prop.getProperty("searcher.debugmode");
 			if (debug != null)
 				this.debugMode = Boolean.parseBoolean(debug);
+			
+			// Number of top score explanation
+			String num = prop.getProperty("debug.numexplanations");
+			if (this.debugMode)
+				this.numTopScoreExplantion = 10;
+			if (this.debugMode && num != null)
+				this.numTopScoreExplantion = Integer.parseInt(num);
 			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
 			logger.info("Index open mode: " + this.indexOpenMode);
 			logger.info("RAM buffer size: " + this.RAMBufferSize);
 			logger.info("Query explanation enabled: " + this.debugMode);
+			logger.info("Number of score explanation: " + this.numTopScoreExplantion);
 		} catch (FileNotFoundException e) {
-			this.indexPath = "index";
-			this.datasetPath = "dataset";
 			e.printStackTrace();
 			logger.severe("Property file could not be found: " + e.getMessage());
 		} catch (IOException e) {
-			this.indexPath = "index";
-			this.datasetPath = "dataset";
 			e.printStackTrace();
 			logger.severe("Properties file could not be loaded: " + e.getMessage());
 		}
@@ -116,6 +119,14 @@ public class EngineConfig {
 	
 	public void setDebugMode(boolean debugMode) {
 		this.debugMode = debugMode;
+	}
+	
+	public int getNumTopScoreExplantion() {
+		return numTopScoreExplantion;
+	}
+	
+	public void setNumTopScoreExplantion(int numTopScoreExplantion) {
+		this.numTopScoreExplantion = numTopScoreExplantion;
 	}
 
 	/** Return the singleton object of this Factory.
