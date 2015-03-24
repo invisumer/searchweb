@@ -13,6 +13,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.Field.Store;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 
 import edu.cmu.lemurproject.WarcHTMLResponseRecord;
 import edu.cmu.lemurproject.WarcRecord;
@@ -87,15 +88,16 @@ public class WarcParser {
 		// extract body and title
 		String html = htmlRecord.getRawRecord().getContentUTF8();
 		html = html.substring(html.indexOf("\n\r\n")+3, html.length());
-
-		if (Jsoup.parse(html).body() == null)
+		org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
+		
+		String title = htmlDoc.title();
+		if (htmlDoc.title() == null || htmlDoc.title().isEmpty())
 			return null;
 		
-		if (Jsoup.parse(html).title() == null)
+		Element bodyEl = htmlDoc.body();
+		if (bodyEl == null)
 			return null;
-		
-		String body = Jsoup.parse(html).body().text();
-		String title = Jsoup.parse(html).title();
+		String body = bodyEl.text();
 
 		Document record = new Document();
 		record.add(new StringField("title", title, Store.YES));
