@@ -1,0 +1,6 @@
+MergePolicy: vedere quale policy di merging conviene
+TermVector: a cosa servono e se ci possono essere utili
+NRTManager e SearchManager: vedere bene come funzionano (conviene riusare un sono IndexWriter e un solo IndexSearcher?
+Spellcorrection
+Risolvere alcuni problemi di visualizzazione dei contenuti (mettere il kanji "miru" sul motore di ricerca)
+Alcuni title non vengono prelevati... anche se esistono (cerca http)
