@@ -4,3 +4,4 @@ NRTManager e SearchManager: vedere bene come funzionano (conviene riusare un son
 Spellcorrection
 Risolvere alcuni problemi di visualizzazione dei contenuti (mettere il kanji "miru" sul motore di ricerca)
 Alcuni title non vengono prelevati... anche se esistono (cerca http)
+Ricerca in base a piu' field (con scoring dei singoli field)
