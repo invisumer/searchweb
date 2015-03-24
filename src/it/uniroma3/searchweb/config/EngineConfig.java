@@ -20,6 +20,7 @@ public class EngineConfig {
 	private double RAMBufferSize = 16;
 	private boolean debugMode = false;
 	private int numTopScoreExplanation = 0;
+	private int maxHits = 50;
 	
 	private EngineConfig() {
 		try {
@@ -159,6 +160,16 @@ public class EngineConfig {
 
 	public String getDictionaryPath() {
 		return this.dictionaryPath;
+	}
+
+
+	public int getMaxHits() {
+		return maxHits;
+	}
+
+
+	public void setMaxHits(int maxHits) {
+		this.maxHits = maxHits;
 	}
 	
 }

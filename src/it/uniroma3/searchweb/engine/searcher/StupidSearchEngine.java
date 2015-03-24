@@ -25,6 +25,7 @@ import org.apache.lucene.util.Version;
 
 public class StupidSearchEngine extends DebuggerSearchEngine {
 	private static final Logger logger = Logger.getLogger(StupidSearchEngine.class.getName());
+	private EngineConfig config = EngineConfig.getInstance();
 	
 	public StupidSearchEngine() {
 		super();
@@ -55,7 +56,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 
 	@Override
 	public ScoreDoc[] search(Query query) throws IOException {
-		int maxHits = 10;
+		int maxHits = config.getMaxHits();
 		TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true);
 		TopScoreDocCollector.create(maxHits, true);
 		this.getSearcher().search(query, collector);
