@@ -44,6 +44,7 @@ public class Main2 {
 				writer.addDocument(doc);
 				counter++;
 			}
+			
 			long stop = System.currentTimeMillis();
 			// TODO logger for index time
 			double time = (stop-start)/1000.0;
@@ -51,6 +52,10 @@ public class Main2 {
 			
 			parser.close();
 			writer.close();
+			
+			stop = System.currentTimeMillis();
+			time = (stop-start)/1000.0;
+			System.out.println("Closing in " + time + " sec");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
