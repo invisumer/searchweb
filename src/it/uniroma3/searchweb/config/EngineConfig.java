@@ -14,6 +14,7 @@ public class EngineConfig {
 	private static String propertyPath = "META-INF/config.properties";
 	private String indexPath = "index";
 	private String datasetPath = "dataset";
+	private String spellCheckerPath = "spellChecker";
 	private OpenMode indexOpenMode = OpenMode.APPEND;
 	private double RAMBufferSize = 16;
 	private boolean debugMode = false;
@@ -27,6 +28,7 @@ public class EngineConfig {
 			// mandatory properties
 			this.indexPath = prop.getProperty("index.path");
 			this.datasetPath = prop.getProperty("dataset.path");
+			this.spellCheckerPath = prop.getProperty("spellChecker.path");
 			
 			// open mode
 			String mode = prop.getProperty("index.openmode");
@@ -89,6 +91,14 @@ public class EngineConfig {
 		this.indexPath = path;
 	}
 	
+	public String getSpellCheckerPath() {
+		return spellCheckerPath;
+	}
+
+	public void setSpellCheckerPath(String spellCheckerPath) {
+		this.spellCheckerPath = spellCheckerPath;
+	}
+
 	public String getDatasetPath() {
 		return datasetPath;
 	}
