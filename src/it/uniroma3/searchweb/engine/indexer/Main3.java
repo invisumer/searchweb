@@ -35,8 +35,7 @@ public class Main3 {
 			config.setRAMBufferSizeMB(engineConfig.getRAMBufferSize());
 			config.setOpenMode(engineConfig.getIndexOpenMode());
 			IndexWriter writer = new IndexWriter(index, config);
-			WarcParser parser = new WarcParser();
-			int nfiles = parser.getWarcFiles().length;
+			int nfiles = engineConfig.getWarcFiles().length;
 //			int nfiles = 2;
 			int filePerThread = (int) Math.ceil(nfiles / (poolSize + 0.0));
 			

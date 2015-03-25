@@ -1,5 +1,7 @@
 package it.uniroma3.searchweb.engine.indexer;
 
+import it.uniroma3.searchweb.config.EngineConfig;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -20,7 +22,8 @@ public class WarcParserTask implements Callable<Integer> {
 	public WarcParserTask(IndexWriter writer, int start, int stop) {
 		this.writer = writer;
 		this.parser = new WarcParser();
-		this.files = this.parser.getWarcFiles();
+		EngineConfig config = EngineConfig.getInstance();
+		this.files = config.getWarcFiles();
 		this.start = start;
 		this.stop = stop;
 	}
@@ -71,6 +74,7 @@ public class WarcParserTask implements Callable<Integer> {
 		parser.close();
 		
 		logger.info("["+id+"] " + "Parsed '"+file+"' with "+counter+" docs");
+		writer.commit();
 		
 		return counter;
 	}

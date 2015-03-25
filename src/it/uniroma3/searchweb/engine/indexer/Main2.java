@@ -30,7 +30,7 @@ public class Main2 {
 			IndexWriter writer = new IndexWriter(index, config);
 			
 			WarcParser parser = new WarcParser();
-			String[] files = parser.getWarcFiles();
+			String[] files = engineConfig.getWarcFiles();
 			parser.open(files[0]);
 			
 			int counter = 1;

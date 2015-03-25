@@ -1,7 +1,9 @@
 package it.uniroma3.searchweb.config;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -163,6 +165,20 @@ public class EngineConfig {
 
 	public void setMaxHits(int maxHits) {
 		this.maxHits = maxHits;
+	}
+	
+	public String[] getWarcFiles() {
+		File datasetFolder = new File(this.getDatasetPath());
+		File[] warcFiles = datasetFolder.listFiles();
+		String[] filenames = new String[warcFiles.length];
+
+		for (int i = 0; i < warcFiles.length; i++) {
+			filenames[i] = warcFiles[i].getName();
+		}
+
+		Arrays.sort(filenames);
+
+		return filenames;
 	}
 
 	/** Return the singleton object of this Factory.
