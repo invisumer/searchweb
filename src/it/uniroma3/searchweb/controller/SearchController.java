@@ -47,7 +47,10 @@ public class SearchController {
 	
 	private List<Result> search(String query) {
 		StupidSearchEngine engine = new StupidSearchEngine();
-		return engine.getResults(query,null);
+		String[] fields = new String[2];
+		fields[0] = "title";
+		fields[1] = "body";
+		return engine.getResults(query,fields);
 	}
 
 }

@@ -5,7 +5,9 @@ import it.uniroma3.searchweb.model.Result;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -13,6 +15,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -51,8 +54,10 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 
 	@Override
 	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-		QueryParser qp = new QueryParser(Version.LUCENE_46, "body", analyzer);
-		Query q = qp.parse(query);
+		//QueryParser qp = new QueryParser(Version.LUCENE_46, "body", analyzer);
+		//Query q = qp.parse(query);
+		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(Version.LUCENE_46, fields, analyzer);
+		Query q = mfqp.parse(query);
 		return q;
 	}
 
