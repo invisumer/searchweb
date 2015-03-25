@@ -24,7 +24,8 @@ public class EngineConfig {
 	private int numTopScoreExplanation = 0;
 	private int maxHits = 50;
 	private double scoreThreshold = maxHits*0.9;
-	
+	private int maxCorrection = 5; 
+
 	private EngineConfig() {
 		try {
 			Properties prop = new Properties();
@@ -86,6 +87,14 @@ public class EngineConfig {
 			e.printStackTrace();
 			logger.severe("Properties file could not be loaded: " + e.getMessage());
 		}
+	}
+	
+	public int getMaxCorrection() {
+		return maxCorrection;
+	}
+
+	public void setMaxCorrection(int maxCorrection) {
+		this.maxCorrection = maxCorrection;
 	}
 	
 	public String getDictionaryPath() {
