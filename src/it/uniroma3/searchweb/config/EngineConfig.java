@@ -23,6 +23,7 @@ public class EngineConfig {
 	private boolean debugMode = false;
 	private int numTopScoreExplanation = 0;
 	private int maxHits = 50;
+	private double scoreThreshold = maxHits*0.9;
 	
 	private EngineConfig() {
 		try {
@@ -167,6 +168,14 @@ public class EngineConfig {
 		this.maxHits = maxHits;
 	}
 	
+	public double getScoreThreshold() {
+		return scoreThreshold;
+	}
+
+	public void setScoreThreshold(double scoreThreshold) {
+		this.scoreThreshold = scoreThreshold;
+	}
+
 	public String[] getWarcFiles() {
 		File datasetFolder = new File(this.getDatasetPath());
 		File[] warcFiles = datasetFolder.listFiles();
