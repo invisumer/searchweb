@@ -54,10 +54,10 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 
 	@Override
 	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-		//QueryParser qp = new QueryParser(Version.LUCENE_46, "body", analyzer);
-		//Query q = qp.parse(query);
-		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(Version.LUCENE_46, fields, analyzer);
-		Query q = mfqp.parse(query);
+		QueryParser qp = new QueryParser(Version.LUCENE_46, "body", analyzer);
+		Query q = qp.parse(query);
+		//MultiFieldQueryParser mfqp = new MultiFieldQueryParser(Version.LUCENE_46, fields, analyzer);
+		//Query q = mfqp.parse(query);
 		return q;
 	}
 
