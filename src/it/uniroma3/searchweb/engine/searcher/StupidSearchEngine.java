@@ -64,7 +64,8 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		this.getSearcher().search(query, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 //		if (hits.length<config.getScoreThreshold()) {
-//			String[] corrections = spellChecker.getBasicSuggestions(query.toString().substring(5), 1, .75f);
+//			System.out.println("correction");
+//			String[] corrections = spellChecker.getBasicSuggestions(query.toString().substring(5), config.getMaxCorrection(), .75f);
 //			for (String q : corrections) {
 //				Query newQuery = null;
 //				try {
