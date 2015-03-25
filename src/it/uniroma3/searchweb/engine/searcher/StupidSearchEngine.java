@@ -26,6 +26,7 @@ import org.apache.lucene.util.Version;
 public class StupidSearchEngine extends DebuggerSearchEngine {
 	private static final Logger logger = Logger.getLogger(StupidSearchEngine.class.getName());
 	private EngineConfig config = EngineConfig.getInstance();
+//	private SpellCheckers spellChecker;
 	
 	public StupidSearchEngine() {
 		super();
@@ -36,6 +37,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			IndexReader reader = DirectoryReader.open(index);
 			IndexSearcher searcher = new IndexSearcher(reader);
 			this.setSearcher(searcher);
+//			this.spellChecker = new SpellCheckers();
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		}
@@ -61,7 +63,24 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		TopScoreDocCollector.create(maxHits, true);
 		this.getSearcher().search(query, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		
+//		if (hits.length<config.getScoreThreshold()) {
+//			String[] corrections = spellChecker.getBasicSuggestions(query.toString().substring(5), 1, .75f);
+//			for (String q : corrections) {
+//				Query newQuery = null;
+//				try {
+//					newQuery = this.parseQuery(new String[3], getAnalyzer(), q);
+//				} catch (ParseException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				collector = TopScoreDocCollector.create(maxHits, true);
+//				this.getSearcher().search(newQuery, collector);
+//				ScoreDoc[] newHits = collector.topDocs().scoreDocs;
+//				if (newHits.length>hits.length) {
+//					hits = newHits;
+//				}
+//			}
+//		}
 		return hits;
 	}
 

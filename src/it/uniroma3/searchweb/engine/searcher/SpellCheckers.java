@@ -4,8 +4,6 @@ import it.uniroma3.searchweb.config.EngineConfig;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -13,10 +11,7 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.spell.HighFrequencyDictionary;
 import org.apache.lucene.search.spell.LuceneDictionary;
-import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.search.spell.StringDistance;
 import org.apache.lucene.store.Directory;
@@ -34,7 +29,7 @@ public class SpellCheckers {
 		spellchecker = new SpellChecker(spellCheckerDir);
 	}
 	
-	public void populateLuceneDictionary() throws CorruptIndexException, IOException {
+	public void initialize() throws CorruptIndexException, IOException {
 		Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
 		IndexReader reader = DirectoryReader.open(index);
 		// To index a field of a user index:
@@ -48,15 +43,19 @@ public class SpellCheckers {
 	}
 	
 	public String[] getBasicSuggestions(String query, int numSug, float similarity) throws IOException {
-		StringDistance distance = spellchecker.getStringDistance();
 		StringTokenizer tokenizer = new StringTokenizer(query);
 		String[] result = new String[1];
 		result[0] = "";
+		boolean firstTime = true;
 		while (tokenizer.hasMoreTokens()) {
 			String currentToken = tokenizer.nextToken();
 			if (spellchecker.exist(currentToken)) {
 				for (int i=0; i<result.length;i++) {
-					result[i] = result[i]+" "+currentToken;
+					if (firstTime) {
+						result[i] = result[i]+currentToken;
+						firstTime = false;
+					} else
+						result[i] = result[i]+" "+currentToken;
 				}
 			} else {
 				String[] suggestions = spellchecker.suggestSimilar(currentToken, numSug, similarity);
@@ -69,13 +68,10 @@ public class SpellCheckers {
 				}
 			}
 		}
-		for (String s : result) {
-			System.out.println("Distance : "+distance.getDistance(s,query));
-		}
 		return result;
 	}
 	
-	public String[] createSuggestions(String[]suggestions, String[] currentSuggestions) {
+	private String[] createSuggestions(String[]suggestions, String[] currentSuggestions) {
 		String[] result = new String[suggestions.length*currentSuggestions.length];
 		int counter = 0;
 		int i,j;
