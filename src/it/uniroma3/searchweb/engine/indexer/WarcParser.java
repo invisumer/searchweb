@@ -20,19 +20,19 @@ public class WarcParser {
 	private String dataset;
 	private DataInputStream stream;
 	private WarcRecord cur;
-	private WarcAdapter converter;
+	private WarcConverter converter;
 
 	public WarcParser() {
 		EngineConfig config = EngineConfig.getInstance();
 		this.dataset = config.getDatasetPath();
 		CharsetDetector detector = new CharsetDetector();
-		this.converter = new WarcAdapter(detector);
+		this.converter = new WarcConverter(detector);
 	}
 
 	public WarcParser(String datasetPath) {
 		this.dataset = datasetPath;
 		CharsetDetector detector = new CharsetDetector();
-		this.converter = new WarcAdapter(detector);
+		this.converter = new WarcConverter(detector);
 	}
 
 	public String getDatasetPath() {

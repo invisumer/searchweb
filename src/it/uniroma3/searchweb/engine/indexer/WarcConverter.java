@@ -23,11 +23,11 @@ import org.w3c.tidy.Tidy;
 import edu.cmu.lemurproject.WarcHTMLResponseRecord;
 import edu.cmu.lemurproject.WarcRecord;
 
-public class WarcAdapter {
-	private static final Logger logger = Logger.getLogger(WarcAdapter.class.getName()); 
+public class WarcConverter {
+	private static final Logger logger = Logger.getLogger(WarcConverter.class.getName()); 
 	private CharsetDetector detector;
 	
-	public WarcAdapter(CharsetDetector detector) {
+	public WarcConverter(CharsetDetector detector) {
 		this.detector = detector;
 	}
 	
