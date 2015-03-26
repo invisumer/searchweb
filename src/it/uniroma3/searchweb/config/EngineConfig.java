@@ -1,11 +1,13 @@
 package it.uniroma3.searchweb.config;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 
@@ -187,7 +189,13 @@ public class EngineConfig {
 
 	public String[] getWarcFiles() {
 		File datasetFolder = new File(this.getDatasetPath());
-		File[] warcFiles = datasetFolder.listFiles();
+		final Pattern p = Pattern.compile(".*\\.(warc\\.gz)$");
+		File[] warcFiles = datasetFolder.listFiles(new FileFilter() {
+	        @Override
+	        public boolean accept(File file) {
+	            return p.matcher(file.getName()).matches();
+	        }
+	    });
 		String[] filenames = new String[warcFiles.length];
 
 		for (int i = 0; i < warcFiles.length; i++) {
