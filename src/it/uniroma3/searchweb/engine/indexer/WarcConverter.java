@@ -10,8 +10,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.tika.parser.txt.CharsetDetector;
 import org.apache.tika.parser.txt.CharsetMatch;
@@ -24,7 +26,7 @@ import edu.cmu.lemurproject.WarcHTMLResponseRecord;
 import edu.cmu.lemurproject.WarcRecord;
 
 public class WarcConverter {
-	private static final Logger logger = Logger.getLogger(WarcParser.class.getName()); 
+	private static final Logger logger = Logger.getLogger(WarcConverter.class.getName()); 
 	private CharsetDetector detector;
 	private EngineConfig config = EngineConfig.getInstance();
 	
@@ -54,15 +56,16 @@ public class WarcConverter {
 			enc = this.getCharsetFromHttp(httpResponse);
 			
 			if (enc != null) {
+//				html = new String(htmlStream, enc);
 				decoder = "http"; 
 			}
 			
 			// find encoding from html meta if necessary
-			String htmlMeta = null;
 			if (enc == null) {
-				htmlMeta = new String(htmlStream, "UTF-8");
+				String htmlMeta = new String(htmlStream, "UTF-8");
 				enc = this.getCharsetFromMeta(htmlMeta);
 				if (enc != null) {
+//					html = new String(htmlStream, enc);
 					decoder = "meta";
 				}
 			}
@@ -71,6 +74,7 @@ public class WarcConverter {
 			if (enc == null) {
 				enc = this.guessEncoding(htmlStream);
 				if (enc != null) {
+//					html = new String(htmlStream, enc);
 					decoder = "tika";
 				}
 			}
@@ -78,25 +82,21 @@ public class WarcConverter {
 			// default encoding
 			if (enc == null) {
 				enc = "UTF-8";
+//				html = new String(htmlStream, enc);
 				decoder = "default";
 			}
 			
 			// Malformed html corrector
-//			if (decoder.equals("meta") && enc.equalsIgnoreCase("UTF-8"))
-//				html = htmlMeta;
-//			else
-//				html = new String(htmlStream, enc);
-			html = this.fixMalformedHtml(htmlStream, enc);
+			html = new String(htmlStream, enc);
+//			html = this.fixMalformedHtml(htmlStream, enc);
 //			System.out.println(html);
 		} catch (UnsupportedEncodingException e) {
 			logger.severe(e.getMessage());
+//			e.printStackTrace();
 			return null;
 		}
 			
 		/* Extract all the informations */
-		
-		if (html == null)
-			return null;
 		
 		org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
 		
@@ -218,6 +218,7 @@ public class WarcConverter {
 	    tidy.setPrintBodyOnly(false);
 	    tidy.setQuiet(true);
 	    tidy.setShowErrors(0);
+//	    tidy.setErrout(null);
 	    tidy.setShowWarnings(false);
 //	    tidy.setWraplen(Integer.MAX_VALUE);
 	    tidy.setForceOutput(true);
@@ -225,16 +226,9 @@ public class WarcConverter {
 	    
 	    ByteArrayInputStream inputStream = new ByteArrayInputStream(inStream);
 	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	    
-	    try {
-	    	tidy.parse(inputStream, outputStream);
-	    } catch(Exception e) {
-	    	logger.severe(e.getMessage());
-	    	return null;
-	    }
+	    tidy.parse(inputStream, outputStream);
 	    
 	    String html = new String(outputStream.toByteArray(), enc);
-	    
 	    return html;
 	}
 
