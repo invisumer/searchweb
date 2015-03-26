@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -21,19 +20,19 @@ public class WarcParser {
 	private String dataset;
 	private DataInputStream stream;
 	private WarcRecord cur;
-	private DocumentBuilder builder;
+	private WarcAdapter converter;
 
 	public WarcParser() {
 		EngineConfig config = EngineConfig.getInstance();
 		this.dataset = config.getDatasetPath();
 		CharsetDetector detector = new CharsetDetector();
-		this.builder = new DocumentBuilder(detector);
+		this.converter = new WarcAdapter(detector);
 	}
 
 	public WarcParser(String datasetPath) {
 		this.dataset = datasetPath;
 		CharsetDetector detector = new CharsetDetector();
-		this.builder = new DocumentBuilder(detector);
+		this.converter = new WarcAdapter(detector);
 	}
 
 	public String getDatasetPath() {
@@ -71,15 +70,7 @@ public class WarcParser {
 	}
 
 	private Document createDocument() {
-		Document doc = null;
-		
-		try {
-			doc = this.builder.create(this.cur);
-		} catch (UnsupportedEncodingException e) {
-			logger.severe(e.getMessage());
-			e.printStackTrace();
-		}
-		
+		Document doc = this.converter.parseDocument(this.cur);
 		return doc;
 	}
 
@@ -101,22 +92,20 @@ public class WarcParser {
 
 		int i = 0;
 		int notEncoded = 0;
-		long limit = 10;
+		long limit = 200000000000000L;
 		
 		Document doc = null;
 		while ((doc = parser.next())!= null && i<limit) {
 			if (doc != null) {
-				System.out.println("---------- Response " + (i+1) + " ----------");
-				System.out.println(doc.get("encPrec") + " -> " + doc.get("enc"));
-				System.out.println();
-				System.out.println(doc.get("url"));
-				System.out.println();
-				System.out.println(doc.get("title"));
-				System.out.println();
-				System.out.println(doc.get("body"));
-				System.out.println();
+//				System.out.println("---------- Response " + (i+1) + " ----------");
+				System.out.println(doc.get("dec") + ", " + doc.get("enc") + ", " + doc.get("url"));
+//				System.out.println();
+//				System.out.println(doc.get("title"));
+//				System.out.println();
+//				System.out.println(doc.get("body"));
+//				System.out.println();
 				
-				if (doc.get("encPrec").equals("default"))
+				if (doc.get("dec").equals("default"))
 					notEncoded++;
 			}
 			i++;
