@@ -115,7 +115,7 @@ public class WarcConverter {
 		record.add(new StringField("url", url, Store.YES));
 		
 		TextField titleField = new TextField("title", title, Store.YES);
-		titleField.setBoost(config.getTitleBoost());
+//		titleField.setBoost(config.getTitleBoost());
 		record.add(titleField);
 		
 		TextField bodyField = new TextField("body", body, Store.YES);
