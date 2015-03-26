@@ -25,9 +25,9 @@ public class EngineConfig {
 	private boolean debugMode = false;
 	private int numTopScoreExplanation = 0;
 	private int maxHits = 50;
-	private double scoreThreshold = maxHits*0.314;
-	private int maxCorrection = 5;
-	private float similarity = 0.75f;
+	private double scoreThreshold = maxHits*0.314; // TODO Use more significant names!!!
+	private int maxCorrection = 5; // TODO Use more significant names!!!
+	private float similarity = 0.75f; // TODO Use more significant names!!!
 	private String logPath = "logger";
 
 	private EngineConfig() {
@@ -76,6 +76,8 @@ public class EngineConfig {
 			if (max != null)
 				this.maxHits = Integer.parseInt(max);
 			
+			// TODO get property configuration for spell corrector
+			
 			// logger file
 			String log = prop.getProperty("log.path");
 			if (log != null)
@@ -89,6 +91,9 @@ public class EngineConfig {
 			logger.info("Query explanation enabled: " + this.debugMode);
 			logger.info("Number of score explanation: " + this.numTopScoreExplanation);
 			logger.info("Max number of hits: " + this.maxHits);
+			logger.info("Min number of hits for query suggestions: " + this.scoreThreshold);
+			logger.info("Max number of query suggestions: " + this.maxCorrection);
+			logger.info("Similarity threshold for query suggestion: " + this.similarity);
 			logger.info("Log path: " + this.logPath);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
