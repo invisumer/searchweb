@@ -1,5 +1,7 @@
 package it.uniroma3.searchweb.engine.indexer;
 
+import it.uniroma3.searchweb.config.EngineConfig;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -26,6 +28,7 @@ import edu.cmu.lemurproject.WarcRecord;
 public class WarcConverter {
 	private static final Logger logger = Logger.getLogger(WarcConverter.class.getName()); 
 	private CharsetDetector detector;
+	private EngineConfig config = EngineConfig.getInstance();
 	
 	public WarcConverter(CharsetDetector detector) {
 		this.detector = detector;
@@ -112,11 +115,11 @@ public class WarcConverter {
 		record.add(new StringField("url", url, Store.YES));
 		
 		TextField titleField = new TextField("title", title, Store.YES);
-		titleField.setBoost(2f);
+//		titleField.setBoost(config.getTitleBoost());
 		record.add(titleField);
 		
 		TextField bodyField = new TextField("body", body, Store.YES);
-		bodyField.setBoost(1f);
+//		bodyField.setBoost(config.getBodyBoost());
 		record.add(bodyField);
 
 		return record;
