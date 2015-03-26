@@ -60,23 +60,21 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	public abstract List<Result> extract(Analyzer a, Query q, ScoreDoc[] hits, String field);
 	
 	public void explain(Query query, ScoreDoc[] hits) throws IOException {
-		for (int i=0; i<TOP_SCORES && i< hits.length; i++) {
-			Explanation expl = this.searcher.explain(query, hits[i].doc);
-			logger.info("Match " + (i+1) + " explanation:\n" + expl.toString());
-		}
+//		for (int i=0; i<TOP_SCORES && i< hits.length; i++) {
+//			Explanation expl = this.searcher.explain(query, hits[i].doc);
+//			logger.info("Match " + (i+1) + " explanation:\n" + expl.toString());
+//		}
 	}
 	
 	public ScoreDoc[] searchForBetterQuery(ScoreDoc[] hits, String query, String[] fields) throws IOException, ParseException {
 		ScoreDoc[] newHits;
-		SpellCheckers spellChecker = new SpellCheckers();
+		NaiveSpellCheckers spellChecker = new NaiveSpellCheckers();
 		Query tmp;
 		String[] corrections = spellChecker.getBasicSuggestions(query, config.getMaxCorrection(), config.getSimilarity());
-		for (int i=1; i<corrections.length;i++) {
+		for (int i=0; i<corrections.length;i++) {
 			tmp = this.parseQuery(fields, getAnalyzer(), corrections[i]);
 			newHits = this.search(tmp);
-			System.out.println("hits length = "+hits.length+" newHits length = "+newHits.length);
 			if (hits.length<newHits.length) {
-				System.out.println("here");
 				hits = newHits;
 				this.queryx = tmp;
 			}
