@@ -2,9 +2,10 @@ package it.uniroma3.searchweb.controller;
 
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import it.uniroma3.searchweb.engine.searcher.StupidSearchEngine;
+import it.uniroma3.searchweb.engine.searcher.SearchEngine;
 import it.uniroma3.searchweb.model.QueryForm;
 import it.uniroma3.searchweb.model.Result;
 
@@ -19,6 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class SearchController {
 	private static final String INVALID_QUERY = "The query is not valid";
+	
+	@Resource(name="searcher")
+	private SearchEngine engine;
 	
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public String search(@ModelAttribute QueryForm query, ModelMap model) {
@@ -46,11 +50,10 @@ public class SearchController {
 	}
 	
 	private List<Result> search(String query) {
-		StupidSearchEngine engine = new StupidSearchEngine();
 		String[] fields = new String[2];
 		fields[0] = "title";
 		fields[1] = "body";
-		return engine.getResults(query,fields);
+		return this.engine.getResults(query,fields);
 	}
 
 }
