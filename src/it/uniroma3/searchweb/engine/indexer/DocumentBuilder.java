@@ -31,8 +31,8 @@ public class DocumentBuilder {
 		
 		// extract http response
 		byte[] contentStream = warc.getContent();
-		int i=0;
-		while(!(contentStream[i] == '\r' && (i>0) && contentStream[i-1] == '\n')) {
+		int i=1;
+		while(!((contentStream[i] == '\r') && (contentStream[i-1] == '\n'))) {
 			i++;
 		}
 		

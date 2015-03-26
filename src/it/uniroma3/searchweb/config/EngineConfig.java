@@ -19,15 +19,16 @@ public class EngineConfig {
 	private String indexPath = "index";
 	private String datasetPath = "dataset";
 	private String dictionaryPath = "dictionary";
-	private String plainPath = "plain";
+	private String plainDictinoryPath = "plain";
 	private OpenMode indexOpenMode = OpenMode.APPEND;
 	private double RAMBufferSize = 16;
 	private boolean debugMode = false;
 	private int numTopScoreExplanation = 0;
 	private int maxHits = 50;
-	private double scoreThreshold = maxHits*0.9;
+	private double scoreThreshold = maxHits*0.314;
 	private int maxCorrection = 5;
 	private float similarity = 0.75f;
+	private String logPath = "logger";
 
 	private EngineConfig() {
 		try {
@@ -37,8 +38,8 @@ public class EngineConfig {
 			// mandatory properties
 			this.indexPath = prop.getProperty("index.path");
 			this.datasetPath = prop.getProperty("dataset.path");
-			this.dictionaryPath = prop.getProperty("lucene.dictionary.path");
-			this.plainPath = prop.getProperty("lucene.plain.path");
+			this.dictionaryPath = prop.getProperty("dictionary.path");
+			this.plainDictinoryPath = prop.getProperty("dictionary.plain.path");
 			
 			// open mode
 			String mode = prop.getProperty("index.openmode");
@@ -75,6 +76,11 @@ public class EngineConfig {
 			if (max != null)
 				this.maxHits = Integer.parseInt(max);
 			
+			// logger file
+			String log = prop.getProperty("log.path");
+			if (log != null)
+				this.logPath = log;
+			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
 			logger.info("Dictionary path: " + this.dictionaryPath);
@@ -83,6 +89,7 @@ public class EngineConfig {
 			logger.info("Query explanation enabled: " + this.debugMode);
 			logger.info("Number of score explanation: " + this.numTopScoreExplanation);
 			logger.info("Max number of hits: " + this.maxHits);
+			logger.info("Log path: " + this.logPath);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			logger.severe("Property file could not be found: " + e.getMessage());
@@ -109,11 +116,11 @@ public class EngineConfig {
 	}
 
 	public String getPlainPath() {
-		return plainPath;
+		return plainDictinoryPath;
 	}
 
 	public void setPlainPath(String plainPath) {
-		this.plainPath = plainPath;
+		this.plainDictinoryPath = plainPath;
 	}
 
 	public static String getPropertyPath() {
@@ -194,6 +201,14 @@ public class EngineConfig {
 
 	public void setSimilarity(float similarity) {
 		this.similarity = similarity;
+	}
+	
+	public String getLogPath() {
+		return logPath;
+	}
+	
+	public void setLogPath(String logPath) {
+		this.logPath = logPath;
 	}
 
 	public String[] getWarcFiles() {

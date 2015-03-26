@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.lucene.document.Document;
@@ -84,13 +86,13 @@ public class WarcParser {
 	public static void main(String[] args) throws FileNotFoundException,
 			IOException {
 		// Log in file
-//        FileHandler fh = new FileHandler("/home/redox/java.log");
-//        logger.addHandler(fh);
-//        SimpleFormatter formatter = new SimpleFormatter();
-//        fh.setFormatter(formatter);
+		EngineConfig config = EngineConfig.getInstance();
+        FileHandler fh = new FileHandler(config.getLogPath());
+        logger.addHandler(fh);
+        SimpleFormatter formatter = new SimpleFormatter();
+        fh.setFormatter(formatter);
 
 		WarcParser parser = new WarcParser();
-		EngineConfig config = EngineConfig.getInstance();
 		String[] files = config.getWarcFiles();
 
 		System.out.println("Parsing: " + parser.getDatasetPath() + "/"
