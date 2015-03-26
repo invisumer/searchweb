@@ -57,6 +57,7 @@ public class SpellCheckers {
 						result[i] = result[i]+" "+currentToken;
 				}
 			} else {
+				// TODO iausfiua
 				String[] suggestions = spellchecker.suggestSimilar(currentToken, numSug, similarity);
 				if (suggestions!=null && suggestions.length>0) {
 					result = createSuggestions(suggestions, result);

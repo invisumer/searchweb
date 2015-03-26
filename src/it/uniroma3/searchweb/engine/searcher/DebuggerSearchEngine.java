@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -21,6 +20,7 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	private EngineConfig config = EngineConfig.getInstance();
 	private IndexSearcher searcher = null;
 	private boolean debugMode = false;
+	private Query queryx;
 	
 	public DebuggerSearchEngine() {
 		this.debugMode = this.config.isDebugMode();
@@ -30,11 +30,13 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	@Override
 	public List<Result> getResults(String query, String[] fields) {
 		List<Result> results = null;
-		
 		try {
 			Analyzer analyzer = this.getAnalyzer();
-			Query queryx  = this.parseQuery(fields, analyzer, query);
+			this.queryx  = this.parseQuery(fields, analyzer, query);
 			ScoreDoc[] docs = this.search(queryx);
+			if (docs.length<config.getScoreThreshold()) {
+				docs = this.searchForBetterQuery(docs, query, fields); 
+			}
 			// TODO change body field
 			results = this.extract(analyzer, queryx, docs, "body");
 			
@@ -62,6 +64,24 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 			Explanation expl = this.searcher.explain(query, hits[i].doc);
 			logger.info("Match " + (i+1) + " explanation:\n" + expl.toString());
 		}
+	}
+	
+	public ScoreDoc[] searchForBetterQuery(ScoreDoc[] hits, String query, String[] fields) throws IOException, ParseException {
+		ScoreDoc[] newHits;
+		SpellCheckers spellChecker = new SpellCheckers();
+		Query tmp;
+		String[] corrections = spellChecker.getBasicSuggestions(query, config.getMaxCorrection(), config.getSimilarity());
+		for (int i=1; i<corrections.length;i++) {
+			tmp = this.parseQuery(fields, getAnalyzer(), corrections[i]);
+			newHits = this.search(tmp);
+			System.out.println("hits length = "+hits.length+" newHits length = "+newHits.length);
+			if (hits.length<newHits.length) {
+				System.out.println("here");
+				hits = newHits;
+				this.queryx = tmp;
+			}
+		}
+		return hits;
 	}
 	
 	public IndexSearcher getSearcher() {

@@ -26,7 +26,8 @@ public class EngineConfig {
 	private int numTopScoreExplanation = 0;
 	private int maxHits = 50;
 	private double scoreThreshold = maxHits*0.9;
-	private int maxCorrection = 5; 
+	private int maxCorrection = 5;
+	private float similarity = 0.75f;
 
 	private EngineConfig() {
 		try {
@@ -185,6 +186,14 @@ public class EngineConfig {
 
 	public void setScoreThreshold(double scoreThreshold) {
 		this.scoreThreshold = scoreThreshold;
+	}
+	
+	public float getSimilarity() {
+		return similarity;
+	}
+
+	public void setSimilarity(float similarity) {
+		this.similarity = similarity;
 	}
 
 	public String[] getWarcFiles() {
