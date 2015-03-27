@@ -29,6 +29,8 @@ public class EngineConfig {
 	private int maxCorrection = 5; // TODO Use more significant names!!!
 	private float similarity = 0.75f; // TODO Use more significant names!!!
 	private String logPath = "logger";
+	private float titleBoost = 2f;
+	private float bodyBoost = 40f;
 
 	private EngineConfig() {
 		try {
@@ -244,6 +246,22 @@ public class EngineConfig {
 		if (instance==null) 
 			instance = new EngineConfig();
 		return instance;
+	}
+
+	public float getTitleBoost() {
+		return titleBoost;
+	}
+
+	public void setTitleBoost(float titleBoost) {
+		this.titleBoost = titleBoost;
+	}
+
+	public float getBodyBoost() {
+		return bodyBoost;
+	}
+
+	public void setBodyBoost(float bodyBoost) {
+		this.bodyBoost = bodyBoost;
 	}
 	
 }
