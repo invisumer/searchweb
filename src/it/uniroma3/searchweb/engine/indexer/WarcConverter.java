@@ -17,8 +17,6 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.tika.parser.txt.CharsetDetector;
 import org.apache.tika.parser.txt.CharsetMatch;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -46,6 +44,7 @@ public class WarcConverter {
 		int httpLen = this.getHttpResponseLength(contentStream);
 		String httpResponse = this.getHttpResponse(contentStream, httpLen);
 		byte[] htmlStream = this.getBodyStream(contentStream, httpLen+3);
+//		System.out.println(httpResponse);
 		
 		/* Now, try to extract html with the right enconding */
 		
@@ -106,7 +105,7 @@ public class WarcConverter {
 			return null;
 		
 		Element bodyEl = htmlDoc.body();
-		if (bodyEl == null)                    // TODO is bodyEl is empty?
+		if (bodyEl == null)
 			return null;
 		String body = bodyEl.text();
 
@@ -213,42 +212,7 @@ public class WarcConverter {
 	
 	private String fixMalformedHtml(byte[] inStream, String enc) throws UnsupportedEncodingException {
 		Tidy tidy = new Tidy();
-//		
-//	    tidy.setInputEncoding(enc);
-//	    tidy.setOutputEncoding(enc);
-//	    tidy.setPrintBodyOnly(false);
-//	    tidy.setQuiet(true);
-//	    tidy.setShowErrors(0);
-//	    tidy.setShowWarnings(false);
-////	    tidy.setWraplen(Integer.MAX_VALUE);
-//	    tidy.setForceOutput(true);
-//	    tidy.setMakeClean(true);
-//	    
-//	    ByteArrayInputStream inputStream = new ByteArrayInputStream(inStream);
-//	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//	    
-//	    try {
-//	    	tidy.parse(inputStream, outputStream);
-//	    } catch(Exception e) {
-//	    	logger.severe(e.getMessage());
-//	    	return null;
-//	    }
-//	    
-//	    String html = new String(outputStream.toByteArray(), enc);
 		
-//		ByteArrayInputStream in = new ByteArrayInputStream(inStream);
-//		HtmlCleaner cleaner = new HtmlCleaner();
-//		TagNode node = null;
-//		String html = null;
-//		
-//		try {
-//			node = cleaner.clean(in);
-//		} catch (Exception e) {
-//			return null;
-//		}
-//		
-//		if (node != null)
-//			html = cleaner.getInnerHtml(node);
 	    tidy.setInputEncoding(enc);
 	    tidy.setOutputEncoding(enc);
 	    tidy.setPrintBodyOnly(false);
