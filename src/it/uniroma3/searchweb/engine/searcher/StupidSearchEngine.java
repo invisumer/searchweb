@@ -57,6 +57,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		//QueryParser qp = new QueryParser(Version.LUCENE_46, "body", analyzer);
 		//Query q = qp.parse(query);
 		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(Version.LUCENE_46, fields, analyzer);
+		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
 		Query q = mfqp.parse(query);
 		return q;
 	}

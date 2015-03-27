@@ -34,15 +34,21 @@ public class Main2 {
 			parser.open(files[0]);
 			
 			int counter = 1;
+			int maxDoc = 100000;
+			int batch = maxDoc/4;
 			long start = System.currentTimeMillis();
-			while (true) {
+			while (counter < maxDoc) {                            // TODO cambiare
 				Document doc = parser.next();
 				
 				if (doc == null)
 					break;
 					
 				writer.addDocument(doc);
+				System.out.println(counter);
 				counter++;
+				
+				if (counter%batch == 0)
+					writer.commit();
 			}
 			
 			long stop = System.currentTimeMillis();
