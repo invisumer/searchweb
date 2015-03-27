@@ -202,7 +202,7 @@ public class WarcConverter {
 	private String guessEncoding(byte[] htmlStream) {
 		String enc = null;
 		
-		detector.setText(htmlStream);
+//		detector.setText(htmlStream);
 		CharsetMatch match = detector.detect();
 		if (match != null)
 			enc = match.getName();
