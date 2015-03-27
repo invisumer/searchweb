@@ -80,6 +80,9 @@ public class WarcConverter {
 			if (enc != null && enc.endsWith("_ltr"))       // TODO what about IBM*_ltr?
 				enc = enc.replace("_ltr", "");
 			
+			if (enc != null && enc.endsWith("_rtl"))       // TODO what about IBM*_rtl?
+				enc = enc.replace("_rtl", "");
+			
 			// default encoding
 			if (enc == null) {
 				enc = "UTF-8";
@@ -168,7 +171,7 @@ public class WarcConverter {
 		if (matcher.find()) {
 			String group = matcher.group();
 			enc = group.replaceAll("(?i)\\bcharset=\\s*\"?", "");
-			if (enc.isEmpty())
+			if (enc.isEmpty() || !Charset.isSupported(enc))
 				enc = null;
 		}
 		
@@ -205,7 +208,7 @@ public class WarcConverter {
 		
 		detector.setText(htmlStream);
 		CharsetMatch match = detector.detect();
-		if (match != null)
+		if (match != null && (match.getConfidence() > 33)) // TODO Confidence?
 			enc = match.getName();
 		
 		return enc;

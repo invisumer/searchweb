@@ -90,18 +90,18 @@ public class WarcParser {
 
 		int i = 0;
 		int notEncoded = 0;
-		long limit = 10;
+		long limit = 50000;
 		
 		Document doc = null;
 		while ((doc = parser.next())!= null && i<limit) {
 			if (doc != null) {
 //				if (!doc.get("dec").equals("http"))
 					System.out.println("[" + (i+1) + "] " + doc.get("dec") + ", " + doc.get("enc") + ", " + "[ " + doc.get("title") + " ] " + doc.get("url"));
-				System.out.println();
-				System.out.println(doc.get("title"));
-				System.out.println();
-				System.out.println(doc.get("body"));
-				System.out.println();
+//				System.out.println();
+//				System.out.println(doc.get("title"));
+//				System.out.println();
+//				System.out.println(doc.get("body"));
+//				System.out.println();
 				
 				if (doc.get("dec").equals("default"))
 					notEncoded++;

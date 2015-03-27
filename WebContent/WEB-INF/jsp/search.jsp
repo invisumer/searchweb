@@ -105,15 +105,15 @@ code {
 								        Title not found
 								    </c:when>
 								    <c:otherwise>
-								        ${fn:substring(result.title, 0, 55)}
-								        <c:if test="${fn:length(result.title) > 65}">...</c:if>
+								        ${fn:substring(result.title, 0, 50)}
+								        <c:if test="${fn:length(result.title) > 50}">...</c:if>
 								    </c:otherwise>
 								</c:choose>
 							</a>
 							</h4>
 							<p>
 								<span class="text-success">
-								${fn:substring(result.url, 0, 55)}<c:if test="${fn:length(result.url) > 55}">...</c:if>
+								${fn:substring(result.url, 0, 40)}<c:if test="${fn:length(result.url) > 40}">...</c:if>
 								</span>
 								<br>
 								${result.snippet}
