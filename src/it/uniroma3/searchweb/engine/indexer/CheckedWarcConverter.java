@@ -1,19 +1,14 @@
 package it.uniroma3.searchweb.engine.indexer;
 
-import it.uniroma3.searchweb.config.EngineConfig;
-
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.tika.parser.txt.CharsetDetector;
 import org.apache.tika.parser.txt.CharsetMatch;
@@ -22,17 +17,15 @@ import org.htmlcleaner.TagNode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.w3c.tidy.Tidy;
 
 import edu.cmu.lemurproject.WarcHTMLResponseRecord;
 import edu.cmu.lemurproject.WarcRecord;
 
-public class WarcConverter {
-	private static final Logger logger = Logger.getLogger(WarcConverter.class.getName()); 
+public class CheckedWarcConverter {
+	private static final Logger logger = Logger.getLogger(WarcParser.class.getName()); 
 	private CharsetDetector detector;
-	private EngineConfig config = EngineConfig.getInstance();
 	
-	public WarcConverter(CharsetDetector detector) {
+	public CheckedWarcConverter(CharsetDetector detector) {
 		this.detector = detector;
 	}
 	
@@ -57,16 +50,15 @@ public class WarcConverter {
 			enc = this.getCharsetFromHttp(httpResponse);
 			
 			if (enc != null) {
-//				html = new String(htmlStream, enc);
 				decoder = "http"; 
 			}
 			
 			// find encoding from html meta if necessary
+			String htmlMeta = null;
 			if (enc == null) {
-				String htmlMeta = new String(htmlStream, "UTF-8");
+				htmlMeta = new String(htmlStream, "UTF-8");
 				enc = this.getCharsetFromMeta(htmlMeta);
 				if (enc != null) {
-//					html = new String(htmlStream, enc);
 					decoder = "meta";
 				}
 			}
@@ -75,7 +67,6 @@ public class WarcConverter {
 			if (enc == null) {
 				enc = this.guessEncoding(htmlStream);
 				if (enc != null) {
-//					html = new String(htmlStream, enc);
 					decoder = "tika";
 				}
 			}
@@ -83,21 +74,24 @@ public class WarcConverter {
 			// default encoding
 			if (enc == null) {
 				enc = "UTF-8";
-//				html = new String(htmlStream, enc);
 				decoder = "default";
 			}
 			
 			// Malformed html corrector
-			html = new String(htmlStream, enc);
-//			html = this.fixMalformedHtml(htmlStream, enc);
-//			System.out.println(html);
+//			if (decoder.equals("meta") && enc.equalsIgnoreCase("UTF-8"))
+//				html = htmlMeta;
+//			else
+//				html = new String(htmlStream, enc);
+			html = this.fixMalformedHtml(htmlStream, enc);
 		} catch (UnsupportedEncodingException e) {
 			logger.severe(e.getMessage());
-//			e.printStackTrace();
 			return null;
 		}
 			
 		/* Extract all the informations */
+		
+		if (html == null)
+			return null;
 		
 		org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
 		
@@ -116,11 +110,11 @@ public class WarcConverter {
 		record.add(new StringField("url", url, Store.YES));
 		
 		TextField titleField = new TextField("title", title, Store.YES);
-//		titleField.setBoost(config.getTitleBoost());
+		titleField.setBoost(2f);
 		record.add(titleField);
 		
 		TextField bodyField = new TextField("body", body, Store.YES);
-//		bodyField.setBoost(config.getBodyBoost());
+		bodyField.setBoost(1f);
 		record.add(bodyField);
 
 		return record;
@@ -212,7 +206,7 @@ public class WarcConverter {
 	}
 	
 	private String fixMalformedHtml(byte[] inStream, String enc) throws UnsupportedEncodingException {
-		Tidy tidy = new Tidy();
+//		Tidy tidy = new Tidy();
 //		
 //	    tidy.setInputEncoding(enc);
 //	    tidy.setOutputEncoding(enc);
@@ -236,36 +230,20 @@ public class WarcConverter {
 //	    
 //	    String html = new String(outputStream.toByteArray(), enc);
 		
-//		ByteArrayInputStream in = new ByteArrayInputStream(inStream);
-//		HtmlCleaner cleaner = new HtmlCleaner();
-//		TagNode node = null;
-//		String html = null;
-//		
-//		try {
-//			node = cleaner.clean(in);
-//		} catch (Exception e) {
-//			return null;
-//		}
-//		
-//		if (node != null)
-//			html = cleaner.getInnerHtml(node);
-	    tidy.setInputEncoding(enc);
-	    tidy.setOutputEncoding(enc);
-	    tidy.setPrintBodyOnly(false);
-	    tidy.setQuiet(true);
-	    tidy.setShowErrors(0);
-//	    tidy.setErrout(null);
-	    tidy.setShowWarnings(false);
-//	    tidy.setWraplen(Integer.MAX_VALUE);
-	    tidy.setForceOutput(true);
-	    tidy.setMakeClean(true);
+		ByteArrayInputStream in = new ByteArrayInputStream(inStream);
+		HtmlCleaner cleaner = new HtmlCleaner();
+		TagNode node = null;
+		String html = null;
+		
+		try {
+			node = cleaner.clean(in);
+		} catch (Exception e) {
+			return null;
+		}
+		
+		if (node != null)
+			html = cleaner.getInnerHtml(node);
 	    
-	    ByteArrayInputStream inputStream = new ByteArrayInputStream(inStream);
-	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	    tidy.parse(inputStream, outputStream);
-	    
-	    String html = new String(outputStream.toByteArray(), enc);
 	    return html;
 	}
-
 }

@@ -92,7 +92,7 @@ public class WarcParser {
 
 		int i = 0;
 		int notEncoded = 0;
-		long limit = 20;
+		long limit = 200000000000000L;
 		
 		Document doc = null;
 		while ((doc = parser.next())!= null && i<limit) {
