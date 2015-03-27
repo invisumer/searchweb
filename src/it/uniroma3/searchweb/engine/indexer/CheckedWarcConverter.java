@@ -1,5 +1,7 @@
 package it.uniroma3.searchweb.engine.indexer;
 
+import it.uniroma3.searchweb.config.EngineConfig;
+
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -110,11 +112,11 @@ public class CheckedWarcConverter {
 		record.add(new StringField("url", url, Store.YES));
 		
 		TextField titleField = new TextField("title", title, Store.YES);
-		titleField.setBoost(2f);
+//		titleField.setBoost(config.getTitleBoost());
 		record.add(titleField);
 		
 		TextField bodyField = new TextField("body", body, Store.YES);
-		bodyField.setBoost(1f);
+//		bodyField.setBoost(config.getBodyBoost());
 		record.add(bodyField);
 
 		return record;
@@ -206,30 +208,6 @@ public class CheckedWarcConverter {
 	}
 	
 	private String fixMalformedHtml(byte[] inStream, String enc) throws UnsupportedEncodingException {
-//		Tidy tidy = new Tidy();
-//		
-//	    tidy.setInputEncoding(enc);
-//	    tidy.setOutputEncoding(enc);
-//	    tidy.setPrintBodyOnly(false);
-//	    tidy.setQuiet(true);
-//	    tidy.setShowErrors(0);
-//	    tidy.setShowWarnings(false);
-////	    tidy.setWraplen(Integer.MAX_VALUE);
-//	    tidy.setForceOutput(true);
-//	    tidy.setMakeClean(true);
-//	    
-//	    ByteArrayInputStream inputStream = new ByteArrayInputStream(inStream);
-//	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//	    
-//	    try {
-//	    	tidy.parse(inputStream, outputStream);
-//	    } catch(Exception e) {
-//	    	logger.severe(e.getMessage());
-//	    	return null;
-//	    }
-//	    
-//	    String html = new String(outputStream.toByteArray(), enc);
-		
 		ByteArrayInputStream in = new ByteArrayInputStream(inStream);
 		HtmlCleaner cleaner = new HtmlCleaner();
 		TagNode node = null;
