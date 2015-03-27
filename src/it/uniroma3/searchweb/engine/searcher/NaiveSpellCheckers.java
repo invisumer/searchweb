@@ -99,7 +99,7 @@ public class NaiveSpellCheckers implements SpellCheckers{
 		while (tokenizer.hasMoreTokens()) {
 			String currentToken = tokenizer.nextToken();
 			String[] suggestions = spellchecker.suggestSimilar(currentToken, numSug, similarity);
-			//caso base
+			//caso bas
 			resultSize = result.size();
 			for (int i=0; i<resultSize;i++) {
 				String tmp = result.get(i);
