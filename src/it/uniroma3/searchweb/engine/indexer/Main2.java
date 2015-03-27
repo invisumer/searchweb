@@ -34,8 +34,8 @@ public class Main2 {
 			parser.open(files[0]);
 			
 			int counter = 1;
-			int maxDoc = 10000;
-			int batch = 5000;
+			int maxDoc = 100000;
+			int batch = maxDoc/4;
 			long start = System.currentTimeMillis();
 			while (counter < maxDoc) {                            // TODO cambiare
 				Document doc = parser.next();

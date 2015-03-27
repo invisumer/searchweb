@@ -3,32 +3,29 @@ package it.uniroma3.searchweb.engine.indexer;
 import it.uniroma3.searchweb.config.EngineConfig;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.tika.parser.txt.CharsetDetector;
 import org.apache.tika.parser.txt.CharsetMatch;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.w3c.tidy.Tidy;
 
 import edu.cmu.lemurproject.WarcHTMLResponseRecord;
 import edu.cmu.lemurproject.WarcRecord;
 
 public class WarcConverter {
-	private static final Logger logger = Logger.getLogger(WarcConverter.class.getName()); 
+	private static final Logger logger = Logger.getLogger(WarcParser.class.getName()); 
 	private CharsetDetector detector;
-	private EngineConfig config = EngineConfig.getInstance();
 	
 	public WarcConverter(CharsetDetector detector) {
 		this.detector = detector;
@@ -44,7 +41,6 @@ public class WarcConverter {
 		int httpLen = this.getHttpResponseLength(contentStream);
 		String httpResponse = this.getHttpResponse(contentStream, httpLen);
 		byte[] htmlStream = this.getBodyStream(contentStream, httpLen+3);
-//		System.out.println(httpResponse);
 		
 		/* Now, try to extract html with the right enconding */
 		
@@ -56,16 +52,15 @@ public class WarcConverter {
 			enc = this.getCharsetFromHttp(httpResponse);
 			
 			if (enc != null) {
-//				html = new String(htmlStream, enc);
 				decoder = "http"; 
 			}
 			
 			// find encoding from html meta if necessary
+			String htmlMeta = null;
 			if (enc == null) {
-				String htmlMeta = new String(htmlStream, "UTF-8");
+				htmlMeta = new String(htmlStream, "UTF-8");
 				enc = this.getCharsetFromMeta(htmlMeta);
 				if (enc != null) {
-//					html = new String(htmlStream, enc);
 					decoder = "meta";
 				}
 			}
@@ -74,7 +69,6 @@ public class WarcConverter {
 			if (enc == null) {
 				enc = this.guessEncoding(htmlStream);
 				if (enc != null) {
-//					html = new String(htmlStream, enc);
 					decoder = "tika";
 				}
 			}
@@ -82,21 +76,24 @@ public class WarcConverter {
 			// default encoding
 			if (enc == null) {
 				enc = "UTF-8";
-//				html = new String(htmlStream, enc);
 				decoder = "default";
 			}
 			
 			// Malformed html corrector
-			html = new String(htmlStream, enc);
-//			html = this.fixMalformedHtml(htmlStream, enc);
-//			System.out.println(html);
+//			if (decoder.equals("meta") && enc.equalsIgnoreCase("UTF-8"))
+//				html = htmlMeta;
+//			else
+//				html = new String(htmlStream, enc);
+			html = this.fixMalformedHtml(htmlStream, enc);
 		} catch (UnsupportedEncodingException e) {
 			logger.severe(e.getMessage());
-//			e.printStackTrace();
 			return null;
 		}
 			
 		/* Extract all the informations */
+		
+		if (html == null)
+			return null;
 		
 		org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
 		
@@ -105,7 +102,7 @@ public class WarcConverter {
 			return null;
 		
 		Element bodyEl = htmlDoc.body();
-		if (bodyEl == null)
+		if (bodyEl == null)                    // TODO is bodyEl is empty?
 			return null;
 		String body = bodyEl.text();
 
@@ -202,7 +199,7 @@ public class WarcConverter {
 	private String guessEncoding(byte[] htmlStream) {
 		String enc = null;
 		
-//		detector.setText(htmlStream);
+		detector.setText(htmlStream);
 		CharsetMatch match = detector.detect();
 		if (match != null)
 			enc = match.getName();
@@ -211,25 +208,20 @@ public class WarcConverter {
 	}
 	
 	private String fixMalformedHtml(byte[] inStream, String enc) throws UnsupportedEncodingException {
-		Tidy tidy = new Tidy();
+		ByteArrayInputStream in = new ByteArrayInputStream(inStream);
+		HtmlCleaner cleaner = new HtmlCleaner();
+		TagNode node = null;
+		String html = null;
 		
-//	    tidy.setInputEncoding(enc);
-//	    tidy.setOutputEncoding(enc);
-//	    tidy.setPrintBodyOnly(false);
-//	    tidy.setQuiet(true);
-//	    tidy.setShowErrors(0);
-////	    tidy.setErrout(null);
-//	    tidy.setShowWarnings(false);
-////	    tidy.setWraplen(Integer.MAX_VALUE);
-//	    tidy.setForceOutput(true);
-//	    tidy.setMakeClean(true);
+		try {
+			node = cleaner.clean(in);
+		} catch (Exception e) {
+			return null;
+		}
+		
+		if (node != null)
+			html = cleaner.getInnerHtml(node);
 	    
-	    ByteArrayInputStream inputStream = new ByteArrayInputStream(inStream);
-	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	    tidy.parse(inputStream, outputStream);
-	    
-	    String html = new String(outputStream.toByteArray(), enc);
 	    return html;
 	}
-
 }
