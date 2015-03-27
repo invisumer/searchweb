@@ -31,6 +31,7 @@ public class EngineConfig {
 	private String logPath = "logger";
 	private float titleBoost = 2f;
 	private float bodyBoost = 40f;
+	private boolean cleanHtml = false;
 
 	private EngineConfig() {
 		try {
@@ -85,6 +86,11 @@ public class EngineConfig {
 			if (log != null)
 				this.logPath = log;
 			
+			// Clean html
+			String clean = prop.getProperty("html.clean");
+			if (clean != null)
+				this.cleanHtml = Boolean.parseBoolean(clean);
+			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
 			logger.info("Dictionary path: " + this.dictionaryPath);
@@ -97,6 +103,7 @@ public class EngineConfig {
 			logger.info("Max number of query suggestions: " + this.maxCorrection);
 			logger.info("Similarity threshold for query suggestion: " + this.similarity);
 			logger.info("Log path: " + this.logPath);
+			logger.info("Clean html pages: " + this.cleanHtml);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			logger.severe("Property file could not be found: " + e.getMessage());
@@ -216,6 +223,14 @@ public class EngineConfig {
 	
 	public void setLogPath(String logPath) {
 		this.logPath = logPath;
+	}
+	
+	public boolean isCleanHtml() {
+		return cleanHtml;
+	}
+	
+	public void setCleanHtml(boolean cleanHtml) {
+		this.cleanHtml = cleanHtml;
 	}
 
 	public String[] getWarcFiles() {
