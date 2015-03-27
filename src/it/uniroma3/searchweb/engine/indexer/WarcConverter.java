@@ -202,7 +202,7 @@ public class WarcConverter {
 	private String guessEncoding(byte[] htmlStream) {
 		String enc = null;
 		
-		detector.setText(htmlStream);
+//		detector.setText(htmlStream);
 		CharsetMatch match = detector.detect();
 		if (match != null)
 			enc = match.getName();
@@ -213,16 +213,16 @@ public class WarcConverter {
 	private String fixMalformedHtml(byte[] inStream, String enc) throws UnsupportedEncodingException {
 		Tidy tidy = new Tidy();
 		
-	    tidy.setInputEncoding(enc);
-	    tidy.setOutputEncoding(enc);
-	    tidy.setPrintBodyOnly(false);
-	    tidy.setQuiet(true);
-	    tidy.setShowErrors(0);
-//	    tidy.setErrout(null);
-	    tidy.setShowWarnings(false);
-//	    tidy.setWraplen(Integer.MAX_VALUE);
-	    tidy.setForceOutput(true);
-	    tidy.setMakeClean(true);
+//	    tidy.setInputEncoding(enc);
+//	    tidy.setOutputEncoding(enc);
+//	    tidy.setPrintBodyOnly(false);
+//	    tidy.setQuiet(true);
+//	    tidy.setShowErrors(0);
+////	    tidy.setErrout(null);
+//	    tidy.setShowWarnings(false);
+////	    tidy.setWraplen(Integer.MAX_VALUE);
+//	    tidy.setForceOutput(true);
+//	    tidy.setMakeClean(true);
 	    
 	    ByteArrayInputStream inputStream = new ByteArrayInputStream(inStream);
 	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
