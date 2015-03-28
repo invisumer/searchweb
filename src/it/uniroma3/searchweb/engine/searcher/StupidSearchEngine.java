@@ -5,9 +5,7 @@ import it.uniroma3.searchweb.model.Result;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;

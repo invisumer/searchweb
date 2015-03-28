@@ -3,11 +3,6 @@ package it.uniroma3.searchweb.model;
 import java.util.List;
 
 import it.uniroma3.searchweb.engine.searcher.ResultsExtractor;
-import it.uniroma3.searchweb.engine.searcher.SearchEngine;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 
 public class ResultsPager {

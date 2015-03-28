@@ -1,7 +1,5 @@
 package it.uniroma3.searchweb.engine.indexer;
 
-import it.uniroma3.searchweb.config.EngineConfig;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
