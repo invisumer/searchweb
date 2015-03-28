@@ -17,6 +17,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.spell.HighFrequencyDictionary;
 import org.apache.lucene.search.spell.LuceneDictionary;
+import org.apache.lucene.search.spell.LuceneLevenshteinDistance;
 import org.apache.lucene.search.spell.NGramDistance;
 import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
@@ -92,25 +93,27 @@ public class NaiveSpellCheckers implements SpellCheckers{
 	
 	public List<String> getBasicSuggestions1(String query, int numSug, float similarity) throws IOException {
 		StringTokenizer tokenizer = new StringTokenizer(query);
-		int tokenizerSize = tokenizer.countTokens();
 		List<String> result = new ArrayList<String>();
-		spellchecker.setStringDistance(new NGramDistance());
+		result.add("");
 		int resultSize;
+		spellchecker.setStringDistance(new LuceneLevenshteinDistance());
 		while (tokenizer.hasMoreTokens()) {
 			String currentToken = tokenizer.nextToken();
 			String[] suggestions = spellchecker.suggestSimilar(currentToken, numSug, similarity);
-			//caso bas
 			resultSize = result.size();
 			for (int i=0; i<resultSize;i++) {
-				String tmp = result.get(i);
+				String tmp = result.get(0);
 				for (String s : suggestions) {
-					result.add(tmp.concat(s));
+					result.add(tmp.concat(s+" "));
+					System.out.println(tmp.concat(s+" "));
 				}
-				result.add(tmp.concat(currentToken));
-				result.remove(i);
+				result.add(tmp.concat(currentToken+" "));
+				System.out.println(tmp.concat(currentToken+" "));
+				result.remove(0);
 			}
-			result.add(currentToken);
-			// passo successivo
+			System.out.println("");
+			System.out.println(result.size());
+			System.out.println("");
 		}
 		return result;
 	}
