@@ -73,11 +73,11 @@ code {
 	</div>
 	</header>
 
-	<div class="container" style="margin-top: 60px;">
+	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
 				<c:url var="url" value="/search" />
-				<form:form action="${url}" method="post" modelAttribute="queryForm">
+				<form:form action="${url}" method="get" modelAttribute="queryForm">
 				<div class="input-group">
 					<span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></span>
 					<form:input path="query" class="form-control" placeholder="Search for..."/>
@@ -92,6 +92,20 @@ code {
 		</div>
 
 		<br>
+		
+		<c:if test="${error!=null}">
+			<div class="alert alert-danger alert-dismissible" role="alert">
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			  <strong>${error}</strong>
+			</div>
+		</c:if>
+		
+		<c:if test="${error==null && empty results}">
+			<div class="alert alert-info alert-dismissible" role="alert">
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			  <strong>There is no match for the query you submitted.</strong>
+			</div>
+		</c:if>
 		
 		<div class="row">
 			<div class="col-md-6 col-xs-12">
@@ -123,6 +137,64 @@ code {
 				</ul>
 			</div>
 		</div>
+		
+		<c:if test="${results!=null && ! empty results}">
+ 		<div class="row">
+			<div class="col-md-12">
+				<ul class="pagination pagination">
+					<li>
+						<a href="<c:url value="/search/page/1"/>">&laquo;&laquo;</a>
+					</li>
+					<li>
+						<c:choose>
+							<c:when test="${currentPage-1>0}">
+								<a href="<c:url value="/search/page/"/>${currentPage-1}"><b>&laquo;</b></a>
+							</c:when>
+							<c:otherwise>
+								<a class="disabled"><b>&laquo;</b></a>
+							</c:otherwise>
+						</c:choose>
+					</li>
+					<c:choose>
+						<c:when test="${currentPage<=3 || pages<=5}">
+							<c:set value="1" var="start"></c:set>
+							<c:set value="${pages<=5?pages:5}" var="end"></c:set>
+						</c:when>
+						<c:when test="${currentPage>=pages-2}">
+							<c:set value="${pages-4}" var="start"></c:set>
+							<c:set value="${pages}" var="end"></c:set>
+						</c:when>
+						<c:otherwise>
+							<c:set value="${currentPage-2}" var="start"></c:set>
+							<c:set value="${currentPage+2}" var="end"></c:set>
+						</c:otherwise>
+					</c:choose>
+					<c:forEach begin="${start}" end="${end}" varStatus="i">
+						<c:if test="${i.index==currentPage}"> 
+							<c:set value="active" var="cssClass"></c:set>
+						</c:if>
+						<li class="${cssClass}">
+							<a  href="<c:url value="/search/page/"/>${i.index}" ><b>${i.index}</b></a>
+						</li>
+						<c:set value="" var="cssClass"></c:set>
+					</c:forEach>
+					<li>
+						<c:choose>
+							<c:when test="${currentPage+1<=pages}">
+								<a href="<c:url value="/search/page/"/>${currentPage+1}"><b>&raquo;</b></a>
+							</c:when>
+							<c:otherwise>
+								<a class="disabled"><b>&raquo;</b></a>
+							</c:otherwise>
+						</c:choose>
+					</li>
+					<li>
+						<a href="<c:url value="/search/page/"/>${pages}">&raquo;&raquo;</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		</c:if>
 	</div>
 	
 	<br>

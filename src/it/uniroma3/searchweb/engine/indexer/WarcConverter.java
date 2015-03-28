@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -164,15 +165,20 @@ public class WarcConverter {
 	}
 	
 	private String getCharsetFromHttp(String response) {
-		Pattern pattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+		Pattern pattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;,\"]*)");
 		Matcher matcher = pattern.matcher(response);
 		String enc = null;
 		
-		if (matcher.find()) {
-			String group = matcher.group();
-			enc = group.replaceAll("(?i)\\bcharset=\\s*\"?", "");
-			if (enc.isEmpty() || !Charset.isSupported(enc))
-				enc = null;
+		try {
+			if (matcher.find()) {
+				String group = matcher.group();
+				enc = group.replaceAll("(?i)\\bcharset=\\s*\"?", "");
+				if (enc.isEmpty() || !Charset.isSupported(enc))
+					enc = null;
+			}
+		} catch (IllegalCharsetNameException e) {
+			logger.severe(e.getMessage());
+			return null;
 		}
 		
 		return enc;

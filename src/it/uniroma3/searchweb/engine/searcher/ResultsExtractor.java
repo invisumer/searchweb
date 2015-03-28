@@ -30,8 +30,8 @@ public class ResultsExtractor {
 		this.analyzer = analyzer;
 		this.query = query;
 	}
-
-	public List<Result> getResults(ScoreDoc[] docs, String field) {
+	
+	public List<Result> getResults(ScoreDoc[] docs, String field, int start, int end) {
 		List<Result> results = new ArrayList<Result>();
 
 		try {
@@ -39,7 +39,7 @@ public class ResultsExtractor {
 			Highlighter highlighter = new Highlighter(htmlFormatter,
 					new QueryScorer(query));
 			
-			for (int i = 0; i < docs.length; i++) {
+			for (int i = start; i < end; i++) {
 				int id = docs[i].doc;
 				Document doc = searcher.doc(id);
 				String text = doc.get(field);
@@ -70,6 +70,10 @@ public class ResultsExtractor {
 		}
 
 		return results;
+	}
+
+	public List<Result> getResults(ScoreDoc[] docs, String field) {
+		return this.getResults(docs, field, 0, docs.length);
 	}
 
 }
