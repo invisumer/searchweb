@@ -19,15 +19,15 @@ public class EngineConfig {
 	private String indexPath = "index";
 	private String datasetPath = "dataset";
 	private String dictionaryPath = "dictionary";
-	private String plainDictinoryPath = "plain";
+	private String plainDictionaryPath = "plain";
 	private OpenMode indexOpenMode = OpenMode.APPEND;
 	private double RAMBufferSize = 16;
 	private boolean debugMode = false;
 	private int numTopScoreExplanation = 0;
 	private int maxHits = 50;
-	private double scoreThreshold = maxHits*0.314; // TODO Use more significant names!!!
-	private int correctionPerWord = 5; // TODO Use more significant names!!!
-	private float similarityThreshold = 0.75f; // TODO Use more significant names!!!
+	private double scoreThreshold = maxHits*0.314;
+	private int correctionPerWord = 5;
+	private float similarityThreshold = 0.75f;
 	private String logPath = "logger";
 	private float titleBoost = 2f;
 	private float bodyBoost = 40f;
@@ -42,7 +42,7 @@ public class EngineConfig {
 			this.indexPath = prop.getProperty("index.path");
 			this.datasetPath = prop.getProperty("dataset.path");
 			this.dictionaryPath = prop.getProperty("dictionary.path");
-			this.plainDictinoryPath = prop.getProperty("dictionary.plain.path");
+			this.plainDictionaryPath = prop.getProperty("dictionary.plain.path");
 			
 			// open mode
 			String mode = prop.getProperty("index.openmode");
@@ -91,6 +91,21 @@ public class EngineConfig {
 			if (clean != null)
 				this.cleanHtml = Boolean.parseBoolean(clean);
 			
+			//score threshold
+			String scorethreshold = prop.getProperty("scoreThreshold");
+			if (scorethreshold!=null)
+				this.scoreThreshold = Double.parseDouble(scorethreshold);
+			
+			//correction per word
+			String correctionperword = prop.getProperty("correctionPerWord");
+			if (correctionperword!=null)
+				this.correctionPerWord = Integer.parseInt(correctionperword);
+			
+			//similarity threshold
+			String similaritythreshold = prop.getProperty("similarityThreshold");
+			if (similaritythreshold!=null)
+				this.similarityThreshold = maxHits*Float.parseFloat(similaritythreshold);
+			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
 			logger.info("Dictionary path: " + this.dictionaryPath);
@@ -130,11 +145,11 @@ public class EngineConfig {
 	}
 
 	public String getPlainPath() {
-		return plainDictinoryPath;
+		return plainDictionaryPath;
 	}
 
 	public void setPlainPath(String plainPath) {
-		this.plainDictinoryPath = plainPath;
+		this.plainDictionaryPath = plainPath;
 	}
 
 	public static String getPropertyPath() {
