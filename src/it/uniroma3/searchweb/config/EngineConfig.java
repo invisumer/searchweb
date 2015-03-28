@@ -94,7 +94,7 @@ public class EngineConfig {
 			//score threshold
 			String scorethreshold = prop.getProperty("scoreThreshold");
 			if (scorethreshold!=null)
-				this.scoreThreshold = Double.parseDouble(scorethreshold);
+				this.scoreThreshold = maxHits*Double.parseDouble(scorethreshold);
 			
 			//correction per word
 			String correctionperword = prop.getProperty("correctionPerWord");
@@ -104,7 +104,7 @@ public class EngineConfig {
 			//similarity threshold
 			String similaritythreshold = prop.getProperty("similarityThreshold");
 			if (similaritythreshold!=null)
-				this.similarityThreshold = maxHits*Float.parseFloat(similaritythreshold);
+				this.similarityThreshold = Float.parseFloat(similaritythreshold);
 			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
