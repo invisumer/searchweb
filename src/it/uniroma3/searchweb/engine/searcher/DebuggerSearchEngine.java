@@ -1,6 +1,7 @@
 package it.uniroma3.searchweb.engine.searcher;
 
 import it.uniroma3.searchweb.config.EngineConfig;
+import it.uniroma3.searchweb.model.QueryResults;
 import it.uniroma3.searchweb.model.Result;
 
 import java.io.IOException;
@@ -34,10 +35,9 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 			Analyzer analyzer = this.getAnalyzer();
 			this.queryx  = this.parseQuery(fields, analyzer, query);
 			ScoreDoc[] docs = this.search(queryx);
-			if (docs.length<config.getScoreThreshold()) {
-				docs = this.searchForBetterQuery(docs, query, fields); 
-			}
-			// TODO change body field
+//			if (docs.length<config.getScoreThreshold()) {
+//				docs = this.searchForBetterQuery(docs, query, fields); 
+//			}
 			results = this.extract(analyzer, queryx, docs, "body");
 			
 			if (debugMode)
@@ -59,6 +59,8 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	
 	public abstract List<Result> extract(Analyzer a, Query q, ScoreDoc[] hits, String field);
 	
+	public abstract QueryResults searchForBetterQuery(String query, QueryResults queryResults) throws IOException, ParseException;
+	
 	public void explain(Query query, ScoreDoc[] hits) throws IOException {
 		for (int i=0; i<TOP_SCORES && i< hits.length; i++) {
 			Explanation expl = this.searcher.explain(query, hits[i].doc);
@@ -66,22 +68,14 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 		}
 	}
 	
-	public ScoreDoc[] searchForBetterQuery(ScoreDoc[] hits, String query, String[] fields) throws IOException, ParseException {
-		ScoreDoc[] newHits;
-		NaiveSpellCheckers spellChecker = new NaiveSpellCheckers();
-		Query tmp;
-		List<String> corrections = spellChecker.getBasicSuggestions(query, config.getMaxCorrection(), config.getSimilarity());
-		for (int i=0; i<corrections.size();i++) {
-			tmp = this.parseQuery(fields, getAnalyzer(), corrections.get(i));
-			newHits = this.search(tmp);
-			if (hits.length<newHits.length) {
-				hits = newHits;
-				this.queryx = tmp;
-			}
-		}
-		return hits;
+	public Query getQueryx() {
+		return queryx;
 	}
-	
+
+	public void setQueryx(Query queryx) {
+		this.queryx = queryx;
+	}
+
 	public IndexSearcher getSearcher() {
 		return searcher;
 	}

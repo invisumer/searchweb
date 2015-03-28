@@ -30,17 +30,9 @@ public class NaiveSpellCheckers implements SpellCheckers{
 	}
 	
 	public void initialize() throws CorruptIndexException, IOException {
-//		Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
-//		IndexReader reader = DirectoryReader.open(index);
-		// To index a field of a user index:
 		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
         IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
-//        LuceneDictionary dictionary = new LuceneDictionary(reader, "body");
-//        HighFrequencyDictionary dictionary = new HighFrequencyDictionary(reader, "body", 0.9f);
-//		spellchecker.indexDictionary(dictionary,config,true);
-		// To index a file containing words:
 		spellchecker.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/en.txt")),config,true);
-//		spellchecker.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/it.txt")),config,true);
 		spellchecker.close();
 	}
 	

@@ -1,6 +1,7 @@
 package it.uniroma3.searchweb.engine.searcher;
 
 import it.uniroma3.searchweb.config.EngineConfig;
+import it.uniroma3.searchweb.model.QueryResults;
 import it.uniroma3.searchweb.model.Result;
 
 import java.io.File;
@@ -27,7 +28,6 @@ import org.apache.lucene.util.Version;
 public class StupidSearchEngine extends DebuggerSearchEngine {
 	private static final Logger logger = Logger.getLogger(StupidSearchEngine.class.getName());
 	private EngineConfig config = EngineConfig.getInstance();
-//	private SpellCheckers spellChecker;
 	
 	public StupidSearchEngine() {
 		super();
@@ -38,7 +38,6 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			IndexReader reader = DirectoryReader.open(index);
 			IndexSearcher searcher = new IndexSearcher(reader);
 			this.setSearcher(searcher);
-//			this.spellChecker = new SpellCheckers();
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		}
@@ -67,25 +66,6 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		TopScoreDocCollector.create(maxHits, true);
 		this.getSearcher().search(query, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-//		if (hits.length<config.getScoreThreshold()) {
-//			System.out.println("correction");
-//			String[] corrections = spellChecker.getBasicSuggestions(query.toString().substring(5), config.getMaxCorrection(), .75f);
-//			for (String q : corrections) {
-//				Query newQuery = null;
-//				try {
-//					newQuery = this.parseQuery(new String[3], getAnalyzer(), q);
-//				} catch (ParseException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				collector = TopScoreDocCollector.create(maxHits, true);
-//				this.getSearcher().search(newQuery, collector);
-//				ScoreDoc[] newHits = collector.topDocs().scoreDocs;
-//				if (newHits.length>hits.length) {
-//					hits = newHits;
-//				}
-//			}
-//		}
 		return hits;
 	}
 
@@ -94,6 +74,22 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			String field) {
 		ResultsExtractor extractor = new ResultsExtractor(this.getSearcher(), a, q);
 		return extractor.getResults(hits, field);
+	}
+	
+	public QueryResults searchForBetterQuery(String query,QueryResults queryResults) throws IOException, ParseException {
+		ScoreDoc[] newHits;
+		NaiveSpellCheckers spellChecker = new NaiveSpellCheckers();
+		Query tmp;
+		List<String> corrections = spellChecker.getBasicSuggestions(query, config.getMaxCorrection(), config.getSimilarity());
+		for (int i=0; i<corrections.size();i++) {
+			tmp = this.parseQuery(queryResults.getFields(), getAnalyzer(), corrections.get(i));
+			newHits = this.search(tmp);
+			if (queryResults.getDocs().length<newHits.length) {
+				queryResults.setDocs(newHits);
+				queryResults.setQuery(tmp);
+			}
+		}
+		return queryResults;
 	}
 	
 }

@@ -11,14 +11,14 @@ public class MainSpellChecker {
 	public static void main(String[] args) throws IOException {
 		NaiveSpellCheckers sp = new NaiveSpellCheckers();
 //		sp.initialize();
-		int numSug = 3;
-		String query = "";
+		int numSug = 1;
+		String query = "applw";
 		float similarity = 0.8f;
 		List<String> result = sp.getBasicSuggestions(query, numSug,similarity);
 		NGramDistance d = new NGramDistance();
 		LuceneLevenshteinDistance lld = new LuceneLevenshteinDistance();
 		for (String s : result) {
-//			System.out.println("Did you mean : "+s);
+			System.out.println("Did you mean : "+s);
 			
 		}
 	}
