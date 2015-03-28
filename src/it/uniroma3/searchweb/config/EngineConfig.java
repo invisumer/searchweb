@@ -10,10 +10,12 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.util.Version;
 
 public class EngineConfig {
 
-	private static final Logger logger = Logger.getLogger(EngineConfig.class.getName()); 
+	private static final Logger logger = Logger.getLogger(EngineConfig.class.getName());
+	private static final Version version = Version.LUCENE_46;
 	private static EngineConfig instance;
 	private static String propertyPath = "META-INF/config.properties";
 	private String indexPath = "index";
@@ -292,6 +294,10 @@ public class EngineConfig {
 
 	public void setBodyBoost(float bodyBoost) {
 		this.bodyBoost = bodyBoost;
+	}
+	
+	public static Version getVersion() {
+		return version;
 	}
 	
 }

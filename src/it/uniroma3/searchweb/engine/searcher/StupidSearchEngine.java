@@ -1,18 +1,14 @@
 package it.uniroma3.searchweb.engine.searcher;
 
 import it.uniroma3.searchweb.config.EngineConfig;
+import it.uniroma3.searchweb.engine.mapper.AnalyzerMapper;
+import it.uniroma3.searchweb.engine.mapper.SearcherMapper;
 import it.uniroma3.searchweb.model.QueryResults;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.util.CharArraySet;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -20,48 +16,43 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 
 public class StupidSearchEngine extends DebuggerSearchEngine {
-	private static final Logger logger = Logger.getLogger(StupidSearchEngine.class.getName());
+	private SearcherMapper searcherMapper;
+	private AnalyzerMapper mapper;
 	
 	public StupidSearchEngine() {
 		super();
 
-		try {
-			EngineConfig engineConfig = this.getConfig();
-			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
-			IndexReader reader = DirectoryReader.open(index);
-			IndexSearcher searcher = new IndexSearcher(reader);
-			this.setSearcher(searcher);
-			// TODO set spellchecker? we should reuse the same spellchecker instance
-		} catch (IOException e) {
-			logger.severe(e.getMessage());
-		}
-
+		// TODO set spellchecker? we should reuse the same spellchecker instance
+		this.mapper = new AnalyzerMapper();
+		this.searcherMapper = new SearcherMapper();
+	}
+	
+	@Override
+	public IndexSearcher getSearcher(String lang) {
+		return this.searcherMapper.pickSearcher(lang);
 	}
 
 	@Override
-	public Analyzer getAnalyzer() {
-		return new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
+	public Analyzer getAnalyzer(String lang) {
+		return this.mapper.pickAnalyzer(lang);
 	}
 
 	@Override
 	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(Version.LUCENE_46, fields, analyzer);
+		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
 		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
 		Query q = mfqp.parse(query);
 		return q;
 	}
 
 	@Override
-	public ScoreDoc[] search(Query query) throws IOException {
+	public ScoreDoc[] search(IndexSearcher searcher, Query query) throws IOException {
 		int maxHits = this.getConfig().getMaxHits();
 		TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true);
 		TopScoreDocCollector.create(maxHits, true);
-		this.getSearcher().search(query, collector);
+		searcher.search(query, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		return hits;
 	}
@@ -73,15 +64,16 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		return e;
 	}
 	
-	public QueryResults searchForBetterQuery(String query,QueryResults queryResults) throws IOException, ParseException {
+	public QueryResults searchForBetterQuery(IndexSearcher searcher, String query, QueryResults queryResults, String lang) 
+			throws IOException, ParseException {
 		ScoreDoc[] newHits;
 		NaiveSpellCheckers spellChecker = new NaiveSpellCheckers();
 		Query tmp;
 		List<String> corrections = spellChecker.getBasicSuggestions(query, 
 				this.getConfig().getMaxCorrection(), this.getConfig().getSimilarity());
 		for (int i=0; i<corrections.size();i++) {
-			tmp = this.parseQuery(queryResults.getFields(), getAnalyzer(), corrections.get(i));
-			newHits = this.search(tmp);
+			tmp = this.parseQuery(queryResults.getFields(), getAnalyzer(lang), corrections.get(i));
+			newHits = this.search(searcher, tmp);
 			if (queryResults.getDocs().length<newHits.length) {
 				queryResults.setDocs(newHits);
 				queryResults.setQuery(tmp);

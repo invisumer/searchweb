@@ -2,8 +2,10 @@ package it.uniroma3.searchweb.controller;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -12,6 +14,7 @@ import it.uniroma3.searchweb.model.QueryForm;
 import it.uniroma3.searchweb.model.Result;
 import it.uniroma3.searchweb.model.ResultsPager;
 
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 @Controller
 public class SearchController {
@@ -31,7 +35,7 @@ public class SearchController {
 	
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public String submitRequest(@Valid @ModelAttribute QueryForm query, BindingResult result, 
-			ModelMap model, HttpSession session) {
+			ModelMap model, HttpSession session, HttpServletRequest request) {
 		
 		if (result.hasErrors()) {
 			model.addAttribute("error", INVALID_QUERY);
@@ -41,6 +45,9 @@ public class SearchController {
 		
 		// some logic
 		if (!query.getQuery().isEmpty()) {
+			Locale locale = RequestContextUtils.getLocale(request);
+			System.out.println(locale.getCountry());    // TODO che ci faccio?
+			System.out.println(locale.getLanguage());
 			session.setAttribute("queryForm", query);
 			
 			long start = System.currentTimeMillis();
@@ -89,7 +96,8 @@ public class SearchController {
 		String[] fields = new String[2];
 		fields[0] = "title";
 		fields[1] = "body";
-		return this.engine.getResults(query, fields);
+		String lang = "text-en";  // TODO prendere da spring la location
+		return this.engine.getResults(query, fields, lang);
 	}
 
 }

@@ -84,8 +84,8 @@ public class WarcParser {
 		WarcParser parser = new WarcParser();
 		String[] files = config.getWarcFiles();
 
-		System.out.println("Parsing: " + parser.getDatasetPath() + "/"
-				+ files[0] + "\n");
+		System.out.println("Parsing: " + parser.getDatasetPath() + "/text-en" 
+				+ files[0] + "\n"); // TODO change dinamically directory
 		parser.open(files[0]);
 
 		int i = 0;

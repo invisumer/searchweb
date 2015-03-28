@@ -19,7 +19,6 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	private static int NUM_EXPLANATIONS = 10;
 	private static String SNIPPET_FIELD = "body";
 	private EngineConfig config = EngineConfig.getInstance();
-	private IndexSearcher searcher = null;
 	private boolean debugMode = false;
 	
 	public DebuggerSearchEngine() {
@@ -28,24 +27,28 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	}
 
 	@Override
-	public ResultsPager getResults(String stringQuery, String[] fields) {
+	public ResultsPager getResults(String stringQuery, String[] fields, String lang) {
 		ResultsPager pager = null;
 		
 		try {
-			Analyzer analyzer = this.getAnalyzer();
+			IndexSearcher searcher = this.getSearcher(lang);
+			Analyzer analyzer = this.getAnalyzer(lang);
 			Query query  = this.parseQuery(fields, analyzer, stringQuery);
-			ScoreDoc[] docs = this.search(query);
+			ScoreDoc[] docs = this.search(searcher, query);
 			
 			QueryResults queryResults = new QueryResults(query, docs, fields);
 			if (docs.length<config.getScoreThreshold())
-				queryResults = this.searchForBetterQuery(stringQuery, queryResults); 
+				queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, lang); 
 			
-			ResultsExtractor e = this.getExtractor(this.getSearcher(), 
+			ResultsExtractor e = this.getExtractor(searcher, 
 					analyzer, queryResults.getQuery(), SNIPPET_FIELD);
 			pager = new ResultsPager(e, queryResults.getDocs());
 			
-			if (debugMode)
-				this.explain(queryResults.getQuery(), queryResults.getDocs());
+			if (debugMode) {
+				logger.info("Selected searcher: " + searcher.getIndexReader().numDocs());
+				logger.info("Selected analyzer: " + analyzer.getClass().getName());
+				this.explain(searcher, queryResults.getQuery(), queryResults.getDocs());
+			}
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		} catch (ParseException e) {
@@ -55,29 +58,24 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 		return pager;
 	}
 	
-	public abstract Analyzer getAnalyzer();
+	public abstract IndexSearcher getSearcher(String lang);
+	
+	public abstract Analyzer getAnalyzer(String lang);
 	
 	public abstract Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException;
 	
-	public abstract ScoreDoc[] search(Query query) throws IOException;
+	public abstract ScoreDoc[] search(IndexSearcher searcher, Query query) throws IOException;
 	
 	public abstract ResultsExtractor getExtractor(IndexSearcher s, Analyzer a, Query q, String snippetField);
 
-	public abstract QueryResults searchForBetterQuery(String query, QueryResults queryResults) throws IOException, ParseException;
+	public abstract QueryResults searchForBetterQuery(IndexSearcher searcher, String query, QueryResults queryResults, 
+			String lang) throws IOException, ParseException;
 	
-	public void explain(Query query, ScoreDoc[] hits) throws IOException {
+	public void explain(IndexSearcher searcher, Query query, ScoreDoc[] hits) throws IOException {
 		for (int i=0; i<NUM_EXPLANATIONS && i< hits.length; i++) {
-			Explanation expl = this.searcher.explain(query, hits[i].doc);
+			Explanation expl = searcher.explain(query, hits[i].doc);
 			logger.info("Match " + (i+1) + " explanation:\n" + expl.toString());
 		}
-	}
-
-	public IndexSearcher getSearcher() {
-		return searcher;
-	}
-	
-	public void setSearcher(IndexSearcher searcher) throws IOException {
-		this.searcher = searcher;
 	}
 	
 	public EngineConfig getConfig() {

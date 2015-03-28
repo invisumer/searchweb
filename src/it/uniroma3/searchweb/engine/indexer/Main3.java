@@ -30,7 +30,7 @@ public class Main3 {
 		try {
 			EngineConfig engineConfig = EngineConfig.getInstance();
 			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
-			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath()));
+			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath() + "/text-en")); // TODO temporaneamente
 			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
 			config.setRAMBufferSizeMB(engineConfig.getRAMBufferSize());
 			config.setOpenMode(engineConfig.getIndexOpenMode());
