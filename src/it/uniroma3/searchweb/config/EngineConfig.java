@@ -26,8 +26,8 @@ public class EngineConfig {
 	private int numTopScoreExplanation = 0;
 	private int maxHits = 50;
 	private double scoreThreshold = maxHits*0.314; // TODO Use more significant names!!!
-	private int maxCorrection = 5; // TODO Use more significant names!!!
-	private float similarity = 0.75f; // TODO Use more significant names!!!
+	private int correctionPerWord = 5; // TODO Use more significant names!!!
+	private float similarityThreshold = 0.75f; // TODO Use more significant names!!!
 	private String logPath = "logger";
 	private float titleBoost = 2f;
 	private float bodyBoost = 40f;
@@ -100,8 +100,8 @@ public class EngineConfig {
 			logger.info("Number of score explanation: " + this.numTopScoreExplanation);
 			logger.info("Max number of hits: " + this.maxHits);
 			logger.info("Min number of hits for query suggestions: " + this.scoreThreshold);
-			logger.info("Max number of query suggestions: " + this.maxCorrection);
-			logger.info("Similarity threshold for query suggestion: " + this.similarity);
+			logger.info("Max number of query suggestions: " + this.correctionPerWord);
+			logger.info("Similarity threshold for query suggestion: " + this.similarityThreshold);
 			logger.info("Log path: " + this.logPath);
 			logger.info("Clean html pages: " + this.cleanHtml);
 		} catch (FileNotFoundException e) {
@@ -114,11 +114,11 @@ public class EngineConfig {
 	}
 	
 	public int getMaxCorrection() {
-		return maxCorrection;
+		return correctionPerWord;
 	}
 
 	public void setMaxCorrection(int maxCorrection) {
-		this.maxCorrection = maxCorrection;
+		this.correctionPerWord = maxCorrection;
 	}
 	
 	public String getDictionaryPath() {
@@ -210,11 +210,11 @@ public class EngineConfig {
 	}
 	
 	public float getSimilarity() {
-		return similarity;
+		return similarityThreshold;
 	}
 
 	public void setSimilarity(float similarity) {
-		this.similarity = similarity;
+		this.similarityThreshold = similarity;
 	}
 	
 	public String getLogPath() {
