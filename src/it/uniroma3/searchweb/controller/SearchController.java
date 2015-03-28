@@ -2,12 +2,10 @@ package it.uniroma3.searchweb.controller;
 
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import it.uniroma3.searchweb.engine.searcher.PagingSearchEngine;
-import it.uniroma3.searchweb.engine.searcher.SearchEngine;
 import it.uniroma3.searchweb.model.QueryForm;
 import it.uniroma3.searchweb.model.Result;
 import it.uniroma3.searchweb.model.ResultsPager;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class SearchController {

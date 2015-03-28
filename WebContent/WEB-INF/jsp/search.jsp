@@ -108,7 +108,7 @@ code {
 		</c:if>
 		
 		<div class="row">
-			<div class="col-md-6 col-xs-12">
+			<div class="col-md-5 col-xs-12">
 				<ul class="list-unstyled">
 					<c:forEach var="result" items="${results}">
 						<li style="margin-bottom: 30px;">
@@ -135,6 +135,8 @@ code {
 						</li>
 					</c:forEach>
 				</ul>
+			</div>
+			<div class="col-md-7 col-xs-12">
 			</div>
 		</div>
 		
