@@ -2,10 +2,11 @@ package it.uniroma3.searchweb.controller;
 
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import it.uniroma3.searchweb.engine.searcher.PagingSearchEngine;
+import it.uniroma3.searchweb.engine.searcher.SearchEngine;
 import it.uniroma3.searchweb.model.QueryForm;
 import it.uniroma3.searchweb.model.Result;
 import it.uniroma3.searchweb.model.ResultsPager;
@@ -23,9 +24,8 @@ public class SearchController {
 	private static final String INVALID_QUERY = "The query is not valid.";
 	private static final String INVALID_PAGE = "The page is not valid.";
 	
-//	@Resource(name="searcher")
-//	private SearchEngine engine;
-	PagingSearchEngine searcher = new PagingSearchEngine();
+	@Resource(name="searcher")
+	private SearchEngine engine;
 	
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public String submitRequest(@Valid @ModelAttribute QueryForm query, BindingResult result, 
@@ -76,14 +76,7 @@ public class SearchController {
 		String[] fields = new String[2];
 		fields[0] = "title";
 		fields[1] = "body";
-		return this.searcher.getPager(query, fields);
+		return this.engine.getResults(query, fields);
 	}
-	
-//	private List<Result> search(String query) {
-//		String[] fields = new String[2];
-//		fields[0] = "title";
-//		fields[1] = "body";
-//		return this.engine.getResults(query,fields);
-//	}
 
 }

@@ -5,6 +5,7 @@ import it.uniroma3.searchweb.model.Result;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -20,52 +21,54 @@ import org.apache.lucene.search.highlight.TextFragment;
 import org.apache.lucene.search.highlight.TokenSources;
 
 public class ResultsExtractor {
+	private static final Logger logger = Logger.getLogger(ResultsExtractor.class.getName());
 	private IndexSearcher searcher;
 	private Analyzer analyzer;
 	private Query query;
+	private String field;
 
 	public ResultsExtractor(IndexSearcher searcher, Analyzer analyzer,
-			Query query) {
+			Query query, String field) {
 		this.searcher = searcher;
 		this.analyzer = analyzer;
 		this.query = query;
+		this.field = field;
 	}
 	
-	public List<Result> getResults(ScoreDoc[] docs, String field, int start, int end) {
+	public List<Result> getResults(ScoreDoc[] docs, int start, int end) {
 		List<Result> results = new ArrayList<Result>();
 
 		try {
 			SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter("<b>", "</b>");
 			Highlighter highlighter = new Highlighter(htmlFormatter,
-					new QueryScorer(query));
+					new QueryScorer(this.query));
 			
 			for (int i = start; i < end; i++) {
 				int id = docs[i].doc;
-				Document doc = searcher.doc(id);
-				String text = doc.get(field);
+				Document doc = this.searcher.doc(id);
+				String text = doc.get(this.field);
 				TokenStream tokenStream = TokenSources.getAnyTokenStream(
-						searcher.getIndexReader(), id, field, analyzer);
+						this.searcher.getIndexReader(), id, this.field, this.analyzer);
 				TextFragment[] frag = highlighter.getBestTextFragments(
 						tokenStream, text, false, 2);
 				String snippet = "";
 				for (int j = 0; j < frag.length; j++) {
 					if ((frag[j] != null) && (frag[j].getScore() > 0)) {
-						snippet += frag[j].toString() + "... ";
+						snippet += frag[j].toString().trim() + "... ";
 					}
 				}
 				
 				Result result = new Result();
 				result.setTitle(doc.get("title").trim());
 				result.setUrl(doc.get("url").trim());
-				result.setDate(null);
-				result.setSnippet(snippet.trim());
+				result.setSnippet(snippet);
 				results.add(result);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			logger.severe(e.getMessage());
 			e.printStackTrace();
 		} catch (InvalidTokenOffsetsException e) {
-			// TODO Auto-generated catch block
+			logger.severe(e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -73,7 +76,7 @@ public class ResultsExtractor {
 	}
 
 	public List<Result> getResults(ScoreDoc[] docs, String field) {
-		return this.getResults(docs, field, 0, docs.length);
+		return this.getResults(docs, 0, docs.length);
 	}
 
 }

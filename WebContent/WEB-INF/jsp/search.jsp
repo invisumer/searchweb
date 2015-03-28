@@ -108,7 +108,7 @@ code {
 		</c:if>
 		
 		<div class="row">
-			<div class="col-md-5 col-xs-12">
+			<div class="col-md-6 col-xs-12">
 				<ul class="list-unstyled">
 					<c:forEach var="result" items="${results}">
 						<li style="margin-bottom: 30px;">
@@ -127,7 +127,7 @@ code {
 							</h4>
 							<p>
 								<span class="text-success">
-								${fn:substring(result.url, 0, 40)}<c:if test="${fn:length(result.url) > 40}">...</c:if>
+								${fn:substring(result.url, 0, 35)}<c:if test="${fn:length(result.url) > 40}">...</c:if>
 								</span>
 								<br>
 								${result.snippet}
@@ -136,7 +136,7 @@ code {
 					</c:forEach>
 				</ul>
 			</div>
-			<div class="col-md-7 col-xs-12">
+			<div class="col-md-6 col-xs-12">
 			</div>
 		</div>
 		

@@ -1,11 +1,9 @@
 package it.uniroma3.searchweb.engine.searcher;
 
-import it.uniroma3.searchweb.model.Result;
-
-import java.util.List;
+import it.uniroma3.searchweb.model.ResultsPager;
 
 public interface SearchEngine {
 	
-	public List<Result> getResults(String query, String[] fields);
+	public ResultsPager getResults(String query, String[] fields);
 
 }
