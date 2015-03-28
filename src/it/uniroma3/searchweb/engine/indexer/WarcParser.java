@@ -10,7 +10,6 @@ import java.util.logging.SimpleFormatter;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.lucene.document.Document;
-import org.apache.tika.parser.txt.CharsetDetector;
 
 import edu.cmu.lemurproject.WarcRecord;
 import it.uniroma3.searchweb.config.EngineConfig;
@@ -25,14 +24,13 @@ public class WarcParser {
 	public WarcParser() {
 		EngineConfig config = EngineConfig.getInstance();
 		this.dataset = config.getDatasetPath();
-		CharsetDetector detector = new CharsetDetector();
-		this.converter = new WarcConverter(detector);
+		this.converter = new WarcConverter(config.isCleanHtml());
 	}
 
 	public WarcParser(String datasetPath) {
+		EngineConfig config = EngineConfig.getInstance();
 		this.dataset = datasetPath;
-		CharsetDetector detector = new CharsetDetector();
-		this.converter = new WarcConverter(detector);
+		this.converter = new WarcConverter(config.isCleanHtml());
 	}
 
 	public String getDatasetPath() {
@@ -92,13 +90,13 @@ public class WarcParser {
 
 		int i = 0;
 		int notEncoded = 0;
-		long limit = 200000000000000L;
+		long limit = 50000;
 		
 		Document doc = null;
 		while ((doc = parser.next())!= null && i<limit) {
 			if (doc != null) {
-//				System.out.println("---------- Response " + (i+1) + " ----------");
-				System.out.println(doc.get("dec") + ", " + doc.get("enc") + ", " + doc.get("url"));
+//				if (!doc.get("dec").equals("http"))
+					System.out.println("[" + (i+1) + "] " + doc.get("dec") + ", " + doc.get("enc") + ", " + "[ " + doc.get("title") + " ] " + doc.get("url"));
 //				System.out.println();
 //				System.out.println(doc.get("title"));
 //				System.out.println();

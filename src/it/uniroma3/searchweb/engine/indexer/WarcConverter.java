@@ -3,7 +3,10 @@ package it.uniroma3.searchweb.engine.indexer;
 import it.uniroma3.searchweb.config.EngineConfig;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,13 +15,13 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.Field.Store;
+import org.apache.tika.parser.html.HtmlEncodingDetector;
 import org.apache.tika.parser.txt.CharsetDetector;
 import org.apache.tika.parser.txt.CharsetMatch;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import edu.cmu.lemurproject.WarcHTMLResponseRecord;
 import edu.cmu.lemurproject.WarcRecord;
@@ -26,9 +29,13 @@ import edu.cmu.lemurproject.WarcRecord;
 public class WarcConverter {
 	private static final Logger logger = Logger.getLogger(WarcParser.class.getName()); 
 	private CharsetDetector detector;
+	private HtmlEncodingDetector htmlDetector;
+	private boolean cleanHtml;
 	
-	public WarcConverter(CharsetDetector detector) {
-		this.detector = detector;
+	public WarcConverter(boolean clean) {
+		this.detector = new CharsetDetector();
+		this.htmlDetector = new HtmlEncodingDetector();
+		this.cleanHtml = clean;
 	}
 	
 	public Document parseDocument(WarcRecord warc) {
@@ -56,10 +63,8 @@ public class WarcConverter {
 			}
 			
 			// find encoding from html meta if necessary
-			String htmlMeta = null;
 			if (enc == null) {
-				htmlMeta = new String(htmlStream, "UTF-8");
-				enc = this.getCharsetFromMeta(htmlMeta);
+				enc = this.getCharsetFromMeta(htmlStream);
 				if (enc != null) {
 					decoder = "meta";
 				}
@@ -73,6 +78,12 @@ public class WarcConverter {
 				}
 			}
 			
+			if (enc != null && enc.endsWith("_ltr"))       // TODO what about IBM*_ltr?
+				enc = enc.replace("_ltr", "");
+			
+			if (enc != null && enc.endsWith("_rtl"))       // TODO what about IBM*_rtl?
+				enc = enc.replace("_rtl", "");
+			
 			// default encoding
 			if (enc == null) {
 				enc = "UTF-8";
@@ -80,11 +91,10 @@ public class WarcConverter {
 			}
 			
 			// Malformed html corrector
-//			if (decoder.equals("meta") && enc.equalsIgnoreCase("UTF-8"))
-//				html = htmlMeta;
-//			else
-//				html = new String(htmlStream, enc);
-			html = this.fixMalformedHtml(htmlStream, enc);
+			if (cleanHtml)
+				html = this.fixMalformedHtml(htmlStream, enc);
+			else
+				html = new String(htmlStream, enc);
 		} catch (UnsupportedEncodingException e) {
 			logger.severe(e.getMessage());
 			return null;
@@ -155,15 +165,20 @@ public class WarcConverter {
 	}
 	
 	private String getCharsetFromHttp(String response) {
-		Pattern pattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+		Pattern pattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;,\"]*)");
 		Matcher matcher = pattern.matcher(response);
 		String enc = null;
 		
-		if (matcher.find()) {
-			String group = matcher.group();
-			enc = group.replaceAll("(?i)\\bcharset=\\s*\"?", "");
-			if (enc.isEmpty())
-				enc = null;
+		try {
+			if (matcher.find()) {
+				String group = matcher.group();
+				enc = group.replaceAll("(?i)\\bcharset=\\s*\"?", "");
+				if (enc.isEmpty() || !Charset.isSupported(enc))
+					enc = null;
+			}
+		} catch (IllegalCharsetNameException e) {
+			logger.severe(e.getMessage());
+			return null;
 		}
 		
 		return enc;
@@ -176,22 +191,20 @@ public class WarcConverter {
 		return htmlStream;
 	}
 	
-	private String getCharsetFromMeta(String html) {
-		org.jsoup.nodes.Document htmlDoc = Jsoup.parse(html);
-		Elements metaEls = htmlDoc.head().select("meta[charset],meta[http-equiv=Content-Type]");
+	private String getCharsetFromMeta(byte[] htmlStream) {
+		ByteArrayInputStream stream = new ByteArrayInputStream(htmlStream);
+		Charset charset = null;
 		String enc = null;
 		
-		String metaEnc = metaEls.attr("charset");
-		if (metaEnc != null && !metaEnc.isEmpty())
-			enc = metaEnc.replaceAll("[\"]*", "");
-		if (enc!=null && enc.isEmpty())
-			enc = null;
-		
-		if (enc == null) {
-			metaEnc = metaEls.attr("content");
-			if (metaEnc != null & !metaEnc.isEmpty())
-				enc = this.getCharsetFromHttp(metaEnc);
+		try {
+			charset = this.htmlDetector.detect(stream, null);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			return null;
 		}
+		
+		if (charset != null)
+			enc = charset.name();
 		
 		return enc;
 	}
@@ -201,7 +214,7 @@ public class WarcConverter {
 		
 		detector.setText(htmlStream);
 		CharsetMatch match = detector.detect();
-		if (match != null)
+		if (match != null && (match.getConfidence() > 33)) // TODO Confidence?
 			enc = match.getName();
 		
 		return enc;
