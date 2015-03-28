@@ -143,7 +143,7 @@ code {
 		<c:if test="${results!=null && ! empty results}">
  		<div class="row">
 			<div class="col-md-12">
-				<ul class="pagination pagination">
+				<ul class="pagination pagination-sm">
 					<li>
 						<a href="<c:url value="/search/page/1"/>">&laquo;&laquo;</a>
 					</li>
@@ -153,7 +153,7 @@ code {
 								<a href="<c:url value="/search/page/"/>${currentPage-1}"><b>&laquo;</b></a>
 							</c:when>
 							<c:otherwise>
-								<a class="disabled"><b>&laquo;</b></a>
+								<a class="disabled">&laquo;</a>
 							</c:otherwise>
 						</c:choose>
 					</li>
@@ -186,7 +186,7 @@ code {
 								<a href="<c:url value="/search/page/"/>${currentPage+1}"><b>&raquo;</b></a>
 							</c:when>
 							<c:otherwise>
-								<a class="disabled"><b>&raquo;</b></a>
+								<a class="disabled">&raquo;</a>
 							</c:otherwise>
 						</c:choose>
 					</li>
