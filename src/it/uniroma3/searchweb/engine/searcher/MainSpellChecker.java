@@ -14,7 +14,7 @@ public class MainSpellChecker {
 		int numSug = 3;
 		String query = "";
 		float similarity = 0.8f;
-		List<String> result = sp.getBasicSuggestions1(query, numSug,similarity);
+		List<String> result = sp.getBasicSuggestions(query, numSug,similarity);
 		NGramDistance d = new NGramDistance();
 		LuceneLevenshteinDistance lld = new LuceneLevenshteinDistance();
 		for (String s : result) {
