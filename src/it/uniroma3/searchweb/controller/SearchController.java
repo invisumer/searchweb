@@ -1,5 +1,6 @@
 package it.uniroma3.searchweb.controller;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -26,6 +27,7 @@ public class SearchController {
 	
 	@Resource(name="searcher")
 	private SearchEngine engine;
+	private DecimalFormat df = new DecimalFormat("0.000"); 
 	
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public String submitRequest(@Valid @ModelAttribute QueryForm query, BindingResult result, 
@@ -40,7 +42,15 @@ public class SearchController {
 		// some logic
 		if (!query.getQuery().isEmpty()) {
 			session.setAttribute("queryForm", query);
-			session.setAttribute("pager", this.getPager(query.getQuery()));
+			
+			long start = System.currentTimeMillis();
+			ResultsPager pager = this.getPager(query.getQuery());
+			session.setAttribute("pager", pager);
+			long stop = System.currentTimeMillis();
+			
+			String time = df.format((stop-start+0.0)/1000);
+			int nResults = pager.getDocs().length;
+			session.setAttribute("statistics", nResults + " result(s) in " + time + " sec");
 		}
 		
 	    return "redirect:/search/page/1";
@@ -61,6 +71,9 @@ public class SearchController {
 		List<Result> results = pager.getPage(n);
 		
 		if (results == null) {
+//			session.removeAttribute("queryForm");
+//			session.removeAttribute("pager");
+//			session.removeAttribute("statistics");
 			model.addAttribute("error", INVALID_PAGE);
 			return "search";
 		}

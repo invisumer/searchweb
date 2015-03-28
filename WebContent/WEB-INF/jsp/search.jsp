@@ -107,6 +107,14 @@ code {
 			</div>
 		</c:if>
 		
+		<c:if test="${statistics != null}">
+			<div class="row">
+				<div class="col-md-12">
+					<p>${statistics}</p>
+				</div>
+			</div>
+		</c:if>
+		
 		<div class="row">
 			<div class="col-md-6 col-xs-12">
 				<ul class="list-unstyled">

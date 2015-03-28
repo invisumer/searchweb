@@ -98,7 +98,7 @@ code {
 	
 	<footer class="footer">
       <div class="container">
-        <p class="text-muted">Performed by BPR Search Engine.</p>
+        <p class="text-muted">Powered by BPR Search Engine.</p>
       </div>
     </footer>
 
