@@ -11,11 +11,21 @@ public class QueryResults {
 	private Query query;
 	private ScoreDoc[] docs;
 	private String[] fields;
+	private String lang;
 	
-	public QueryResults(Query query, ScoreDoc[] docs, String[] fields) {
+	public QueryResults(Query query, ScoreDoc[] docs, String[] fields, String lang) {
 		this.query = query;
 		this.docs = docs;
 		this.fields = fields;
+		this.lang = lang;
+	}
+
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
 	}
 
 	public Query getQuery() {

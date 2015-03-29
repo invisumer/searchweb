@@ -33,12 +33,7 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 		try {
 			IndexSearcher searcher = this.getSearcher(lang);
 			Analyzer analyzer = this.getAnalyzer(lang);
-			Query query  = this.parseQuery(fields, analyzer, stringQuery);
-			ScoreDoc[] docs = this.search(searcher, query);
-			
-			QueryResults queryResults = new QueryResults(query, docs, fields);
-			if (docs.length<config.getScoreThreshold())
-				queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, lang); 
+			QueryResults queryResults = this.makeQuery(stringQuery, fields, analyzer, searcher, lang);
 			ResultsExtractor e = this.getExtractor(searcher, 
 					analyzer, queryResults.getQuery(), SNIPPET_FIELD);
 			String queryExecuted = queryResults.QueryToString();
@@ -65,12 +60,17 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	
 	public abstract Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException;
 	
+	public abstract Query parsePhraseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException;
+	
+	public abstract QueryResults makeQuery(String query, String[] fields, Analyzer analyzer, IndexSearcher searcher, 
+			String lang) throws IOException, ParseException;
+	
 	public abstract ScoreDoc[] search(IndexSearcher searcher, Query query) throws IOException;
 	
 	public abstract ResultsExtractor getExtractor(IndexSearcher s, Analyzer a, Query q, String snippetField);
 
 	public abstract QueryResults searchForBetterQuery(IndexSearcher searcher, String query, QueryResults queryResults, 
-			String lang) throws IOException, ParseException;
+			boolean flag) throws IOException, ParseException;
 	
 	public void explain(IndexSearcher searcher, Query query, ScoreDoc[] hits) throws IOException {
 		for (int i=0; i<NUM_EXPLANATIONS && i< hits.length; i++) {

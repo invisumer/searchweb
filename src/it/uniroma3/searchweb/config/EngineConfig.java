@@ -28,7 +28,7 @@ public class EngineConfig {
 	private int numTopScoreExplanation = 0;
 	private int maxHits = 50;
 	private double scoreThreshold = maxHits*0.314;
-	private int correctionPerWord = 5;
+	private int correctionPerPhrase = 100;
 	private String logPath = "logger";
 	private float titleBoost = 2f;
 	private float bodyBoost = 40f;
@@ -100,7 +100,7 @@ public class EngineConfig {
 			//correction per word
 			String correctionperword = prop.getProperty("correctionperword");
 			if (correctionperword!=null)
-				this.correctionPerWord = Integer.parseInt(correctionperword);
+				this.correctionPerPhrase = Integer.parseInt(correctionperword);
 			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
@@ -111,7 +111,7 @@ public class EngineConfig {
 			logger.info("Number of score explanation: " + this.numTopScoreExplanation);
 			logger.info("Max number of hits: " + this.maxHits);
 			logger.info("Min number of hits for query suggestions: " + this.scoreThreshold);
-			logger.info("Max number of query suggestions: " + this.correctionPerWord);
+			logger.info("Max number of query suggestions: " + this.correctionPerPhrase);
 			logger.info("Log path: " + this.logPath);
 			logger.info("Clean html pages: " + this.cleanHtml);
 		} catch (FileNotFoundException e) {
@@ -124,11 +124,11 @@ public class EngineConfig {
 	}
 	
 	public int getMaxCorrection() {
-		return correctionPerWord;
+		return correctionPerPhrase;
 	}
 
 	public void setMaxCorrection(int maxCorrection) {
-		this.correctionPerWord = maxCorrection;
+		this.correctionPerPhrase = maxCorrection;
 	}
 	
 	public String getDictionaryPath() {

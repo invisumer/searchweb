@@ -32,7 +32,7 @@ public class NaiveSpellCheckers implements SpellCheckers{
 		spellchecker.close();
 	}
 	
-	public List<String> getBasicSuggestions(String query, int numSug, String lang) throws IOException {
+	public List<String> getBasicSuggestions(String query, String lang) throws IOException {
 		EngineConfig engineConfig = EngineConfig.getInstance();
 		Directory spellCheckerDir = FSDirectory.open(new File(engineConfig.getDictionaryPath()+"/dictionary-"+lang));
 		SpellChecker spellchecker = new SpellChecker(spellCheckerDir);
@@ -42,6 +42,8 @@ public class NaiveSpellCheckers implements SpellCheckers{
 		int resultSize;
 		spellchecker.setStringDistance(new LuceneLevenshteinDistance());
 		float similarity = 1.0f;
+		int numSug = (engineConfig.getMaxCorrection()/10)/tokenizer.countTokens();
+		System.out.println(numSug);
 		while (tokenizer.hasMoreTokens()) {
 			String currentToken = tokenizer.nextToken();
 			if (currentToken.length()>1)

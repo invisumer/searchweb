@@ -8,9 +8,8 @@ public class MainSpellChecker {
 	public static void main(String[] args) throws IOException {
 		NaiveSpellCheckers sp = new NaiveSpellCheckers();
 //		sp.initialize("it");
-		int numSug = 1;
-		String query = "il mare è bellussimo";
-		List<String> result = sp.getBasicSuggestions(query, numSug,"it");
+		String query = "ffjk";
+		List<String> result = sp.getBasicSuggestions(query, "en");
 		for (String s : result) {
 			System.out.println("Did you mean : "+s);
 			
