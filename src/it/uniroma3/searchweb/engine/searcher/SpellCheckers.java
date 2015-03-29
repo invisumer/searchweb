@@ -7,6 +7,6 @@ import org.apache.lucene.index.CorruptIndexException;
 
 public interface SpellCheckers {
 	
-	public void initialize() throws CorruptIndexException, IOException;
-	public List<String> getBasicSuggestions(String query, int numSug, float similarity) throws IOException;
+	public void initialize(String lang) throws CorruptIndexException, IOException;
+	public List<String> getBasicSuggestions(String query, int numSug, String lang) throws IOException;
 }

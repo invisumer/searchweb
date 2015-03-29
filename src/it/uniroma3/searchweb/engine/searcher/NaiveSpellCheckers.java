@@ -19,31 +19,33 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 public class NaiveSpellCheckers implements SpellCheckers{
-	EngineConfig engineConfig;
-	Directory spellCheckerDir;
-	SpellChecker spellchecker;
 	
-	public NaiveSpellCheckers() throws IOException {
-		engineConfig = EngineConfig.getInstance();
-		spellCheckerDir = FSDirectory.open(new File(engineConfig.getDictionaryPath()));
-		spellchecker = new SpellChecker(spellCheckerDir);
-	}
+	public NaiveSpellCheckers() throws IOException { }
 	
-	public void initialize() throws CorruptIndexException, IOException {
+	public void initialize(String lang) throws CorruptIndexException, IOException {
+		EngineConfig engineConfig = EngineConfig.getInstance();
+		Directory spellCheckerDir = FSDirectory.open(new File(engineConfig.getDictionaryPath()+"/dictionary-"+lang));
+		SpellChecker spellchecker = new SpellChecker(spellCheckerDir);
 		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
         IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
-		spellchecker.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/en.txt")),config,true);
+		spellchecker.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/"+lang+".txt")),config,true);
 		spellchecker.close();
 	}
 	
-	public List<String> getBasicSuggestions(String query, int numSug, float similarity) throws IOException {
+	public List<String> getBasicSuggestions(String query, int numSug, String lang) throws IOException {
+		EngineConfig engineConfig = EngineConfig.getInstance();
+		Directory spellCheckerDir = FSDirectory.open(new File(engineConfig.getDictionaryPath()+"/dictionary-"+lang));
+		SpellChecker spellchecker = new SpellChecker(spellCheckerDir);
 		StringTokenizer tokenizer = new StringTokenizer(query);
 		List<String> result = new ArrayList<String>();
 		result.add("");
 		int resultSize;
 		spellchecker.setStringDistance(new LuceneLevenshteinDistance());
+		float similarity = 1.0f;
 		while (tokenizer.hasMoreTokens()) {
 			String currentToken = tokenizer.nextToken();
+			if (currentToken.length()>1)
+				similarity = (float) (1-1.0/currentToken.length());
 			String[] suggestions = spellchecker.suggestSimilar(currentToken, numSug, similarity);
 			resultSize = result.size();
 			for (int i=0; i<resultSize;i++) {
@@ -55,6 +57,7 @@ public class NaiveSpellCheckers implements SpellCheckers{
 				result.remove(0);
 			}
 		}
+		spellchecker.close();
 		return result;
 	}
 	

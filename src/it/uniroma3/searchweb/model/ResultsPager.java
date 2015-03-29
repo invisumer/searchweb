@@ -9,10 +9,12 @@ public class ResultsPager {
 	private static int RESULT_PER_PAGE = 10;
 	private ResultsExtractor extractor;
 	private ScoreDoc[] docs;
+	private String suggestion; // TODO if there were no suggestion, it is ""
 	
-	public ResultsPager(ResultsExtractor extractor, ScoreDoc[] docs) {
+	public ResultsPager(ResultsExtractor extractor, ScoreDoc[] docs, String suggestion) {
 		this.extractor = extractor;
 		this.docs = docs;
+		this.suggestion = suggestion;
 	}
 	
 	public List<Result> getPage(int i) {

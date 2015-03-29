@@ -70,7 +70,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		NaiveSpellCheckers spellChecker = new NaiveSpellCheckers();
 		Query tmp;
 		List<String> corrections = spellChecker.getBasicSuggestions(query, 
-				this.getConfig().getMaxCorrection(), this.getConfig().getSimilarity());
+				this.getConfig().getMaxCorrection(), lang);
 		for (int i=0; i<corrections.size();i++) {
 			tmp = this.parseQuery(queryResults.getFields(), getAnalyzer(lang), corrections.get(i));
 			newHits = this.search(searcher, tmp);

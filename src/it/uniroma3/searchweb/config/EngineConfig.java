@@ -29,7 +29,6 @@ public class EngineConfig {
 	private int maxHits = 50;
 	private double scoreThreshold = maxHits*0.314;
 	private int correctionPerWord = 5;
-	private float similarityThreshold = 0.75f;
 	private String logPath = "logger";
 	private float titleBoost = 2f;
 	private float bodyBoost = 40f;
@@ -103,11 +102,6 @@ public class EngineConfig {
 			if (correctionperword!=null)
 				this.correctionPerWord = Integer.parseInt(correctionperword);
 			
-			//similarity threshold
-			String similaritythreshold = prop.getProperty("similaritythreshold");
-			if (similaritythreshold!=null)
-				this.similarityThreshold = Float.parseFloat(similaritythreshold);
-			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
 			logger.info("Dictionary path: " + this.dictionaryPath);
@@ -118,7 +112,6 @@ public class EngineConfig {
 			logger.info("Max number of hits: " + this.maxHits);
 			logger.info("Min number of hits for query suggestions: " + this.scoreThreshold);
 			logger.info("Max number of query suggestions: " + this.correctionPerWord);
-			logger.info("Similarity threshold for query suggestion: " + this.similarityThreshold);
 			logger.info("Log path: " + this.logPath);
 			logger.info("Clean html pages: " + this.cleanHtml);
 		} catch (FileNotFoundException e) {
@@ -224,14 +217,6 @@ public class EngineConfig {
 
 	public void setScoreThreshold(double scoreThreshold) {
 		this.scoreThreshold = scoreThreshold;
-	}
-	
-	public float getSimilarity() {
-		return similarityThreshold;
-	}
-
-	public void setSimilarity(float similarity) {
-		this.similarityThreshold = similarity;
 	}
 	
 	public String getLogPath() {
