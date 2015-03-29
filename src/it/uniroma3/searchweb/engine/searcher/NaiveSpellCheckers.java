@@ -46,8 +46,11 @@ public class NaiveSpellCheckers implements SpellCheckers{
 		System.out.println(numSug);
 		while (tokenizer.hasMoreTokens()) {
 			String currentToken = tokenizer.nextToken();
-			if (currentToken.length()>1)
+			if (currentToken.length()>1) {
 				similarity = (float) (1-1.0/currentToken.length());
+				if (similarity>0.8)
+					similarity = 0.8f;
+			}
 			String[] suggestions = spellchecker.suggestSimilar(currentToken, numSug, similarity);
 			resultSize = result.size();
 			for (int i=0; i<resultSize;i++) {
