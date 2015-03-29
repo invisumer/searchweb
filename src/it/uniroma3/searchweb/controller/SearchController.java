@@ -14,7 +14,6 @@ import it.uniroma3.searchweb.model.QueryForm;
 import it.uniroma3.searchweb.model.Result;
 import it.uniroma3.searchweb.model.ResultsPager;
 
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
