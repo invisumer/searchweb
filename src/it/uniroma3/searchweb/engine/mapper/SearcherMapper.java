@@ -25,15 +25,12 @@ public class SearcherMapper {
 	
 	private void open() {
 		this.mapper = new HashMap<String, IndexSearcher>();
-		this.mapper.put("text-en", this.buildIndexSearcher("text-en"));
-//		this.mapper.put("text-it", this.buildIndexSearcher("text-it"));
-//		this.mapper.put("text-fr", this.buildIndexSearcher("text-fr"));
-//		this.mapper.put("text-th", this.buildIndexSearcher("text-th"));
+		this.mapper.put("html", this.buildIndexSearcher("html"));
 		// TODO other formats
 	}
 	
-	public IndexSearcher pickSearcher(String lang) {
-		return this.mapper.get(lang);
+	public IndexSearcher pickSearcher(String contentType) {
+		return this.mapper.get(contentType);
 	}
 	
 	public IndexSearcher buildIndexSearcher(String path) {
@@ -43,7 +40,7 @@ public class SearcherMapper {
 		try {
 			File dir = new File(engineConfig.getIndexPath() + "/" + path);
 			if (!dir.exists())
-				dir.mkdir();
+				return null;
 			Directory index = FSDirectory.open(dir);
 			IndexReader reader = DirectoryReader.open(index);
 			searcher = new IndexSearcher(reader);

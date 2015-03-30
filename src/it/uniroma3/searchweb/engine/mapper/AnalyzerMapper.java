@@ -19,25 +19,23 @@ public class AnalyzerMapper {
 		Version version = EngineConfig.getVersion();
 		this.mapper = new HashMap<String, Analyzer>();
 		
-		this.mapper.put("text-en", new StandardAnalyzer(version));
-//		this.mapper.put("text-it", new ItalianAnalyzer(version));
-//		this.mapper.put("text-fr", new FrenchAnalyzer(version));
-//		this.mapper.put("text-th", new ThaiAnalyzer(version));
+		this.mapper.put("en", new StandardAnalyzer(version));
+		this.mapper.put("it", new ItalianAnalyzer(version));
+		this.mapper.put("fr", new FrenchAnalyzer(version));
+		this.mapper.put("th", new ThaiAnalyzer(version));
 		
 		// TODO other formats
 	}
 	
-	public Analyzer pickAnalyzer(String code) {
-		if (code == null)
+	public Analyzer pickAnalyzer(String lang) {
+		if (lang == null)
 			return null;
 		
 		Analyzer analyzer = null;
-		analyzer = this.mapper.get(code);
+		analyzer = this.mapper.get(lang);
 		
-		if (analyzer==null && code.startsWith("text-"))
-			analyzer = this.mapper.get("text-en");
-		
-		// TODO defaults analyzer for other formats
+		if (analyzer==null)
+			analyzer = this.mapper.get("en");
 		
 		return analyzer;
 	}
