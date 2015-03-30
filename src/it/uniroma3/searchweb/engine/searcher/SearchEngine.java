@@ -4,6 +4,6 @@ import it.uniroma3.searchweb.model.ResultsPager;
 
 public interface SearchEngine {
 	
-	public ResultsPager getResults(String query, String[] fields, String lang);
+	public ResultsPager getResults(String query, String[] fields, String contentType, String lang);
 
 }

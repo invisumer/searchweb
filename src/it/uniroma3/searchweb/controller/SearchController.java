@@ -96,7 +96,8 @@ public class SearchController {
 		fields[0] = "title";
 		fields[1] = "body";
 		String lang = "en";  // TODO prendere da spring la location
-		return this.engine.getResults(query, fields, lang);
+		String contentType = "html";
+		return this.engine.getResults(query, fields, contentType, lang);
 	}
 
 }

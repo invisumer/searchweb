@@ -27,7 +27,7 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	}
 
 	@Override
-	public ResultsPager getResults(String stringQuery, String[] fields, String lang) {
+	public ResultsPager getResults(String stringQuery, String[] fields, String contentType, String lang) {
 		ResultsPager pager = null;
 		
 		try {
@@ -58,19 +58,10 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	
 	public abstract Analyzer getAnalyzer(String lang);
 	
-	public abstract Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException;
-	
-	public abstract Query parsePhraseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException;
-	
 	public abstract QueryResults makeQuery(String query, String[] fields, Analyzer analyzer, IndexSearcher searcher, 
 			String lang) throws IOException, ParseException;
 	
-	public abstract ScoreDoc[] search(IndexSearcher searcher, Query query) throws IOException;
-	
 	public abstract ResultsExtractor getExtractor(IndexSearcher s, Analyzer a, Query q, String snippetField);
-
-	public abstract QueryResults searchForBetterQuery(IndexSearcher searcher, String query, QueryResults queryResults, 
-			boolean flag) throws IOException, ParseException;
 	
 	public void explain(IndexSearcher searcher, Query query, ScoreDoc[] hits) throws IOException {
 		for (int i=0; i<NUM_EXPLANATIONS && i< hits.length; i++) {

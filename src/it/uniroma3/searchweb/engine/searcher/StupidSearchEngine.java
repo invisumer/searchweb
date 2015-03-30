@@ -3,10 +3,12 @@ package it.uniroma3.searchweb.engine.searcher;
 import it.uniroma3.searchweb.config.EngineConfig;
 import it.uniroma3.searchweb.engine.mapper.AnalyzerMapper;
 import it.uniroma3.searchweb.engine.mapper.SearcherMapper;
+import it.uniroma3.searchweb.engine.mapper.SpellCheckerMapper;
 import it.uniroma3.searchweb.model.QueryResults;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -20,15 +22,24 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 
 public class StupidSearchEngine extends DebuggerSearchEngine {
+	private static final Logger logger = Logger.getLogger(StupidSearchEngine.class.getName());
 	private SearcherMapper searcherMapper;
-	private AnalyzerMapper mapper;
+	private AnalyzerMapper analyzerMapper;
+	private SpellCheckers spellCheckers;
 	
 	public StupidSearchEngine() {
 		super();
-
-		// TODO set spellchecker? we should reuse the same spellchecker instance
-		this.mapper = new AnalyzerMapper();
-		this.searcherMapper = new SearcherMapper();
+		
+		try {
+			this.analyzerMapper = new AnalyzerMapper();
+			this.searcherMapper = new SearcherMapper();
+			SpellCheckerMapper mapper = new SpellCheckerMapper();
+			this.spellCheckers = new NaiveSpellCheckers(mapper);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Override
@@ -38,44 +49,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 
 	@Override
 	public Analyzer getAnalyzer(String lang) {
-		return this.mapper.pickAnalyzer(lang);
-	}
-	
-	@Override
-	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
-		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
-		Query q = mfqp.parse(query);
-		return q;
-	}
-
-	@Override
-	public Query parsePhraseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-		BooleanQuery bq = new BooleanQuery();
-		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
-		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
-		for (String field : fields) {
-			Query q = mfqp.createPhraseQuery(field, query);
-			bq.add(q, Occur.SHOULD);
-		}
-		return bq;
-	}
-
-	@Override
-	public ScoreDoc[] search(IndexSearcher searcher, Query query) throws IOException {
-		int maxHits = this.getConfig().getMaxHits();
-		TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true);
-		TopScoreDocCollector.create(maxHits, true);
-		searcher.search(query, collector);
-		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		return hits;
-	}
-
-	@Override
-	public ResultsExtractor getExtractor(IndexSearcher s, Analyzer a, Query q,
-			String snippetField) {
-		ResultsExtractor e = new ResultsExtractor(s, a, q, snippetField);
-		return e;
+		return this.analyzerMapper.pickAnalyzer(lang);
 	}
 	
 	@Override
@@ -105,12 +79,38 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		return queryResults;
 	}
 	
+	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
+		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
+		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
+		Query q = mfqp.parse(query);
+		return q;
+	}
+
+	public Query parsePhraseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
+		BooleanQuery bq = new BooleanQuery();
+		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
+		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
+		for (String field : fields) {
+			Query q = mfqp.createPhraseQuery(field, query);
+			bq.add(q, Occur.SHOULD);
+		}
+		return bq;
+	}
+
+	public ScoreDoc[] search(IndexSearcher searcher, Query query) throws IOException {
+		int maxHits = this.getConfig().getMaxHits();
+		TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true);
+		TopScoreDocCollector.create(maxHits, true);
+		searcher.search(query, collector);
+		ScoreDoc[] hits = collector.topDocs().scoreDocs;
+		return hits;
+	}
+	
 	public QueryResults searchForBetterQuery(IndexSearcher searcher, String query, QueryResults queryResults, boolean flag) 
 			throws IOException, ParseException {
 		ScoreDoc[] newHits;
-		NaiveSpellCheckers spellChecker = new NaiveSpellCheckers();
 		Query tmp;
-		List<String> corrections = spellChecker.getBasicSuggestions(query, "en"); //TODO change this value
+		List<String> corrections = spellCheckers.getBasicSuggestions(query, queryResults.getLang()); //TODO change this value
 		for (int i=0; i<corrections.size();i++) {
 			if (flag)
 				tmp = this.parsePhraseQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
@@ -123,6 +123,13 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			}
 		}
 		return queryResults;
+	}
+
+	@Override
+	public ResultsExtractor getExtractor(IndexSearcher s, Analyzer a, Query q,
+			String snippetField) {
+		ResultsExtractor e = new ResultsExtractor(s, a, q, snippetField);
+		return e;
 	}
 	
 }
