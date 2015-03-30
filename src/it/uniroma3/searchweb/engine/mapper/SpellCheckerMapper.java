@@ -4,6 +4,7 @@ import it.uniroma3.searchweb.config.EngineConfig;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.lucene.search.spell.SpellChecker;
@@ -14,6 +15,7 @@ public class SpellCheckerMapper {
 	private Map<String, SpellChecker> spellCheckers;
 	
 	public SpellCheckerMapper() throws IOException {
+		this.spellCheckers = new HashMap<String, SpellChecker>();
 		this.open();
 	}
 	
