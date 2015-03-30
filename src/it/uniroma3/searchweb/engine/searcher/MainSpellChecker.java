@@ -11,7 +11,7 @@ public class MainSpellChecker {
 		SpellCheckerMapper mapper = new SpellCheckerMapper();
 		NaiveSpellCheckers sp = new NaiveSpellCheckers(mapper);
 //		sp.initialize("html");
-		String query = "applction errop";
+		String query = "kristin";
 		List<String> result = sp.getBasicSuggestions(query, "en");
 		for (String s : result) {
 			System.out.println("Did you mean : "+s);

@@ -36,20 +36,20 @@ public class NaiveSpellCheckers implements SpellCheckers{
         File dir = new File(engineConfig.getIndexPath()+"/"+path);
 		if (!dir.exists())
 			dir.mkdir();
-//		Directory index = FSDirectory.open(dir);
-//		IndexReader reader = DirectoryReader.open(index);
-//		SpellChecker spellcheckerIndex = this.mapper.getSpellChecker("index");
-//        spellcheckerIndex.indexDictionary(new HighFrequencyDictionary(reader, "body",0.5f), config, true);
-//        spellcheckerIndex.close();
+		Directory index = FSDirectory.open(dir);
+		IndexReader reader = DirectoryReader.open(index);
+		SpellChecker spellcheckerIndex = this.mapper.getSpellChecker("index");
+        spellcheckerIndex.indexDictionary(new HighFrequencyDictionary(reader, "body",0.001f), config, true);
+        spellcheckerIndex.close();
 //        SpellChecker spellcheckerEnglish = this.mapper.getSpellChecker("en");
 //		spellcheckerEnglish.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/en.txt")),config,true);
 //		spellcheckerEnglish.close();
 //		SpellChecker spellcheckerItalian = this.mapper.getSpellChecker("it");
 //		spellcheckerItalian.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/it.txt")),config,true);
 //		spellcheckerItalian.close();
-		SpellChecker spellcheckerGerman = this.mapper.getSpellChecker("de");
-		spellcheckerGerman.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/de.txt")),config,true);
-		spellcheckerGerman.close();
+//		SpellChecker spellcheckerGerman = this.mapper.getSpellChecker("de");
+//		spellcheckerGerman.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/de.txt")),config,true);
+//		spellcheckerGerman.close();
 //		SpellChecker spellcheckerFrench = this.mapper.getSpellChecker("fr");
 //		spellcheckerFrench.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/fr.txt")),config,true);
 //		spellcheckerFrench.close();
@@ -81,20 +81,20 @@ public class NaiveSpellCheckers implements SpellCheckers{
 			}
 			String[] suggestionsDictionary = spellcheckerDictionary.suggestSimilar(currentToken, numSug, similarity);
 			String[] suggestionsIndex = spellcheckerIndex.suggestSimilar(currentToken, numSug, similarity);
-			List<String> suggestions = new ArrayList<String>();
+//			List<String> suggestions = new ArrayList<String>();
 //			for (String s : suggestionsDictionary) {
-//				if ()
+//				if (suggestionsIndex.)
 //			}
 			resultSize = result.size();
 			for (int i=0; i<resultSize;i++) {
 				String tmp = result.get(0);
-				for (String s : suggestionsDictionary) {
+				for (String s : suggestionsIndex) {
 					result.add(tmp.concat(s+" "));
 				}
+				result.add(tmp.concat(currentToken+" "));
 				result.remove(0);
 			}
 		}
-//		spellcheckerDictionary.close();
 		return result;
 	}
 	
