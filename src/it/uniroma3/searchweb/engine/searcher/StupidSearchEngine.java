@@ -56,32 +56,33 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, IndexSearcher searcher, String lang) throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
 		
-		Query query  = this.parsePhraseQuery(fields, analyzer, stringQuery);
+		Query query  = this.parseQuery(fields, analyzer, stringQuery);
+//		Query query  = this.parsePhraseQuery(fields, analyzer, stringQuery); TODO dany ricordati di sistemare
 		ScoreDoc[] docs = this.search(searcher, query);
 		QueryResults queryResults = new QueryResults(query, docs, fields,lang);
 
-		if (docs.length>=config.getScoreThreshold())
-			return queryResults;
-		boolean flag = true;
-		queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
-		if (queryResults.getDocs().length>=config.getScoreThreshold())
-			return queryResults;
-		query = this.parseQuery(fields, analyzer, stringQuery);
-		docs = this.search(searcher, query);
-		if (docs.length>=config.getScoreThreshold()) {
-			queryResults.setDocs(docs);
-			queryResults.setQuery(query);
-			return queryResults;
-		}
-		flag = false;
-		
-		queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
+//		if (docs.length>=config.getScoreThreshold())
+//			return queryResults;
+//		boolean flag = true;
+//		queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
+//		if (queryResults.getDocs().length>=config.getScoreThreshold())
+//			return queryResults;
+//		query = this.parseQuery(fields, analyzer, stringQuery);
+//		docs = this.search(searcher, query);
+//		if (docs.length>=config.getScoreThreshold()) {
+//			queryResults.setDocs(docs);
+//			queryResults.setQuery(query);
+//			return queryResults;
+//		}
+//		flag = false;
+//		
+//		queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
 		return queryResults;
 	}
 	
 	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
 		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
-		mfqp.setDefaultOperator(QueryParser.AND_OPERATOR);
+		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
 		Query q = mfqp.parse(query);
 		return q;
 	}
