@@ -43,8 +43,8 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 	
 	@Override
-	public IndexSearcher getSearcher(String lang) {
-		return this.searcherMapper.pickSearcher(lang);
+	public IndexSearcher getSearcher(String contentType) {
+		return this.searcherMapper.pickSearcher(contentType);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	
 	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
 		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
-		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
+		mfqp.setDefaultOperator(QueryParser.AND_OPERATOR);
 		Query q = mfqp.parse(query);
 		return q;
 	}

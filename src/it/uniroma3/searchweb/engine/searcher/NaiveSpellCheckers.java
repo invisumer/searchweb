@@ -94,7 +94,7 @@ public class NaiveSpellCheckers implements SpellCheckers{
 				result.remove(0);
 			}
 		}
-		spellcheckerDictionary.close();
+//		spellcheckerDictionary.close();
 		return result;
 	}
 	

@@ -23,7 +23,7 @@ public class Main2 {
 			EngineConfig engineConfig = EngineConfig.getInstance();
 
 			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
-			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath() + "/text-en"));  // TODO fix it
+			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath() + "/html"));  // TODO fix it
 			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
 			config.setRAMBufferSizeMB(engineConfig.getRAMBufferSize());
 			config.setOpenMode(engineConfig.getIndexOpenMode());

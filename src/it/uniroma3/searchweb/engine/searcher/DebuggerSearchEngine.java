@@ -31,12 +31,12 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 		ResultsPager pager = null;
 		
 		try {
-			IndexSearcher searcher = this.getSearcher(lang);
+			IndexSearcher searcher = this.getSearcher(contentType);
 			Analyzer analyzer = this.getAnalyzer(lang);
 			QueryResults queryResults = this.makeQuery(stringQuery, fields, analyzer, searcher, lang);
 			ResultsExtractor e = this.getExtractor(searcher, 
 					analyzer, queryResults.getQuery(), SNIPPET_FIELD);
-			String queryExecuted = queryResults.QueryToString();
+			String queryExecuted = queryResults.QueryToString();   // TODO Dany... sistema
 			if (queryExecuted.equals(stringQuery))
 				queryExecuted = "";
 			pager = new ResultsPager(e, queryResults.getDocs(),queryExecuted);
