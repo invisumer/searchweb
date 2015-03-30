@@ -137,8 +137,8 @@ public class WarcConverter {
 		Matcher matcher = pattern.matcher(url);
 		while (matcher.find()) {
 			domain = matcher.group(1);
-			System.out.println("Sottogruppo 1 : " + matcher.group());
-			System.out.println("Sottogruppo 2 : " + matcher.group(1));
+			System.out.println("Sottogruppo 0 : " + matcher.group());
+			System.out.println("Sottogruppo 1 : " + matcher.group(1));
 		}
 
 //		String domain = url.substring(src, dst);

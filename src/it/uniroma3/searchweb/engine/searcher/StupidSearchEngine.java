@@ -81,6 +81,9 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 	
 	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
+		System.out.println(fields[0]);
+		System.out.println(fields[1]);
+		System.out.println(fields[2]);
 		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
 		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
 		Query q = mfqp.parse(query);
