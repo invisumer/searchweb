@@ -26,7 +26,7 @@ public class EngineConfig {
 	private double RAMBufferSize = 16;
 	private boolean debugMode = false;
 	private int numTopScoreExplanation = 0;
-	private int maxHits = 50;
+	private int maxHits = 300000;
 	private double scoreThreshold = maxHits*0.314;
 	private int correctionPerPhrase = 100;
 	private String logPath = "logger";

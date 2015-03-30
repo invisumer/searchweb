@@ -34,7 +34,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			this.analyzerMapper = new AnalyzerMapper();
 			this.searcherMapper = new SearcherMapper();
 			SpellCheckerMapper mapper = new SpellCheckerMapper();
-			this.spellCheckers = new NaiveSpellCheckers(mapper);
+//			this.spellCheckers = new NaiveSpellCheckers(mapper);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 			e.printStackTrace();

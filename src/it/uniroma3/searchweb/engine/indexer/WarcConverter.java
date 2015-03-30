@@ -119,6 +119,32 @@ public class WarcConverter {
 		record.add(new StringField("dec", decoder, Store.YES));
 		record.add(new StringField("url", url, Store.YES));
 		
+		/*int src = 0;
+		int dst = 0;
+		char[] array = new char[url.length()];
+		url.getChars(0, url.length(), array, 0);
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == '.' && src == 0) {
+				src = i;
+			}
+			if (array[i] == '.' && dst == 0) {
+				dst = i;
+			}
+		}*/
+
+		String domain = "";
+		Pattern pattern = Pattern.compile("^https?://w?w?w?[.]?([^/]+)[.][a-z]{2,3}/([^/]+)/.*$");
+		Matcher matcher = pattern.matcher(url);
+		while (matcher.find()) {
+			domain = matcher.group(1);
+			System.out.println("Sottogruppo 1 : " + matcher.group());
+			System.out.println("Sottogruppo 2 : " + matcher.group(1));
+		}
+
+//		String domain = url.substring(src, dst);
+		TextField domainfield = new TextField("domain", domain, Store.YES);
+		record.add(domainfield);
+		
 		TextField titleField = new TextField("title", title, Store.YES);
 //		titleField.setBoost(config.getTitleBoost());
 		record.add(titleField);

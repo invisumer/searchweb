@@ -92,9 +92,10 @@ public class SearchController {
 	}
 	
 	private ResultsPager getPager(String query) {
-		String[] fields = new String[2];
+		String[] fields = new String[3];
 		fields[0] = "title";
 		fields[1] = "body";
+		fields[2] = "domain";
 		String contentType = "html";
 		String lang = "en";  // TODO prendere da spring la location
 		return this.engine.getResults(query, fields, contentType, lang);
