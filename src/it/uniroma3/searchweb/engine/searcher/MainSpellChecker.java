@@ -12,7 +12,7 @@ public class MainSpellChecker {
 		NaiveSpellCheckers sp = new NaiveSpellCheckers(mapper);
 		sp.initialize("en","html");
 		String query = "applction errop";
-		List<String> result = sp.getBasicSuggestions(query, "en","html");
+		List<String> result = sp.getBasicSuggestions(query, "en");
 		for (String s : result) {
 			System.out.println("Did you mean : "+s);
 			

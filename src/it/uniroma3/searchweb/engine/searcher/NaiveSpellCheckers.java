@@ -14,6 +14,7 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.spell.HighFrequencyDictionary;
 import org.apache.lucene.search.spell.LuceneDictionary;
 import org.apache.lucene.search.spell.LuceneLevenshteinDistance;
 import org.apache.lucene.search.spell.PlainTextDictionary;
@@ -40,13 +41,13 @@ public class NaiveSpellCheckers implements SpellCheckers{
 			dir.mkdir();
 		Directory index = FSDirectory.open(dir);
 		IndexReader reader = DirectoryReader.open(index);
-        spellcheckerIndex.indexDictionary(new LuceneDictionary(reader, "body"), config, true);
+//        spellcheckerIndex.indexDictionary(new HighFrequencyDictionary(reader, "body"), config, true);
 		spellcheckerDictionary.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/"+lang+".txt")),config,true);
 		spellcheckerDictionary.close();
 		spellcheckerIndex.close();
 	}
 	
-	public List<String> getBasicSuggestions(String query, String lang, String path) throws IOException {
+	public List<String> getBasicSuggestions(String query, String lang) throws IOException {
 		EngineConfig engineConfig = EngineConfig.getInstance();
 		SpellChecker spellcheckerDictionary = this.mapper.getSpellChecker(lang);
 		SpellChecker spellcheckerIndex = this.mapper.getSpellChecker("index");
