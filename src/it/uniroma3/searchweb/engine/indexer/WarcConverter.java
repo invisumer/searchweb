@@ -142,8 +142,8 @@ public class WarcConverter {
 		}
 
 //		String domain = url.substring(src, dst);
-		TextField domainfield = new TextField("domain", domain, Store.YES);
-		record.add(domainfield);
+		TextField domainField = new TextField("domain", domain, Store.YES);
+		record.add(domainField);
 		
 		TextField titleField = new TextField("title", title, Store.YES);
 //		titleField.setBoost(config.getTitleBoost());
