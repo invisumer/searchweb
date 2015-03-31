@@ -10,7 +10,7 @@
 	<jsp:attribute name="body">
 		<div class="row">
 			<div class="col-md-12">
-				<c:url var="url" value="/search" />
+				<c:url var="url" value="/search/web" />
 				<form:form action="${url}" method="get" modelAttribute="queryForm">
 				<div class="input-group">
 					<span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></span>
@@ -85,12 +85,12 @@
 			<div class="col-md-12">
 				<ul class="pagination pagination-sm">
 					<li>
-						<a href="<c:url value="/search/page/1"/>">&laquo;&laquo;</a>
+						<a href="<c:url value="/search/web/page/1"/>">&laquo;&laquo;</a>
 					</li>
 					<li>
 						<c:choose>
 							<c:when test="${currentPage-1>0}">
-								<a href="<c:url value="/search/page/"/>${currentPage-1}"><b>&laquo;</b></a>
+								<a href="<c:url value="/search/web/page/"/>${currentPage-1}"><b>&laquo;</b></a>
 							</c:when>
 							<c:otherwise>
 								<a class="disabled">&laquo;</a>
@@ -116,14 +116,14 @@
 							<c:set value="active" var="cssClass"></c:set>
 						</c:if>
 						<li class="${cssClass}">
-							<a  href="<c:url value="/search/page/"/>${i.index}" ><b>${i.index}</b></a>
+							<a  href="<c:url value="/search/web/page/"/>${i.index}" ><b>${i.index}</b></a>
 						</li>
 						<c:set value="" var="cssClass"></c:set>
 					</c:forEach>
 					<li>
 						<c:choose>
 							<c:when test="${currentPage+1<=pages}">
-								<a href="<c:url value="/search/page/"/>${currentPage+1}"><b>&raquo;</b></a>
+								<a href="<c:url value="/search/web/page/"/>${currentPage+1}"><b>&raquo;</b></a>
 							</c:when>
 							<c:otherwise>
 								<a class="disabled">&raquo;</a>
@@ -131,7 +131,7 @@
 						</c:choose>
 					</li>
 					<li>
-						<a href="<c:url value="/search/page/"/>${pages}">&raquo;&raquo;</a>
+						<a href="<c:url value="/search/web/page/"/>${pages}">&raquo;&raquo;</a>
 					</li>
 				</ul>
 			</div>

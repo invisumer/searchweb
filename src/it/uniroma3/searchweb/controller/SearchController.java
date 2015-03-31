@@ -32,7 +32,7 @@ public class SearchController {
 	private SearchEngine engine;
 	private DecimalFormat df = new DecimalFormat("0.000"); 
 	
-	@RequestMapping(value="/search", method=RequestMethod.GET)
+	@RequestMapping(value="/search/web", method=RequestMethod.GET)
 	public String submitRequest(@Valid @ModelAttribute QueryForm query, BindingResult result, 
 			ModelMap model, HttpSession session, HttpServletRequest request) {
 		
@@ -59,10 +59,10 @@ public class SearchController {
 			session.setAttribute("statistics", nResults + " result(s) in " + time + " sec");
 		}
 		
-	    return "redirect:/search/page/1";
+	    return "redirect:/search/web/page/1";
 	}
 	
-	@RequestMapping(value="/search/page/{n}", method=RequestMethod.GET)
+	@RequestMapping(value="/search/web/page/{n}", method=RequestMethod.GET)
 	public String getPage(@PathVariable int n, HttpSession session, ModelMap model) {
 		ResultsPager pager = (ResultsPager) session.getAttribute("pager");
 		QueryForm form = (QueryForm) session.getAttribute("queryForm");
@@ -92,10 +92,11 @@ public class SearchController {
 	}
 	
 	private ResultsPager getPager(String query) {
-		String[] fields = new String[3];
+		String[] fields = new String[4];
 		fields[0] = "title";
 		fields[1] = "body";
 		fields[2] = "domain";
+		fields[3] = "domain2";
 		String contentType = "html";
 		String lang = "en";  // TODO prendere da spring la location
 		return this.engine.getResults(query, fields, contentType, lang);

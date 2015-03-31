@@ -15,7 +15,7 @@
 		<br>
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2 col-xs-12">
-				<c:url var="url" value="/search" />
+				<c:url var="url" value="/search/web" />
 				<form:form action="${url}" method="get" modelAttribute="queryForm">
 				<div class="input-group">
 					<form:input path="query" class="form-control" placeholder="Search for..."/>
