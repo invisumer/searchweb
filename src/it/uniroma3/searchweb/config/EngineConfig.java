@@ -20,8 +20,6 @@ public class EngineConfig {
 	private static String propertyPath = "META-INF/config.properties";
 	private String indexPath = "index";
 	private String datasetPath = "dataset";
-	private String dictionaryPath = "dictionary";
-	private String plainDictionaryPath = "plain";
 	private OpenMode indexOpenMode = OpenMode.APPEND;
 	private double RAMBufferSize = 16;
 	private boolean debugMode = false;
@@ -42,8 +40,6 @@ public class EngineConfig {
 			// mandatory properties
 			this.indexPath = prop.getProperty("index.path");
 			this.datasetPath = prop.getProperty("dataset.path");
-			this.dictionaryPath = prop.getProperty("dictionary.path");
-			this.plainDictionaryPath = prop.getProperty("dictionary.plain.path");
 			
 			// open mode
 			String mode = prop.getProperty("index.openmode");
@@ -104,7 +100,6 @@ public class EngineConfig {
 			
 			logger.info("Index path: " + this.indexPath);
 			logger.info("Dataset path: " + this.datasetPath);
-			logger.info("Dictionary path: " + this.dictionaryPath);
 			logger.info("Index open mode: " + this.indexOpenMode);
 			logger.info("RAM buffer size: " + this.RAMBufferSize);
 			logger.info("Query explanation enabled: " + this.debugMode);
@@ -129,22 +124,6 @@ public class EngineConfig {
 
 	public void setMaxCorrection(int maxCorrection) {
 		this.correctionPerPhrase = maxCorrection;
-	}
-	
-	public String getDictionaryPath() {
-		return this.dictionaryPath;
-	}
-
-	public void setDictionaryPath(String dictionaryPath) {
-		this.dictionaryPath = dictionaryPath;
-	}
-
-	public String getPlainPath() {
-		return plainDictionaryPath;
-	}
-
-	public void setPlainPath(String plainPath) {
-		this.plainDictionaryPath = plainPath;
 	}
 
 	public static String getPropertyPath() {
