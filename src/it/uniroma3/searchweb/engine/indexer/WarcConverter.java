@@ -133,12 +133,12 @@ public class WarcConverter {
 		}*/
 
 		String domain = "";
-		Pattern pattern = Pattern.compile("^https?://w?w?w?[.]?([^/]+)[.][a-z]{2,3}/([^/]+)/.*$");
+		Pattern pattern = Pattern.compile("^(https?|ftp|gopher|telnet|file)://[www[0-9]?]*[.]?([^/]+)[.][a-z]{2,3}/([^/]+)/.*$");
 		Matcher matcher = pattern.matcher(url);
 		while (matcher.find()) {
 			domain = matcher.group(1);
 			System.out.println("Sottogruppo 0 : " + matcher.group());
-			System.out.println("Sottogruppo 1 : " + matcher.group(1));
+			System.out.println("Sottogruppo 1 : " + matcher.group(2));
 		}
 
 //		String domain = url.substring(src, dst);
