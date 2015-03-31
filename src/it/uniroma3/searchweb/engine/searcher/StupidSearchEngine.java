@@ -55,7 +55,6 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	@Override
 	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, IndexSearcher searcher, String lang) throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
-		
 		Query query  = this.parseQuery(fields, analyzer, stringQuery);
 //		Query query  = this.parsePhraseQuery(fields, analyzer, stringQuery); TODO dany ricordati di sistemare
 		ScoreDoc[] docs = this.search(searcher, query);
@@ -81,9 +80,6 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 	
 	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-		System.out.println(fields[0]);
-		System.out.println(fields[1]);
-		System.out.println(fields[2]);
 		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
 		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
 		Query q = mfqp.parse(query);
