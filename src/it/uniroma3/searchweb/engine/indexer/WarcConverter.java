@@ -13,6 +13,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.Field.Store;
+import org.apache.tika.language.LanguageIdentifier;
 import org.apache.tika.parser.html.HtmlEncodingDetector;
 import org.apache.tika.parser.txt.CharsetDetector;
 import org.apache.tika.parser.txt.CharsetMatch;
@@ -129,8 +130,8 @@ public class WarcConverter {
 		 Matcher matcher = pattern.matcher(url);
 		 while (matcher.find()) {
 		 domain = matcher.group(4);
-		 System.out.println("URL: " + matcher.group());
-		 System.out.println("dominio: " + matcher.group(4));
+//		 System.out.println("URL: " + matcher.group());
+//		 System.out.println("dominio: " + matcher.group(4));
 		 }
 
 		TextField domainField = new TextField("domain", domain, Store.YES);
@@ -146,6 +147,9 @@ public class WarcConverter {
 			}
 			System.out.println("dominio: " + domain2);
 		}
+		
+//		System.out.println("body: " + htmlDoc.body().text());
+		System.out.println("language: " + this.guessLanguage(htmlDoc.body().text()));
 		
 		TextField domainField2 = new TextField("domain2", domain2, Store.YES);
 		record.add(domainField2);
@@ -248,6 +252,18 @@ public class WarcConverter {
 			enc = match.getName();
 
 		return enc;
+	}
+	
+	
+	private String guessLanguage(String text) {
+		String language = null;
+		
+		LanguageIdentifier identifier = new LanguageIdentifier(text);
+		if (identifier.isReasonablyCertain()) {
+			language = identifier.getLanguage();
+		}
+
+		return language;
 	}
 
 	private String fixMalformedHtml(byte[] inStream, String enc)
