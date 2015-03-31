@@ -145,11 +145,11 @@ public class WarcConverter {
 			if (string != null) {
 				domain2 = string.substring(0, string.length() - 1);
 			}
-			System.out.println("dominio: " + domain2);
+//			System.out.println("dominio: " + domain2);
 		}
 		
 //		System.out.println("body: " + htmlDoc.body().text());
-		System.out.println("language: " + this.guessLanguage(htmlDoc.body().text()));
+//		System.out.println("language: " + this.guessLanguage(htmlDoc.body().text()));
 		
 		TextField domainField2 = new TextField("domain2", domain2, Store.YES);
 		record.add(domainField2);
