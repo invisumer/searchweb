@@ -57,9 +57,11 @@ public class SearchController {
 			String time = df.format((stop-start+0.0)/1000);
 			int nResults = pager.getDocs().length;
 			session.setAttribute("statistics", nResults + " result(s) in " + time + " sec");
+			
+			return "redirect:/search/web/page/1";
 		}
 		
-	    return "redirect:/search/web/page/1";
+	    return "indexWeb";
 	}
 	
 	@RequestMapping(value="/search/web/page/{n}", method=RequestMethod.GET)
