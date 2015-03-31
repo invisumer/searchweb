@@ -34,7 +34,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			this.analyzerMapper = new AnalyzerMapper();
 			this.searcherMapper = new SearcherMapper();
 			SpellCheckerMapper mapper = new SpellCheckerMapper();
-//			this.spellCheckers = new NaiveSpellCheckers(mapper);
+			this.spellCheckers = new NaiveSpellCheckers(mapper);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 			e.printStackTrace();
@@ -55,27 +55,28 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	@Override
 	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, IndexSearcher searcher, String lang) throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
-		Query query  = this.parseQuery(fields, analyzer, stringQuery);
-//		Query query  = this.parsePhraseQuery(fields, analyzer, stringQuery); TODO dany ricordati di sistemare
+		
+//		Query query  = this.parseQuery(fields, analyzer, stringQuery);
+		Query query  = this.parsePhraseQuery(fields, analyzer, stringQuery);// TODO dany ricordati di sistemare
 		ScoreDoc[] docs = this.search(searcher, query);
 		QueryResults queryResults = new QueryResults(query, docs, fields,lang);
 
-//		if (docs.length>=config.getScoreThreshold())
-//			return queryResults;
-//		boolean flag = true;
-//		queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
-//		if (queryResults.getDocs().length>=config.getScoreThreshold())
-//			return queryResults;
-//		query = this.parseQuery(fields, analyzer, stringQuery);
-//		docs = this.search(searcher, query);
-//		if (docs.length>=config.getScoreThreshold()) {
-//			queryResults.setDocs(docs);
-//			queryResults.setQuery(query);
-//			return queryResults;
-//		}
-//		flag = false;
-//		
-//		queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
+		if (docs.length>=config.getScoreThreshold())
+			return queryResults;
+		boolean flag = true;
+		queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
+		if (queryResults.getDocs().length>=config.getScoreThreshold())
+			return queryResults;
+		query = this.parseQuery(fields, analyzer, stringQuery);
+		docs = this.search(searcher, query);
+		if (docs.length>=config.getScoreThreshold()) {
+			queryResults.setDocs(docs);
+			queryResults.setQuery(query);
+			return queryResults;
+		}
+		flag = false;
+		
+		queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
 		return queryResults;
 	}
 	
@@ -87,14 +88,18 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 
 	public Query parsePhraseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-		BooleanQuery bq = new BooleanQuery();
+//		BooleanQuery bq = new BooleanQuery();
+//		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
+//		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
+//		for (String field : fields) {
+//			Query q = mfqp.createPhraseQuery(field, query);
+//			bq.add(q, Occur.SHOULD);
+//		}
+//		return bq;
 		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
-		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
-		for (String field : fields) {
-			Query q = mfqp.createPhraseQuery(field, query);
-			bq.add(q, Occur.SHOULD);
-		}
-		return bq;
+		mfqp.setDefaultOperator(QueryParser.AND_OPERATOR);
+		Query q = mfqp.parse(query);
+		return q;
 	}
 
 	public ScoreDoc[] search(IndexSearcher searcher, Query query) throws IOException {
@@ -117,11 +122,14 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			else
 				tmp = this.parseQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
 			newHits = this.search(searcher, tmp);
+			System.out.println(tmp.toString()+"+++++++" +newHits.length);
 			if (queryResults.getDocs().length<newHits.length) {
 				queryResults.setDocs(newHits);
 				queryResults.setQuery(tmp);
+//				System.out.println(tmp.toString());
 			}
 		}
+		
 		return queryResults;
 	}
 
