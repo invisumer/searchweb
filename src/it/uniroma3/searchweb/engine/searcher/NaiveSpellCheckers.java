@@ -17,7 +17,6 @@ import org.apache.lucene.search.spell.LuceneLevenshteinDistance;
 import org.apache.lucene.search.spell.SuggestMode;
 import org.apache.lucene.search.spell.SuggestWord;
 import org.apache.lucene.search.spell.SuggestWordFrequencyComparator;
-import org.apache.lucene.search.spell.SuggestWordScoreComparator;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
