@@ -26,8 +26,8 @@ public class EngineConfig {
 	private double RAMBufferSize = 16;
 	private boolean debugMode = false;
 	private int numTopScoreExplanation = 0;
-	private int maxHits = 300000;
-	private double scoreThreshold = maxHits*0.314;
+	private int maxHits = 10000;
+	private double scoreThreshold = 150;
 	private int correctionPerPhrase = 100;
 	private String logPath = "logger";
 	private float titleBoost = 2f;
@@ -95,7 +95,7 @@ public class EngineConfig {
 			//score threshold
 			String scorethreshold = prop.getProperty("scorethreshold");
 			if (scorethreshold!=null)
-				this.scoreThreshold = maxHits*Double.parseDouble(scorethreshold);
+				this.scoreThreshold = Integer.parseInt(scorethreshold);
 			
 			//correction per word
 			String correctionperword = prop.getProperty("correctionperword");

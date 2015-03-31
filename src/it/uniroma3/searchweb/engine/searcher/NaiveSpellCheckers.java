@@ -16,7 +16,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.spell.HighFrequencyDictionary;
 import org.apache.lucene.search.spell.LuceneLevenshteinDistance;
-import org.apache.lucene.search.spell.PlainTextDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -38,64 +37,63 @@ public class NaiveSpellCheckers implements SpellCheckers{
 			dir.mkdir();
 		Directory index = FSDirectory.open(dir);
 		IndexReader reader = DirectoryReader.open(index);
-		SpellChecker spellcheckerIndex = this.mapper.getSpellChecker("index");
-        spellcheckerIndex.indexDictionary(new HighFrequencyDictionary(reader, "body",0.001f), config, true);
-        spellcheckerIndex.close();
-//        SpellChecker spellcheckerEnglish = this.mapper.getSpellChecker("en");
-//		spellcheckerEnglish.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/en.txt")),config,true);
-//		spellcheckerEnglish.close();
-//		SpellChecker spellcheckerItalian = this.mapper.getSpellChecker("it");
-//		spellcheckerItalian.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/it.txt")),config,true);
-//		spellcheckerItalian.close();
-//		SpellChecker spellcheckerGerman = this.mapper.getSpellChecker("de");
-//		spellcheckerGerman.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/de.txt")),config,true);
-//		spellcheckerGerman.close();
-//		SpellChecker spellcheckerFrench = this.mapper.getSpellChecker("fr");
-//		spellcheckerFrench.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/fr.txt")),config,true);
-//		spellcheckerFrench.close();
-//		SpellChecker spellcheckerSpanish = this.mapper.getSpellChecker("es");
-//		spellcheckerSpanish.indexDictionary(new PlainTextDictionary(new File(engineConfig.getPlainPath()+"/es.txt")),config,true);
-//		spellcheckerSpanish.close();
+		SpellChecker spellchecker = this.mapper.getSpellChecker();
+        spellchecker.indexDictionary(new HighFrequencyDictionary(reader, "body",0.0015f), config, true);
+        spellchecker.close();
 	}
 	
 	public List<String> getBasicSuggestions(String query, String lang) throws IOException {
 		EngineConfig engineConfig = EngineConfig.getInstance();
-		SpellChecker spellcheckerDictionary = this.mapper.getSpellChecker(lang);
-		SpellChecker spellcheckerIndex = this.mapper.getSpellChecker("index");
+		SpellChecker spellchecker = this.mapper.getSpellChecker();
 		StringTokenizer tokenizer = new StringTokenizer(query);
 		List<String> result = new ArrayList<String>();
 		result.add("");
 		int resultSize;
 		LuceneLevenshteinDistance ldistance = new LuceneLevenshteinDistance();
-		spellcheckerDictionary.setStringDistance(ldistance);
-		spellcheckerIndex.setStringDistance(ldistance);
-		float similarity = 1.0f;
-		int numSug = (engineConfig.getMaxCorrection()/10)/tokenizer.countTokens();
-		System.out.println(numSug);
+		spellchecker.setStringDistance(ldistance);
+		int numSug = (int) ((engineConfig.getMaxCorrection()/Math.sqrt(engineConfig.getMaxCorrection()))/tokenizer.countTokens());
+		System.out.println("NaiveSpellChecker- Numero di suggerimenti per parola : "+(numSug+1));
+		int tokens = tokenizer.countTokens();
 		while (tokenizer.hasMoreTokens()) {
 			String currentToken = tokenizer.nextToken();
-			if (currentToken.length()>1) {
-				similarity = (float) (1-1.0/currentToken.length());
-				if (similarity>0.85)
-					similarity = 0.7f;
-			}
-			String[] suggestionsDictionary = spellcheckerDictionary.suggestSimilar(currentToken, numSug, similarity);
-			String[] suggestionsIndex = spellcheckerIndex.suggestSimilar(currentToken, numSug, similarity);
-//			List<String> suggestions = new ArrayList<String>();
-//			for (String s : suggestionsDictionary) {
-//				if (suggestionsIndex.)
-//			}
-			resultSize = result.size();
-			for (int i=0; i<resultSize;i++) {
-				String tmp = result.get(0);
-				for (String s : suggestionsIndex) {
-					result.add(tmp.concat(s+" "));
+			if (tokens<4)
+				result = generateSuggestions(result, currentToken, spellchecker, numSug);
+			else {
+				if (spellchecker.exist(currentToken)) {
+					resultSize = result.size();
+					for (int i=0; i<resultSize;i++) {
+						String tmp = result.get(0);
+						result.add(tmp.concat(currentToken+" "));
+						result.remove(0);
+					}
+				} else {
+					result = generateSuggestions(result, currentToken, spellchecker, numSug);
 				}
-				result.add(tmp.concat(currentToken+" "));
-				result.remove(0);
 			}
 		}
+		int last = result.size();
+		result.remove(last-1);
 		return result;
 	}
 	
+	private List<String> generateSuggestions(List<String> result, String currentToken, SpellChecker spellchecker, int numSug) throws IOException {
+		float similarity = 1.0f;
+		int resultSize;
+		if (currentToken.length()>1) {
+			similarity = (float) (1-1.0/currentToken.length());
+			if (similarity>0.85)
+				similarity = 0.7f;
+		}
+		String[] suggestionsIndex = spellchecker.suggestSimilar(currentToken, numSug, similarity);
+		resultSize = result.size();
+		for (int i=0; i<resultSize;i++) {
+			String tmp = result.get(0);
+			for (String s : suggestionsIndex) {
+				result.add(tmp.concat(s+" "));
+			}
+			result.add(tmp.concat(currentToken+" "));
+			result.remove(0);
+		}
+		return result;
+	}
 }
