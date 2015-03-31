@@ -14,7 +14,7 @@ public class HomeController {
 	@RequestMapping(value = "/", method=RequestMethod.GET)
 	public String search(@ModelAttribute QueryForm query, Model model) {
 		model.addAttribute("queryForm", query);
-		return "index";
+		return "indexWeb";
 	}
 
 }

@@ -39,7 +39,7 @@ public class SearchController {
 		if (result.hasErrors()) {
 			model.addAttribute("error", INVALID_QUERY);
 			model.addAttribute("queryForm", query);
-			return "search";
+			return "searchWeb";
 		}
 		
 		// some logic
@@ -70,7 +70,7 @@ public class SearchController {
 		if (pager == null || form == null) {
 			model.addAttribute("error", INVALID_QUERY);
 			model.addAttribute("queryForm", new QueryForm());
-			return "search";
+			return "searchWeb";
 		}
 		
 		model.addAttribute("queryForm", form);
@@ -81,14 +81,14 @@ public class SearchController {
 //			session.removeAttribute("pager");
 //			session.removeAttribute("statistics");
 			model.addAttribute("error", INVALID_PAGE);
-			return "search";
+			return "searchWeb";
 		}
 		
 		model.addAttribute("results", pager.getPage(n));
 		model.addAttribute("pages", pager.getPages());
 		model.addAttribute("currentPage", n);
 			
-		return "search";
+		return "searchWeb";
 	}
 	
 	private ResultsPager getPager(String query) {

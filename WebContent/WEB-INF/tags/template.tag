@@ -69,6 +69,11 @@
 				<a href="<c:url value="/" />" class="navbar-brand">SearchWeb</a>
 			</div>
 			<nav class="collapse navbar-collapse bs-navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="<c:url value="/" />">Web</a></li>
+					<li><a href="#">Image</a></li>
+					<li><a href="#">Music</a></li>
+				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<li class="active"><a href="#">Help</a></li>
 				</ul>
