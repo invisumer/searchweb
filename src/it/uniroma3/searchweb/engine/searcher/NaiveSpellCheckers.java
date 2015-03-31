@@ -119,7 +119,6 @@ public class NaiveSpellCheckers implements SpellCheckers{
 		result.add("");
 		LuceneLevenshteinDistance ldistance = new LuceneLevenshteinDistance();
 		spellchecker.setDistance(ldistance);
-		spellchecker.setMaxEdits(2);
 		System.out.println(spellchecker.getThresholdFrequency());
 		spellchecker.setLowerCaseTerms(true);
 //		int numSug = (int) ((engineConfig.getMaxCorrection()/Math.sqrt(engineConfig.getMaxCorrection()))/tokenizer.countTokens());
@@ -152,6 +151,8 @@ public class NaiveSpellCheckers implements SpellCheckers{
 					break;
 				j++;
 			}
+			if (suggestionsIndex.length == 0)
+				result.add(tmp.concat(currentToken+" "));
 			result.remove(0);
 		}
 		return result;
