@@ -111,7 +111,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			throws IOException, ParseException {
 		ScoreDoc[] newHits;
 		Query tmp;
-		List<String> corrections = spellCheckers.getSuggestions(query); //TODO change this value
+		List<String> corrections = spellCheckers.getSuggestions(query);
 		for (int i=0; i<corrections.size();i++) {
 			if (flag)
 				tmp = this.parsePhraseQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));

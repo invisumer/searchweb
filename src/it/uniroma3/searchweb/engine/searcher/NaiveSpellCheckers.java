@@ -16,6 +16,7 @@ import org.apache.lucene.search.spell.DirectSpellChecker;
 import org.apache.lucene.search.spell.LuceneLevenshteinDistance;
 import org.apache.lucene.search.spell.SuggestMode;
 import org.apache.lucene.search.spell.SuggestWord;
+import org.apache.lucene.search.spell.SuggestWordFrequencyComparator;
 import org.apache.lucene.search.spell.SuggestWordScoreComparator;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -35,7 +36,7 @@ public class NaiveSpellCheckers implements SpellCheckers{
 		Directory index = FSDirectory.open(dir);
 		IndexReader reader = DirectoryReader.open(index);
 		DirectSpellChecker spellchecker = new DirectSpellChecker();
-		spellchecker.setComparator(new SuggestWordScoreComparator());
+		spellchecker.setComparator(new SuggestWordFrequencyComparator());
 		StringTokenizer tokenizer = new StringTokenizer(query);
 		List<String> result = new ArrayList<String>();
 		result.add("");
@@ -54,7 +55,7 @@ public class NaiveSpellCheckers implements SpellCheckers{
 		float similarity = 1.0f;
 		int resultSize;
 		if (currentToken.length()>1) {
-			similarity = (float) (1-(2.0/currentToken.length()));
+			similarity = (float) (1-(1.5/currentToken.length()));
 			if (similarity>0.85)
 				similarity = 0.7f;
 		}

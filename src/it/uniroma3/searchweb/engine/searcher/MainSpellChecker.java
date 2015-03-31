@@ -10,7 +10,7 @@ public class MainSpellChecker {
 	public static void main(String[] args) throws IOException {
 		SpellCheckerMapper mapper = new SpellCheckerMapper();
 		NaiveSpellCheckers sp = new NaiveSpellCheckers(mapper);
-		String query = "score mondiak";
+		String query = "enterprime applicatn";
 		List<String> result = sp.getSuggestions(query);
 		for (String s : result) {
 			System.out.println(s);
