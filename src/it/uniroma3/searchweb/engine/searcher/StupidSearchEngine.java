@@ -14,8 +14,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -55,12 +53,9 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	@Override
 	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, IndexSearcher searcher, String lang) throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
-		
-//		Query query  = this.parseQuery(fields, analyzer, stringQuery);
-		Query query  = this.parsePhraseQuery(fields, analyzer, stringQuery);// TODO dany ricordati di sistemare
+		Query query  = this.parsePhraseQuery(fields, analyzer, stringQuery);
 		ScoreDoc[] docs = this.search(searcher, query);
 		QueryResults queryResults = new QueryResults(query, docs, fields,lang);
-
 		if (docs.length>=config.getScoreThreshold())
 			return queryResults;
 		boolean flag = true;
@@ -90,16 +85,8 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 
 	public Query parsePhraseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-//		BooleanQuery bq = new BooleanQuery();
-//		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
-//		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
-//		for (String field : fields) {
-//			Query q = mfqp.createPhraseQuery(field, query);
-//			bq.add(q, Occur.SHOULD);
-//		}
-//		return bq;
 		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
-		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
+		mfqp.setDefaultOperator(QueryParser.AND_OPERATOR);
 		Query q = mfqp.parse(query);
 		return q;
 	}
@@ -117,18 +104,16 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			throws IOException, ParseException {
 		ScoreDoc[] newHits;
 		Query tmp;
-		List<String> corrections = spellCheckers.getBasicSuggestions(query, queryResults.getLang()); //TODO change this value
+		List<String> corrections = spellCheckers.getSuggestions(query); //TODO change this value
 		for (int i=0; i<corrections.size();i++) {
 			if (flag)
 				tmp = this.parsePhraseQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
 			else
 				tmp = this.parseQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
 			newHits = this.search(searcher, tmp);
-			System.out.println(tmp.toString()+"+++++++" +newHits.length);
 			if (queryResults.getDocs().length<newHits.length) {
 				queryResults.setDocs(newHits);
 				queryResults.setQuery(tmp);
-//				System.out.println(tmp.toString());
 			}
 		}
 		
