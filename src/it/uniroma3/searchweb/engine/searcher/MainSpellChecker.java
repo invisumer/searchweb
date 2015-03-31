@@ -12,12 +12,12 @@ public class MainSpellChecker {
 	public static void main(String[] args) throws IOException {
 		SpellCheckerMapper mapper = new SpellCheckerMapper();
 		NaiveSpellCheckers sp = new NaiveSpellCheckers(mapper);
-		sp.initialize("html");
-//		String query = "cristano ronaldv real madrif";
-//		List<String> result = sp.getBasicSuggestions(query, "en");
-//		for (String s : result) {
-//			System.out.println(s);
-//		}
-//		System.out.println(result.size());
+//		sp.initialize("html");
+		String query = "cristano ronaldv real madrif";
+		List<String> result = sp.getBasicSuggestions(query, "en");
+		for (String s : result) {
+			System.out.println(s);
+		}
+		System.out.println(result.size());
 	}
 }

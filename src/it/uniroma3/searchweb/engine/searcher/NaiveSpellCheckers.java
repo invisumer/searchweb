@@ -91,7 +91,8 @@ public class NaiveSpellCheckers implements SpellCheckers{
 			for (String s : suggestionsIndex) {
 				result.add(tmp.concat(s+" "));
 			}
-			result.add(tmp.concat(currentToken+" "));
+			if (spellchecker.exist(currentToken))
+				result.add(tmp.concat(currentToken+" "));
 			result.remove(0);
 		}
 		return result;
