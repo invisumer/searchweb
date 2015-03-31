@@ -55,25 +55,32 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		EngineConfig config = EngineConfig.getInstance();
 		Query query  = this.parsePhraseQuery(fields, analyzer, stringQuery);
 		ScoreDoc[] docs = this.search(searcher, query);
-		QueryResults queryResults = new QueryResults(query, docs, fields,lang);
-		if (docs.length>=config.getScoreThreshold())
+		QueryResults queryResults = new QueryResults(query, docs, fields,lang, stringQuery);
+		if (docs.length>=config.getScoreThreshold()) {
+			queryResults.setQueryExecuted(stringQuery);
 			return queryResults;
+		}
 		boolean flag = true;
 		if (!stringQuery.contains("\"")) {
 			queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
-			if (queryResults.getDocs().length>=config.getScoreThreshold())
+			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
+				queryResults.setHasSuggestion(true);
 				return queryResults;
+			}
 		}
 		query = this.parseQuery(fields, analyzer, stringQuery);
 		docs = this.search(searcher, query);
 		if (docs.length>=config.getScoreThreshold()) {
 			queryResults.setDocs(docs);
 			queryResults.setQuery(query);
+			queryResults.setQueryExecuted(stringQuery);
 			return queryResults;
 		}
 		flag = false;
-		if (!stringQuery.contains("\""))
+		if (!stringQuery.contains("\"")) {
+			queryResults.setHasSuggestion(true);
 			queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
+		}
 		return queryResults;
 	}
 	
@@ -114,6 +121,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			if (queryResults.getDocs().length<newHits.length) {
 				queryResults.setDocs(newHits);
 				queryResults.setQuery(tmp);
+				queryResults.setQueryExecuted(corrections.get(i));
 			}
 		}
 		
