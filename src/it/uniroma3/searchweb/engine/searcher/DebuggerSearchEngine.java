@@ -36,10 +36,7 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 			QueryResults queryResults = this.makeQuery(stringQuery, fields, analyzer, searcher, lang);
 			ResultsExtractor e = this.getExtractor(searcher, 
 					analyzer, queryResults.getQuery(), SNIPPET_FIELD);
-			String queryExecuted = queryResults.QueryToString();   // TODO Dany... sistema
-			if (queryExecuted.equals(stringQuery))
-				queryExecuted = "";
-			pager = new ResultsPager(e, queryResults.getDocs(),queryExecuted);
+			pager = new ResultsPager(e, queryResults.getDocs(),queryResults.getStartQuery(),queryResults.getQueryExecuted(),queryResults.isSuggestionOccurred());
 			if (debugMode) {
 				logger.info("Selected searcher: " + searcher.getIndexReader().numDocs());
 				logger.info("Selected analyzer: " + analyzer.getClass().getName());

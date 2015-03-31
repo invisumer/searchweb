@@ -64,7 +64,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		if (!stringQuery.contains("\"")) {
 			queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
 			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
-				queryResults.setHasSuggestion(true);
+				queryResults.setSuggestionOccurred(true);
 				return queryResults;
 			}
 		}
@@ -78,7 +78,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		}
 		flag = false;
 		if (!stringQuery.contains("\"")) {
-			queryResults.setHasSuggestion(true);
+			queryResults.setSuggestionOccurred(true);
 			queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
 		}
 		return queryResults;

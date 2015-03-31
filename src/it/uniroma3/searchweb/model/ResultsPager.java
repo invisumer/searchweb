@@ -3,18 +3,23 @@ package it.uniroma3.searchweb.model;
 import java.util.List;
 
 import it.uniroma3.searchweb.engine.searcher.ResultsExtractor;
+
 import org.apache.lucene.search.ScoreDoc;
 
 public class ResultsPager {
 	private static int RESULT_PER_PAGE = 10;
 	private ResultsExtractor extractor;
 	private ScoreDoc[] docs;
-	private String suggestion; // TODO if there were no suggestion, it is ""
+	private String startQuery;
+	private String queryExecuted;
+	private boolean suggestionOccurred;
 	
-	public ResultsPager(ResultsExtractor extractor, ScoreDoc[] docs, String suggestion) {
+	public ResultsPager(ResultsExtractor extractor, ScoreDoc[] docs, String startQuery, String queryExecuted, boolean suggestionOccurred) {
 		this.extractor = extractor;
 		this.docs = docs;
-		this.suggestion = suggestion;
+		this.setStartQuery(startQuery);
+		this.setQueryExecuted(queryExecuted);
+		this.setSuggestionOccurred(suggestionOccurred);
 	}
 	
 	public List<Result> getPage(int i) {
@@ -55,6 +60,30 @@ public class ResultsPager {
 	
 	public void setDocs(ScoreDoc[] docs) {
 		this.docs = docs;
+	}
+
+	public String getQueryExecuted() {
+		return queryExecuted;
+	}
+
+	public void setQueryExecuted(String queryExecuted) {
+		this.queryExecuted = queryExecuted;
+	}
+
+	public String getStartQuery() {
+		return startQuery;
+	}
+
+	public void setStartQuery(String startQuery) {
+		this.startQuery = startQuery;
+	}
+
+	public boolean isSuggestionOccurred() {
+		return suggestionOccurred;
+	}
+
+	public void setSuggestionOccurred(boolean suggestionOccurred) {
+		this.suggestionOccurred = suggestionOccurred;
 	}
 
 }

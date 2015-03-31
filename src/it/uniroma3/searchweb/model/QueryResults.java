@@ -14,7 +14,7 @@ public class QueryResults {
 	private String lang;
 	private String startQuery;
 	private String queryExecuted;
-	private boolean hasSuggestion;
+	private boolean suggestionOccurred;
 	
 	public QueryResults(Query query, ScoreDoc[] docs, String[] fields, String lang, String startQuery) {
 		this.query = query;
@@ -22,7 +22,7 @@ public class QueryResults {
 		this.fields = fields;
 		this.lang = lang;
 		this.startQuery = startQuery;
-		this.hasSuggestion = false;
+		this.suggestionOccurred = false;
 	}
 
 	public String getLang() {
@@ -86,11 +86,11 @@ public class QueryResults {
 		this.queryExecuted = queryExecuted;
 	}
 
-	public boolean isHasSuggestion() {
-		return hasSuggestion;
+	public boolean isSuggestionOccurred() {
+		return suggestionOccurred;
 	}
 
-	public void setHasSuggestion(boolean hasSuggestion) {
-		this.hasSuggestion = hasSuggestion;
+	public void setSuggestionOccurred(boolean hasSuggestion) {
+		this.suggestionOccurred = hasSuggestion;
 	}
 }
