@@ -20,13 +20,17 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class Mp3Builder implements DocumentBuilder {
 	private static final Logger logger = Logger.getLogger(Mp3Builder.class.getName());
-	private StringField urlField = new StringField("url", "", Store.YES);
-	private TextField titleField = new TextField("title", "", Store.YES);
-	private TextField artistField = new TextField("artist", "", Store.YES);
-	private TextField genreField = new TextField("genre", "", Store.YES);
+	private StringField urlField;
+	private StringField decField;
+	private StringField encField;
+	private TextField titleField;
+	private TextField artistField;
+	private TextField genreField;
 	
 	public Mp3Builder() {
 		this.urlField = new StringField("url", "", Store.YES);
+		this.decField = new StringField("dec", "", Store.YES);
+		this.encField = new StringField("enc", "", Store.YES);
 		this.titleField = new TextField("title", "", Store.YES);
 		this.artistField = new TextField("artist", "", Store.YES);
 		this.genreField = new TextField("genre", "", Store.YES);
@@ -52,11 +56,15 @@ public class Mp3Builder implements DocumentBuilder {
 			doc = new Document();
 			
 			this.urlField.setStringValue(url);
+			this.decField.setStringValue("streamer");
+			this.encField.setStringValue("byte");
 			this.titleField.setStringValue(title == null ? "unknown" : title);
 			this.artistField.setStringValue(artist == null ? "unknown" : artist);
 			this.genreField.setStringValue(genre == null ? "unknown" : genre);
 			
 			doc.add(this.urlField);
+			doc.add(this.decField);
+			doc.add(this.encField);
 			doc.add(this.titleField);
 			doc.add(this.artistField);
 			doc.add(this.genreField);

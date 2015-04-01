@@ -6,17 +6,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.Field.Store;
 
 import edu.cmu.lemurproject.WarcHTMLResponseRecord;
 import edu.cmu.lemurproject.WarcRecord;
 
 public class WarcConverter {
 	private static final Logger logger = Logger.getLogger(WarcConverter.class.getName());
+	private StringField contextField;
+	private StringField typeField;
 	private HtmlBuilder htmlBuilder;
 	private ImgBuilder imgBuilder;
 	private Mp3Builder mp3Builder;
 
 	public WarcConverter(boolean clean) {
+		this.contextField = new StringField("context", "", Store.YES);
+		this.typeField = new StringField("type", "", Store.YES);
 		this.htmlBuilder = new HtmlBuilder(clean);
 		this.imgBuilder = new ImgBuilder();
 		this.mp3Builder = new Mp3Builder();
@@ -48,7 +54,14 @@ public class WarcConverter {
 			doc = this.imgBuilder.build(url, httpResponse, htmlStream);
 		if (contentType[0].equals("audio"))
 			doc = this.mp3Builder.build(url, httpResponse, htmlStream);
-			
+		
+		if (doc != null) {
+			this.contextField.setStringValue(contentType[0]);
+			this.typeField.setStringValue(contentType[1]);
+			doc.add(this.contextField);
+			doc.add(this.typeField);
+		}
+		
 		return doc;
 	}
 
