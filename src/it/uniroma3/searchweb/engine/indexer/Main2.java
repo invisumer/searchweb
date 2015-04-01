@@ -14,14 +14,6 @@ public class Main2 {
 
 		try {
 			EngineConfig engineConfig = EngineConfig.getInstance();
-//
-//			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
-//			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath() + "/html"));  // TODO fix it
-//			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
-//			config.setRAMBufferSizeMB(engineConfig.getRAMBufferSize());
-//			config.setOpenMode(engineConfig.getIndexOpenMode());
-//			IndexWriter writer = new IndexWriter(index, config);
-			
 			IndexerMapper mapper = new IndexerMapper();
 			IndexWriter writer = null;
 			
@@ -41,7 +33,6 @@ public class Main2 {
 				
 				String context = doc.get("context");
 				String type = doc.get("type");
-				
 				String writerType = null;
 				if (context.equals("text") && type.equals("html"))
 					writerType = "html";
@@ -53,7 +44,9 @@ public class Main2 {
 					writerType = "video";
 				
 				writer = mapper.pickWriter(writerType);
-				writer.addDocument(doc);
+				if (writer == null)
+					continue;
+				writer.addDocument(doc);       // TODO analyzer depending on language
 				System.out.println(counter);
 				counter++;
 				

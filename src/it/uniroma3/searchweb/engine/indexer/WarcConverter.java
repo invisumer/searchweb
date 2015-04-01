@@ -45,8 +45,6 @@ public class WarcConverter {
 		if (contentType == null)
 			return null;
 		
-		System.out.println(contentType[0] + " " + contentType[1]); // TODO Rimuovere
-		
 		Document doc = null;
 		if (contentType[0].equals("text") && contentType[1].equals("html"))
 			doc = this.htmlBuilder.build(url, httpResponse, htmlStream);
@@ -54,6 +52,7 @@ public class WarcConverter {
 			doc = this.imgBuilder.build(url, httpResponse, htmlStream);
 		if (contentType[0].equals("audio"))
 			doc = this.mp3Builder.build(url, httpResponse, htmlStream);
+		// TODO and video?
 		
 		if (doc != null) {
 			this.contextField.setStringValue(contentType[0]);
