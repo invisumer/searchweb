@@ -11,26 +11,16 @@ public class QueryResults {
 	private Query query;
 	private ScoreDoc[] docs;
 	private String[] fields;
-	private String lang;
 	private String startQuery;
 	private String queryExecuted;
 	private boolean suggestionOccurred;
 	
-	public QueryResults(Query query, ScoreDoc[] docs, String[] fields, String lang, String startQuery) {
+	public QueryResults(Query query, ScoreDoc[] docs, String[] fields, String startQuery) {
 		this.query = query;
 		this.docs = docs;
 		this.fields = fields;
-		this.lang = lang;
 		this.startQuery = startQuery;
 		this.suggestionOccurred = false;
-	}
-
-	public String getLang() {
-		return lang;
-	}
-
-	public void setLang(String lang) {
-		this.lang = lang;
 	}
 
 	public Query getQuery() {

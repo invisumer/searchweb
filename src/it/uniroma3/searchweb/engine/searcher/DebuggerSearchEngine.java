@@ -28,13 +28,13 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	}
 
 	@Override
-	public ResultsPager getResults(String stringQuery, String[] fields, String contentType, String lang, boolean spellCheckerEnabled) {
+	public ResultsPager getResults(String stringQuery, String[] fields, String contentType, boolean spellCheckerEnabled) {
 		ResultsPager pager = null;
 		
 		try {
 			SearcherManager manager = this.getSearcherManager(contentType);
-			Analyzer analyzer = this.getAnalyzer(lang);
-			QueryResults queryResults = this.makeQuery(stringQuery, fields, analyzer, manager, lang, spellCheckerEnabled);
+			Analyzer analyzer = this.getAnalyzer(fields[4]);
+			QueryResults queryResults = this.makeQuery(stringQuery, fields, analyzer, manager, spellCheckerEnabled);
 			ResultsExtractor e = this.getExtractor(manager, 
 					analyzer, queryResults.getQuery(), SNIPPET_FIELD);
 			pager = new ResultsPager(e, queryResults.getDocs(),queryResults.getStartQuery(),queryResults.getQueryExecuted(),queryResults.isSuggestionOccurred());
@@ -62,7 +62,7 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	public abstract Analyzer getAnalyzer(String lang);
 	
 	public abstract QueryResults makeQuery(String query, String[] fields, Analyzer analyzer, SearcherManager manager, 
-			String lang, boolean spellCheckerEnabled) throws IOException, ParseException;
+			boolean spellCheckerEnabled) throws IOException, ParseException;
 	
 	public abstract ResultsExtractor getExtractor(SearcherManager manager, Analyzer a, Query q, String snippetField);
 	

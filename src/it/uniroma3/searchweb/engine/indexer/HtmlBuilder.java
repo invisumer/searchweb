@@ -200,7 +200,7 @@ public class HtmlBuilder implements DocumentBuilder {
 //		System.out.println(lang);
 
 		 TextField langField = new TextField("lang", lang, Store.YES);
-//		 langField.setBoost(10f);
+		 langField.setBoost(100f);
 		 record.add(langField);
 
 		return record;

@@ -111,15 +111,16 @@ public class WebSearchController {
 	}
 	
 	private ResultsPager getPager(String query, boolean enableSpellChecker) {
-		String[] fields = new String[4];
+		String[] fields = new String[5];
 		fields[0] = "title";
 		fields[1] = "body";
 		fields[2] = "domain";
 		fields[3] = "domain2";
 		String contentType = "html";
-		String lang = "en";  // TODO prendere da spring la location
+		String lang = "it";  // TODO prendere da spring la location
+		fields[4] = lang;
 		query = handler.analyzeQuery(query);
-		return this.engine.getResults(query, fields, contentType, lang, enableSpellChecker);
+		return this.engine.getResults(query, fields, contentType, enableSpellChecker);
 	}
 
 }

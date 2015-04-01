@@ -53,12 +53,12 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 	
 	@Override
-	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, SearcherManager manager, String lang, boolean spellCheckerEnabled)
+	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, SearcherManager manager, boolean spellCheckerEnabled)
 			throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
 		Query query  = this.parseAndQuery(fields, analyzer, stringQuery);
 		ScoreDoc[] docs = this.search(manager, query);
-		QueryResults queryResults = new QueryResults(query, docs, fields,lang, stringQuery);
+		QueryResults queryResults = new QueryResults(query, docs, fields, stringQuery);
 		if (docs.length>=config.getScoreThreshold()) {
 			queryResults.setQueryExecuted(stringQuery);
 			return queryResults;
@@ -122,9 +122,9 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		List<String> corrections = spellCheckers.getSuggestions(query);
 		for (int i=0; i<corrections.size();i++) {
 			if (flag)
-				tmp = this.parseAndQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
+				tmp = this.parseAndQuery(queryResults.getFields(), getAnalyzer(queryResults.getFields()[4]), corrections.get(i));
 			else
-				tmp = this.parseOrQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
+				tmp = this.parseOrQuery(queryResults.getFields(), getAnalyzer(queryResults.getFields()[4]), corrections.get(i));
 			newHits = this.search(manager, tmp);
 			if (queryResults.getDocs().length<newHits.length) {
 				String q = corrections.get(i);
