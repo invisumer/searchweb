@@ -1,6 +1,7 @@
 package it.uniroma3.searchweb.engine.indexer;
 
 import it.uniroma3.searchweb.config.EngineConfig;
+import it.uniroma3.searchweb.engine.mapper.AnalyzerMapper;
 import it.uniroma3.searchweb.engine.mapper.IndexerMapper;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ public class Main2 {
 			EngineConfig engineConfig = EngineConfig.getInstance();
 			IndexerMapper mapper = new IndexerMapper();
 			IndexWriter writer = null;
+			AnalyzerMapper analyzers = new AnalyzerMapper();
 
 			WarcParser parser = new WarcParser();
 			String[] files = engineConfig.getWarcFiles();
@@ -42,11 +44,12 @@ public class Main2 {
 					writerType = "image";
 				if (context.equals("video"))
 					writerType = "video";
-
 				writer = mapper.pickWriter(writerType);
 				if (writer == null)
 					continue;
-				writer.addDocument(doc); // TODO analyzer depending on language
+				if (type.equals("html")) {
+				writer.addDocument(doc, analyzers.pickAnalyzer(doc.getField("lang").stringValue())); // TODO analyzer depending on language
+				}
 				System.out.println(counter);
 				counter++;
 
