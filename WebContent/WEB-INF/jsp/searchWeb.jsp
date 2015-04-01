@@ -49,6 +49,29 @@
 			</div>
 		</c:if>
 		
+		<c:if test="${originalQuery != null && executedQuery != null}">
+			<div class="row">
+				<div class="col-md-12">
+					<c:url var="url" value="/search/web" />
+					<form:form action="${url}" method="get" modelAttribute="queryForm">
+						<form:hidden path="query" value="${executedQuery.query}"/>
+						<form:hidden path="spellCheckerActive" value="${originalQuery.spellCheckerActive}"/>
+						Results for <a href="#" onclick="$(this).closest('form').submit()">${executedQuery.query}</a>
+					</form:form>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<c:url var="url" value="/search/web" />
+					<form:form action="${url}" method="get" modelAttribute="queryForm">
+						<form:hidden path="query" value="${originalQuery.query}"/>
+						<form:hidden path="spellCheckerActive" value="${originalQuery.spellCheckerActive}"/>
+						Did you mean <a href="#" onclick="$(this).closest('form').submit()">${originalQuery.query}</a>?
+					</form:form>
+				</div>
+			</div>
+		</c:if>
+		
 		<div class="row">
 			<div class="col-md-6 col-xs-12">
 				<ul class="list-unstyled">

@@ -10,16 +10,16 @@ public class ResultsPager {
 	private static int RESULT_PER_PAGE = 10;
 	private ResultsExtractor extractor;
 	private ScoreDoc[] docs;
-	private String startQuery;
-	private String queryExecuted;
-	private boolean suggestionOccurred;
+	private String originalQuery;
+	private String executedQuery;
+	private boolean queryCorrected;
 	
 	public ResultsPager(ResultsExtractor extractor, ScoreDoc[] docs, String startQuery, String queryExecuted, boolean suggestionOccurred) {
 		this.extractor = extractor;
 		this.docs = docs;
-		this.setStartQuery(startQuery);
-		this.setQueryExecuted(queryExecuted);
-		this.setSuggestionOccurred(suggestionOccurred);
+		this.setOriginalQuery(startQuery);
+		this.setExecutedQuery(queryExecuted);
+		this.setQueryCorrected(suggestionOccurred);
 	}
 	
 	public List<Result> getPage(int i) {
@@ -62,28 +62,28 @@ public class ResultsPager {
 		this.docs = docs;
 	}
 
-	public String getQueryExecuted() {
-		return queryExecuted;
+	public String getExecutedQuery() {
+		return executedQuery;
 	}
-
-	public void setQueryExecuted(String queryExecuted) {
-		this.queryExecuted = queryExecuted;
+	
+	public void setExecutedQuery(String executedQuery) {
+		this.executedQuery = executedQuery;
 	}
-
-	public String getStartQuery() {
-		return startQuery;
+	
+	public String getOriginalQuery() {
+		return originalQuery;
 	}
-
-	public void setStartQuery(String startQuery) {
-		this.startQuery = startQuery;
+	
+	public void setOriginalQuery(String originalQuery) {
+		this.originalQuery = originalQuery;
 	}
-
-	public boolean isSuggestionOccurred() {
-		return suggestionOccurred;
+	
+	public boolean isQueryCorrected() {
+		return queryCorrected;
 	}
-
-	public void setSuggestionOccurred(boolean suggestionOccurred) {
-		this.suggestionOccurred = suggestionOccurred;
+	
+	public void setQueryCorrected(boolean queryCorrected) {
+		this.queryCorrected = queryCorrected;
 	}
 
 }

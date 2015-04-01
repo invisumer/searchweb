@@ -50,13 +50,29 @@ public class WebSearchController {
 			session.setAttribute("queryForm", query);
 			
 			long start = System.currentTimeMillis();
-			ResultsPager pager = this.getPager(query.getQuery(),true); //TODO per kri, sostituire col flag
+			ResultsPager pager = this.getPager(query.getQuery(),query.isSpellCheckerActive());
 			session.setAttribute("pager", pager);
 			long stop = System.currentTimeMillis();
 			
 			String time = df.format((stop-start+0.0)/1000);
 			int nResults = pager.getDocs().length;
 			session.setAttribute("statistics", nResults + " result(s) in " + time + " sec");
+			
+			session.removeAttribute("originalQuery");
+			session.removeAttribute("executedQuery");
+			
+			if (pager.isQueryCorrected()) {
+				QueryForm originalForm = new QueryForm();
+				originalForm.setQuery(pager.getOriginalQuery());
+				originalForm.setSpellCheckerActive(false);
+				
+				QueryForm executedForm = new QueryForm();
+				executedForm.setQuery(pager.getExecutedQuery());
+				executedForm.setSpellCheckerActive(true);
+				
+				session.setAttribute("originalQuery", originalForm);
+				session.setAttribute("executedQuery", executedForm);
+			}
 			
 			return "redirect:/search/web/page/1";
 		}
@@ -79,9 +95,6 @@ public class WebSearchController {
 		List<Result> results = pager.getPage(n);
 		
 		if (results == null) {
-//			session.removeAttribute("queryForm");
-//			session.removeAttribute("pager");
-//			session.removeAttribute("statistics");
 			model.addAttribute("error", INVALID_PAGE);
 			return "searchWeb";
 		}
@@ -89,6 +102,13 @@ public class WebSearchController {
 		model.addAttribute("results", pager.getPage(n));
 		model.addAttribute("pages", pager.getPages());
 		model.addAttribute("currentPage", n);
+		
+		QueryForm original = (QueryForm) session.getAttribute("originalQuery");
+		if (original != null)
+			model.addAttribute("originalQuery", original);
+		QueryForm executed = (QueryForm) session.getAttribute("executedQuery");
+		if (executed != null)
+			model.addAttribute("executedQuery", executed);
 			
 		return "searchWeb";
 	}
