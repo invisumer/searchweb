@@ -101,12 +101,15 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	public ScoreDoc[] search(SearcherManager manager, Query query) throws IOException {
 		int maxHits = this.getConfig().getMaxHits();
 		IndexSearcher searcher = manager.acquire();
+		try {
 		TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true);
 		TopScoreDocCollector.create(maxHits, true);
 		searcher.search(query, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		manager.release(searcher);
 		return hits;
+		} finally {
+			manager.release(searcher);
+		}
 	}
 	
 	public QueryResults searchForBetterQuery(SearcherManager manager, String query, QueryResults queryResults, boolean flag) 

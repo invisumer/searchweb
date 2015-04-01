@@ -40,10 +40,13 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 			pager = new ResultsPager(e, queryResults.getDocs(),queryResults.getStartQuery(),queryResults.getQueryExecuted(),queryResults.isSuggestionOccurred());
 			if (debugMode) {
 				IndexSearcher searcher = manager.acquire();
-				logger.info("Selected searcher: " + searcher.getIndexReader().numDocs());
-				logger.info("Selected analyzer: " + analyzer.getClass().getName());
-				this.explain(searcher, queryResults.getQuery(), queryResults.getDocs());
-				manager.release(searcher);
+				try {
+					logger.info("Selected searcher: " + searcher.getIndexReader().numDocs());
+					logger.info("Selected analyzer: " + analyzer.getClass().getName());
+					this.explain(searcher, queryResults.getQuery(), queryResults.getDocs());
+				} finally  {
+					manager.release(searcher);
+				}
 			}
 		} catch (IOException e) {
 			logger.severe(e.getMessage());

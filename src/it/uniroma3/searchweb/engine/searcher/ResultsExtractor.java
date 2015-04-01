@@ -38,15 +38,16 @@ public class ResultsExtractor {
 	
 	public List<Result> getResults(ScoreDoc[] docs, int start, int end) {
 		List<Result> results = new ArrayList<Result>();
-
+		IndexSearcher searcher = null;
 		try {
+			searcher = manager.acquire();
 			SimpleHTMLFormatter htmlFormatter = new SimpleHTMLFormatter("<b>", "</b>");
 			Highlighter highlighter = new Highlighter(htmlFormatter,
 					new QueryScorer(this.query));
 			
 			for (int i = start; i < end; i++) {
 				int id = docs[i].doc;
-				IndexSearcher searcher = manager.acquire();
+				
 				Document doc = searcher.doc(id);
 				String text = doc.get(this.field);
 				TokenStream tokenStream = TokenSources.getAnyTokenStream(
@@ -72,6 +73,13 @@ public class ResultsExtractor {
 		} catch (InvalidTokenOffsetsException e) {
 			logger.severe(e.getMessage());
 			e.printStackTrace();
+		} finally {
+			try {
+				manager.release(searcher);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		return results;
