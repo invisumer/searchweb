@@ -95,15 +95,9 @@ public class WarcParser {
 		Document doc = null;
 		while ((doc = parser.next())!= null && i<limit) {
 			if (doc != null) {
-//				if (!doc.get("dec").equals("http"))
-					System.out.println("[" + (i+1) + "] " + doc.get("dec") + ", " + doc.get("enc") + ", " + 
-									   doc.get("context") + ", " + doc.get("type") + ", " +
-									   "[ " + doc.get("title") + " ] " + doc.get("url"));
-//				System.out.println();
-//				System.out.println(doc.get("title"));
-//				System.out.println();
-//				System.out.println(doc.get("body"));
-//				System.out.println();
+				System.out.println("[" + (i+1) + "] " + doc.get("dec") + ", " + doc.get("enc") + ", " + 
+								   doc.get("context") + ", " + doc.get("type") + ", " +
+								   "[ " + doc.get("title") + " ] " + doc.get("url"));
 				
 				if (doc.get("dec").equals("default"))
 					notEncoded++;

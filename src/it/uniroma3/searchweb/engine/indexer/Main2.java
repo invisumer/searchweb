@@ -1,19 +1,12 @@
 package it.uniroma3.searchweb.engine.indexer;
 
 import it.uniroma3.searchweb.config.EngineConfig;
+import it.uniroma3.searchweb.engine.mapper.IndexerMapper;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 
 public class Main2 {
 
@@ -21,13 +14,16 @@ public class Main2 {
 
 		try {
 			EngineConfig engineConfig = EngineConfig.getInstance();
-
-			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
-			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath() + "/html"));  // TODO fix it
-			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
-			config.setRAMBufferSizeMB(engineConfig.getRAMBufferSize());
-			config.setOpenMode(engineConfig.getIndexOpenMode());
-			IndexWriter writer = new IndexWriter(index, config);
+//
+//			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46, CharArraySet.EMPTY_SET);
+//			Directory index = FSDirectory.open(new File(engineConfig.getIndexPath() + "/html"));  // TODO fix it
+//			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_46, analyzer);
+//			config.setRAMBufferSizeMB(engineConfig.getRAMBufferSize());
+//			config.setOpenMode(engineConfig.getIndexOpenMode());
+//			IndexWriter writer = new IndexWriter(index, config);
+			
+			IndexerMapper mapper = new IndexerMapper();
+			IndexWriter writer = null;
 			
 			WarcParser parser = new WarcParser();
 			String[] files = engineConfig.getWarcFiles();
@@ -37,12 +33,26 @@ public class Main2 {
 			int maxDoc = 100000;
 			int batch = maxDoc/4;
 			long start = System.currentTimeMillis();
-			while (counter < maxDoc) {                            // TODO cambiare
+			while (counter < maxDoc) {
 				Document doc = parser.next();
 				
 				if (doc == null)
 					break;
-					
+				
+				String context = doc.get("context");
+				String type = doc.get("type");
+				
+				String writerType = null;
+				if (context.equals("text") && type.equals("html"))
+					writerType = "html";
+				if (context.equals("audio"))
+					writerType = "audio";
+				if (context.equals("image"))
+					writerType = "image";
+				if (context.equals("video"))
+					writerType = "video";
+				
+				writer = mapper.pickWriter(writerType);
 				writer.addDocument(doc);
 				System.out.println(counter);
 				counter++;
@@ -52,7 +62,6 @@ public class Main2 {
 			}
 			
 			long stop = System.currentTimeMillis();
-			// TODO logger for index time
 			double time = (stop-start)/1000.0;
 			System.out.println(counter + " document(s) added in " + time + " sec");
 			
@@ -63,7 +72,6 @@ public class Main2 {
 			time = (stop-start)/1000.0;
 			System.out.println("Closing in " + time + " sec");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
