@@ -53,7 +53,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	@Override
 	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, IndexSearcher searcher, String lang) throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
-		Query query  = this.parsePhraseQuery(fields, analyzer, stringQuery);
+		Query query  = this.parseAndQuery(fields, analyzer, stringQuery);
 		ScoreDoc[] docs = this.search(searcher, query);
 		QueryResults queryResults = new QueryResults(query, docs, fields,lang, stringQuery);
 		if (docs.length>=config.getScoreThreshold()) {
@@ -67,31 +67,29 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 				queryResults.setSuggestionOccurred(true);
 				return queryResults;
 			}
-		}
-		query = this.parseQuery(fields, analyzer, stringQuery);
-		docs = this.search(searcher, query);
-		if (docs.length>=config.getScoreThreshold()) {
-			queryResults.setDocs(docs);
-			queryResults.setQuery(query);
-			queryResults.setQueryExecuted(stringQuery);
-			return queryResults;
-		}
-		flag = false;
-		if (!stringQuery.contains("\"")) {
-			queryResults.setSuggestionOccurred(true);
+			flag = false;
 			queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
+			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
+				queryResults.setSuggestionOccurred(true);
+				return queryResults;
+			}
 		}
+		query = this.parseOrQuery(fields, analyzer, stringQuery);
+		docs = this.search(searcher, query);
+		queryResults.setDocs(docs);
+		queryResults.setQuery(query);
+		queryResults.setQueryExecuted(stringQuery);
 		return queryResults;
 	}
 	
-	public Query parseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
+	public Query parseOrQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
 		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
 		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
 		Query q = mfqp.parse(query);
 		return q;
 	}
 
-	public Query parsePhraseQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
+	public Query parseAndQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
 		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
 		mfqp.setDefaultOperator(QueryParser.AND_OPERATOR);
 		Query q = mfqp.parse(query);
@@ -114,9 +112,9 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		List<String> corrections = spellCheckers.getSuggestions(query);
 		for (int i=0; i<corrections.size();i++) {
 			if (flag)
-				tmp = this.parsePhraseQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
+				tmp = this.parseAndQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
 			else
-				tmp = this.parseQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
+				tmp = this.parseOrQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
 			newHits = this.search(searcher, tmp);
 			if (queryResults.getDocs().length<newHits.length) {
 				queryResults.setDocs(newHits);
