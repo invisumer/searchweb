@@ -9,8 +9,8 @@ public class MainSpellChecker {
 	public MainSpellChecker(){}
 	public static void main(String[] args) throws IOException {
 		SpellCheckerMapper mapper = new SpellCheckerMapper();
-		NaiveSpellCheckers sp = new NaiveSpellCheckers(mapper);
-		String query = "enterprime applicatn";
+		NaiveSpellChecker sp = new NaiveSpellChecker(mapper);
+		String query = "enterprime applicatio";
 		List<String> result = sp.getSuggestions(query);
 		for (String s : result) {
 			System.out.println(s);

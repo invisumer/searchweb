@@ -20,10 +20,10 @@ import org.apache.lucene.search.spell.SuggestWordFrequencyComparator;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-public class NaiveSpellCheckers implements SpellCheckers{
+public class NaiveSpellChecker implements SpellCheckerEngine{
 	SpellCheckerMapper mapper;
 	
-	public NaiveSpellCheckers(SpellCheckerMapper mapper) throws IOException {
+	public NaiveSpellChecker(SpellCheckerMapper mapper) throws IOException {
 		this.mapper = mapper;
 	}
 	

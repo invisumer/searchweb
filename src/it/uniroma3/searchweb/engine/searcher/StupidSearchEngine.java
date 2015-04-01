@@ -24,7 +24,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	private static final Logger logger = Logger.getLogger(StupidSearchEngine.class.getName());
 	private SearcherMapper searcherMapper;
 	private AnalyzerMapper analyzerMapper;
-	private SpellCheckers spellCheckers;
+	private SpellCheckerEngine spellCheckers;
 	
 	public StupidSearchEngine() {
 		super();
@@ -33,7 +33,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			this.analyzerMapper = new AnalyzerMapper();
 			this.searcherMapper = new SearcherMapper();
 			SpellCheckerMapper mapper = new SpellCheckerMapper();
-			this.spellCheckers = new NaiveSpellCheckers(mapper);
+			this.spellCheckers = new NaiveSpellChecker(mapper);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 			e.printStackTrace();
