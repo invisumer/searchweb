@@ -15,7 +15,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.Field.Store;
-import org.apache.tika.language.LanguageIdentifier;
 import org.apache.tika.parser.html.HtmlEncodingDetector;
 import org.apache.tika.parser.txt.CharsetDetector;
 import org.apache.tika.parser.txt.CharsetMatch;
@@ -23,14 +22,14 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 public class HtmlBuilder implements DocumentBuilder {
-	private static final Logger logger = Logger.getLogger(HtmlBuilder.class.getName());
+	private static final Logger logger = Logger.getLogger(HtmlBuilder.class
+			.getName());
 	private CharsetDetector detector;
 	private HtmlEncodingDetector htmlDetector;
 	private boolean cleanHtml;
-	
+
 	public HtmlBuilder(boolean clean) {
 		this.detector = new CharsetDetector();
 		this.htmlDetector = new HtmlEncodingDetector();
@@ -92,7 +91,7 @@ public class HtmlBuilder implements DocumentBuilder {
 			logger.severe(e.getMessage());
 			return null;
 		}
-		
+
 		/* Extract all the informations */
 
 		if (html == null)
@@ -115,33 +114,34 @@ public class HtmlBuilder implements DocumentBuilder {
 		record.add(new StringField("dec", decoder, Store.YES));
 		record.add(new StringField("url", url, Store.YES));
 
-		 String domain = "";
-		 Pattern pattern =
-		 Pattern.compile("(https?|ftp|gopher|telnet|file|ldap)://(www[0-9]?(\\.)?)?([a-zA-Z0-9]{3,})\\.(.*)$");
-		 Matcher matcher = pattern.matcher(url);
-		 while (matcher.find()) {
-		 domain = matcher.group(4);
-//		 System.out.println("URL: " + matcher.group());
-//		 System.out.println("dominio: " + matcher.group(4));
-		 }
+		String domain = "";
+		Pattern pattern = Pattern
+				.compile("(https?|ftp|gopher|telnet|file|ldap)://(www[0-9]?(\\.)?)?([a-zA-Z0-9]{3,})\\.(.*)$");
+		Matcher matcher = pattern.matcher(url);
+		while (matcher.find()) {
+			domain = matcher.group(4);
+			// System.out.println("URL: " + matcher.group());
+			// System.out.println("dominio: " + matcher.group(4));
+		}
 
 		TextField domainField = new TextField("domain", domain, Store.YES);
 		record.add(domainField);
-		
+
 		String domain2 = "";
-		Pattern pattern2 = Pattern.compile("(https?|ftp|gopher|telnet|file|ldap)://(www[0-9]?(\\.)?)?([a-zA-Z0-9]{3,})\\.(([a-zA-Z0-9]{3,})\\.)?(.*)$");
+		Pattern pattern2 = Pattern
+				.compile("(https?|ftp|gopher|telnet|file|ldap)://(www[0-9]?(\\.)?)?([a-zA-Z0-9]{3,})\\.(([a-zA-Z0-9]{3,})\\.)?(.*)$");
 		Matcher matcher2 = pattern2.matcher(url);
 		while (matcher2.find()) {
 			String string = matcher2.group(5);
 			if (string != null) {
 				domain2 = string.substring(0, string.length() - 1);
 			}
-//			System.out.println("dominio: " + domain2);
+			// System.out.println("dominio: " + domain2);
 		}
-		
-//		System.out.println("body: " + htmlDoc.body().text());
-//		System.out.println("language: " + this.guessLanguage(htmlStream));
-		
+
+		// System.out.println("body: " + htmlDoc.body().text());
+		// System.out.println("language: " + this.guessLanguage(htmlStream));
+
 		TextField domainField2 = new TextField("domain2", domain2, Store.YES);
 		record.add(domainField2);
 
@@ -152,58 +152,60 @@ public class HtmlBuilder implements DocumentBuilder {
 		TextField bodyField = new TextField("body", body, Store.YES);
 		// bodyField.setBoost(config.getBodyBoost());
 		record.add(bodyField);
-		
-/* Language */
-		
+
+		/* Language */
+
 		Element taglang = htmlDoc.select("html").first();
-		
+
 		Map<String, String> codlang = new HashMap<String, String>();
-		codlang.put("Shift_JIS", "Japanese");
-		codlang.put("ISO-2022-JP", "Japanese");
-		codlang.put("ISO-2022-CN", "Chinese");
-		codlang.put("ISO-2022-KR", "Korean");
-		codlang.put("GB18030", "Chinese");
-		codlang.put("Big5", "Chinese");
-		codlang.put("EUC-JP", "Japanese");
-		codlang.put("EUC-KR", "Korean");
-		codlang.put("ISO-8859-5", "Russian");
-		codlang.put("ISO-8859-6", "Arabic");
-		codlang.put("ISO-8859-7", "Greek");
-		codlang.put("ISO-8859-8", "Hebrew");
-		codlang.put("ISO-8859-9", "Turkish");
-		codlang.put("windows-1251", "Russian");
-		codlang.put("windows-1253", "Greek");
-		codlang.put("windows-1254", "Turkish");
-		codlang.put("windows-1255", "Hebrew");
-		codlang.put("windows-1256", "Arabic");
-		codlang.put("KOI8-R", "Russian");
-		codlang.put("IBM420", "Arabic");
-		codlang.put("IBM424", "Hebrew");
-		if (codlang.get(enc) != null) {
-			lang = codlang.get(enc);
-		}
+		codlang.put("Shift_JIS", "ja");
+		codlang.put("ISO-2022-JP", "ja");
+		codlang.put("ISO-2022-CN", "zh");
+		codlang.put("ISO-2022-KR", "ko");
+		codlang.put("GB18030", "zh");
+		codlang.put("Big5", "zh");
+		codlang.put("EUC-JP", "ja");
+		codlang.put("EUC-KR", "ko");
+		codlang.put("ISO-8859-5", "ru");
+		codlang.put("ISO-8859-6", "ar");
+		codlang.put("ISO-8859-7", "el");
+		codlang.put("ISO-8859-8", "he");
+		codlang.put("ISO-8859-9", "tr");
+		codlang.put("windows-1251", "ru");
+		codlang.put("windows-1253", "el");
+		codlang.put("windows-1254", "tr");
+		codlang.put("windows-1255", "he");
+		codlang.put("windows-1256", "ar");
+		codlang.put("KOI8-R", "ru");
+		codlang.put("IBM420", "ar");
+		codlang.put("IBM424", "he");
 		if (lang == null) {
-			taglang.attr("lang");
+			lang = taglang.attr("lang");
+		}
+		if (codlang.get(enc) != null && lang == null) {
+			lang = codlang.get(enc);
 		}
 		if (lang == null) {
 			lang = this.guessLanguage(htmlStream);
 		}
-//		if (lang == null) {
-//			lang = this.guessLanguage2(htmlDoc.body().text());
-//		}
-		if (lang == null) {
+		// if (lang == null) {
+		// lang = this.guessLanguage2(htmlDoc.body().text());
+		// }
+		if (lang == null || lang.equals("")) {
 			lang = "en";
 		}
-		
+		if (lang.length() > 2)
+			lang = lang.substring(0, 2);
+
 //		System.out.println(lang);
 
-		TextField langField = new TextField("lang", lang, Store.YES);
-//		langField.setBoost(10f);
-		record.add(langField);
-		
+		// TextField langField = new TextField("lang", lang, Store.YES);
+		// langField.setBoost(10f);
+		// record.add(langField);
+
 		return record;
 	}
-	
+
 	private String getCharsetFromHttp(String response) {
 		Pattern pattern = Pattern
 				.compile("(?i)\\bcharset=\\s*\"?([^\\s;,\"]*)");
@@ -224,7 +226,7 @@ public class HtmlBuilder implements DocumentBuilder {
 
 		return enc;
 	}
-	
+
 	private String getCharsetFromMeta(byte[] htmlStream) {
 		ByteArrayInputStream stream = new ByteArrayInputStream(htmlStream);
 		Charset charset = null;
@@ -248,33 +250,34 @@ public class HtmlBuilder implements DocumentBuilder {
 
 		detector.setText(htmlStream);
 		CharsetMatch match = detector.detect();
-		
+
 		if (match != null && (match.getConfidence() > 33)) // TODO Confidence?
 			enc = match.getName();
 
 		return enc;
 	}
-	
+
 	private String guessLanguage(byte[] htmlStream) {
 		String lang = null;
 
 		detector.setText(htmlStream);
 		CharsetMatch match = detector.detect();
-//		if (match != null && (match.getConfidence() > 10)) // TODO Confidence?
-			lang = match.getLanguage();
+		// if (match != null && (match.getConfidence() > 10)) // TODO
+		// Confidence?
+		lang = match.getLanguage();
 
 		return lang;
 	}
-	
-	private String guessLanguage2(String text) {
-		String language = null;
-		
-		LanguageIdentifier identifier = new LanguageIdentifier(text);
-//		if (identifier.isReasonablyCertain()) 
-			language = identifier.getLanguage();
 
-		return language;
-	}
+//	private String guessLanguage2(String text) {
+//		String language = null;
+//
+//		LanguageIdentifier identifier = new LanguageIdentifier(text);
+//		 if (identifier.isReasonablyCertain())
+//		language = identifier.getLanguage();
+//
+//		return language;
+//	}
 
 	private String fixMalformedHtml(byte[] inStream, String enc)
 			throws UnsupportedEncodingException {
