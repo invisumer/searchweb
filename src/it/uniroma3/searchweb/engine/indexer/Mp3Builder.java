@@ -33,11 +33,11 @@ public class Mp3Builder implements DocumentBuilder {
 	}
 
 	@Override
-	public Document build(String url, byte[] header, byte[] content) {
+	public Document build(String url, String httpResponse, byte[] htmlStream) {
 		Document doc = null;
 		
 		try {
-			InputStream input = new ByteArrayInputStream(content);
+			InputStream input = new ByteArrayInputStream(htmlStream);
 			ContentHandler handler = new DefaultHandler();
 			Metadata metadata = new Metadata();
 			Parser parser = new Mp3Parser();

@@ -4,6 +4,6 @@ import org.apache.lucene.document.Document;
 
 public interface DocumentBuilder {
 	
-	public Document build(String url, byte[] header, byte[] content);
+	public Document build(String url, String httpResponse, byte[] htmlStream);
 	
 }
