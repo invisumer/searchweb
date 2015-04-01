@@ -5,8 +5,6 @@ import javax.validation.constraints.NotNull;
 public class QueryForm {
 	@NotNull
 	private String query;
-	private String queryExecuted;
-	private boolean suggestionOccurred;
 	
 	public String getQuery() {
 		return query;
