@@ -60,7 +60,6 @@ public class ResultsExtractor {
 						snippet += frag[j].toString().trim() + "... ";
 					}
 				}
-				manager.release(searcher);
 				Result result = new Result();
 				result.setTitle(doc.get("title").trim());
 				result.setUrl(doc.get("url").trim());
