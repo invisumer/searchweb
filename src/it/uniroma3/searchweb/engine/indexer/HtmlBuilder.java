@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +23,7 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class HtmlBuilder implements DocumentBuilder {
 	private static final Logger logger = Logger.getLogger(HtmlBuilder.class.getName());
@@ -41,6 +44,7 @@ public class HtmlBuilder implements DocumentBuilder {
 		String html = null;
 		String enc = null;
 		String decoder = null;
+		String lang = null;
 
 		try {
 			enc = this.getCharsetFromHttp(httpResponse);
@@ -88,7 +92,7 @@ public class HtmlBuilder implements DocumentBuilder {
 			logger.severe(e.getMessage());
 			return null;
 		}
-
+		
 		/* Extract all the informations */
 
 		if (html == null)
@@ -136,7 +140,7 @@ public class HtmlBuilder implements DocumentBuilder {
 		}
 		
 //		System.out.println("body: " + htmlDoc.body().text());
-//		System.out.println("language: " + this.guessLanguage(htmlDoc.body().text()));
+//		System.out.println("language: " + this.guessLanguage(htmlStream));
 		
 		TextField domainField2 = new TextField("domain2", domain2, Store.YES);
 		record.add(domainField2);
@@ -148,6 +152,50 @@ public class HtmlBuilder implements DocumentBuilder {
 		TextField bodyField = new TextField("body", body, Store.YES);
 		// bodyField.setBoost(config.getBodyBoost());
 		record.add(bodyField);
+		
+/* Language */
+		
+		Element taglang = htmlDoc.select("html").first();
+		
+		Map<String, String> codlang = new HashMap<String, String>();
+		codlang.put("Shift_JIS", "Japanese");
+		codlang.put("ISO-2022-JP", "Japanese");
+		codlang.put("ISO-2022-CN", "Chinese");
+		codlang.put("ISO-2022-KR", "Korean");
+		codlang.put("GB18030", "Chinese");
+		codlang.put("Big5", "Chinese");
+		codlang.put("EUC-JP", "Japanese");
+		codlang.put("EUC-KR", "Korean");
+		codlang.put("ISO-8859-5", "Russian");
+		codlang.put("ISO-8859-6", "Arabic");
+		codlang.put("ISO-8859-7", "Greek");
+		codlang.put("ISO-8859-8", "Hebrew");
+		codlang.put("ISO-8859-9", "Turkish");
+		codlang.put("windows-1251", "Russian");
+		codlang.put("windows-1253", "Greek");
+		codlang.put("windows-1254", "Turkish");
+		codlang.put("windows-1255", "Hebrew");
+		codlang.put("windows-1256", "Arabic");
+		codlang.put("KOI8-R", "Russian");
+		codlang.put("IBM420", "Arabic");
+		codlang.put("IBM424", "Hebrew");
+		if (codlang.get(enc) != null) {
+			lang = codlang.get(enc);
+		}
+		if (lang == null) {
+			taglang.attr("lang");
+		}
+		if (lang == null) {
+			lang = this.guessLanguage(htmlStream);
+		}
+//		if (lang == null) {
+//			lang = this.guessLanguage2(htmlDoc.body().text());
+//		}
+		if (lang == null) {
+			lang = "en";
+		}
+		
+//		System.out.println(lang);
 
 		return record;
 	}
@@ -196,19 +244,30 @@ public class HtmlBuilder implements DocumentBuilder {
 
 		detector.setText(htmlStream);
 		CharsetMatch match = detector.detect();
+		
 		if (match != null && (match.getConfidence() > 33)) // TODO Confidence?
 			enc = match.getName();
 
 		return enc;
 	}
 	
-	private String guessLanguage(String text) {
+	private String guessLanguage(byte[] htmlStream) {
+		String lang = null;
+
+		detector.setText(htmlStream);
+		CharsetMatch match = detector.detect();
+//		if (match != null && (match.getConfidence() > 10)) // TODO Confidence?
+			lang = match.getLanguage();
+
+		return lang;
+	}
+	
+	private String guessLanguage2(String text) {
 		String language = null;
 		
 		LanguageIdentifier identifier = new LanguageIdentifier(text);
-		if (identifier.isReasonablyCertain()) {
+//		if (identifier.isReasonablyCertain()) 
 			language = identifier.getLanguage();
-		}
 
 		return language;
 	}
