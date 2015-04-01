@@ -14,11 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class HomeController {
 	
 	@RequestMapping(value = "/", method=RequestMethod.GET)
-	public String search(@ModelAttribute QueryForm query, Model model, HttpSession session) {
-		session.removeAttribute("queryForm");
-		session.removeAttribute("pager");
-		session.removeAttribute("statistics");
-		
+	public String search(@ModelAttribute QueryForm query, Model model, HttpSession session) {		
 		model.addAttribute("queryForm", query);
 		
 		return "indexWeb";

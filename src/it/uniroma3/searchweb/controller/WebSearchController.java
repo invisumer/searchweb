@@ -44,6 +44,13 @@ public class WebSearchController {
 		
 		// some logic
 		if (!query.getQuery().isEmpty()) {
+			// Reset session
+			session.removeAttribute("queryForm");
+			session.removeAttribute("pager");
+			session.removeAttribute("statistics");
+			session.removeAttribute("originalQuery");
+			session.removeAttribute("executedQuery");
+			
 			Locale locale = RequestContextUtils.getLocale(request);
 			System.out.println(locale.getCountry());    // TODO che ci faccio?
 			System.out.println(locale.getLanguage());
@@ -57,9 +64,6 @@ public class WebSearchController {
 			String time = df.format((stop-start+0.0)/1000);
 			int nResults = pager.getDocs().length;
 			session.setAttribute("statistics", nResults + " result(s) in " + time + " sec");
-			
-			session.removeAttribute("originalQuery");
-			session.removeAttribute("executedQuery");
 			
 			if (pager.isQueryCorrected()) {
 				QueryForm originalForm = new QueryForm();
@@ -102,13 +106,6 @@ public class WebSearchController {
 		model.addAttribute("results", pager.getPage(n));
 		model.addAttribute("pages", pager.getPages());
 		model.addAttribute("currentPage", n);
-		
-		QueryForm original = (QueryForm) session.getAttribute("originalQuery");
-		if (original != null)
-			model.addAttribute("originalQuery", original);
-		QueryForm executed = (QueryForm) session.getAttribute("executedQuery");
-		if (executed != null)
-			model.addAttribute("executedQuery", executed);
 			
 		return "searchWeb";
 	}
@@ -121,7 +118,7 @@ public class WebSearchController {
 		fields[3] = "domain2";
 		String contentType = "html";
 		String lang = "en";  // TODO prendere da spring la location
-		return this.engine.getResults(query, fields, contentType, lang,enableSpellChecker);
+		return this.engine.getResults(query, fields, contentType, lang, enableSpellChecker);
 	}
 
 }
