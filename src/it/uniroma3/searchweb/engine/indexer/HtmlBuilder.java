@@ -5,7 +5,7 @@ import org.apache.lucene.document.Document;
 public class HtmlBuilder implements DocumentBuilder {
 
 	@Override
-	public Document build(byte[] header, byte[] content) {
+	public Document build(String url, byte[] header, byte[] content) {
 		// TODO Auto-generated method stub
 		return null;
 	}
