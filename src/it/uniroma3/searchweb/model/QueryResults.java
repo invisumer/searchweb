@@ -1,9 +1,5 @@
 package it.uniroma3.searchweb.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 
