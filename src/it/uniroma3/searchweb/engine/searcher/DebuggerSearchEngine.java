@@ -28,12 +28,12 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 	}
 
 	@Override
-	public ResultsPager getResults(String stringQuery, String[] fields, String contentType, boolean spellCheckerEnabled) {
+	public ResultsPager getResults(String stringQuery, String[] fields, String contentType, boolean spellCheckerEnabled, String lang) {
 		ResultsPager pager = null;
 		
 		try {
 			SearcherManager manager = this.getSearcherManager(contentType);
-			Analyzer analyzer = this.getAnalyzer(fields[4]);
+			Analyzer analyzer = this.getAnalyzer(lang);
 			QueryResults queryResults = this.makeQuery(stringQuery, fields, analyzer, manager, spellCheckerEnabled);
 			ResultsExtractor e = this.getExtractor(manager, 
 					analyzer, queryResults.getQuery(), SNIPPET_FIELD);

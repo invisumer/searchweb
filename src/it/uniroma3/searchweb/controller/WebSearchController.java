@@ -52,13 +52,20 @@ public class WebSearchController {
 			session.removeAttribute("originalQuery");
 			session.removeAttribute("executedQuery");
 			
-			Locale locale = RequestContextUtils.getLocale(request);
-			System.out.println(locale.getCountry());    // TODO che ci faccio?
-			System.out.println(locale.getLanguage());
+			String lang = "en";
+			String langPreference = (String) session.getAttribute("lang");
+			if (langPreference != null && !langPreference.isEmpty())
+				lang = langPreference;
+			else {
+				Locale locale = RequestContextUtils.getLocale(request);
+				lang = locale.getLanguage();
+			}
+			System.out.println(lang); // TODO che ci faccio?
+			
 			session.setAttribute("queryForm", query);
 			
 			long start = System.currentTimeMillis();
-			ResultsPager pager = this.getPager(query.getQuery(),query.isSpellCheckerActive());
+			ResultsPager pager = this.getPager(query.getQuery(),query.isSpellCheckerActive(),lang);
 			session.setAttribute("pager", pager);
 			long stop = System.currentTimeMillis();
 			
@@ -110,17 +117,16 @@ public class WebSearchController {
 		return "searchWeb";
 	}
 	
-	private ResultsPager getPager(String query, boolean enableSpellChecker) {
+	private ResultsPager getPager(String query, boolean enableSpellChecker, String lang) {
 		String[] fields = new String[5];
 		fields[0] = "title";
 		fields[1] = "body";
 		fields[2] = "domain";
 		fields[3] = "domain2";
+		fields[4] = "lang";
 		String contentType = "html";
-		String lang = "it";  // TODO prendere da spring la location
-		fields[4] = lang;
 		query = handler.analyzeQuery(query);
-		return this.engine.getResults(query, fields, contentType, enableSpellChecker);
+		return this.engine.getResults(query, fields, contentType, enableSpellChecker, lang);
 	}
 
 }

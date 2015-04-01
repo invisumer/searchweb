@@ -12,9 +12,9 @@
 				<c:url var="url" value="/select/language" />
 				<form:form action="${url}" method="post" modelAttribute="languageForm">
 					<div class="form-group">
-						<label for="languages">Select the languages that you prefer:</label>
+						<label for="language">Select the languages that you prefer:</label>
 					</div>
-					<form:checkboxes path="languages" items="${langOptions}" />
+					<form:select path="language" items="${langOptions}" />
 					<br>
 					<br>
 					<button class="btn btn-default" type="submit">

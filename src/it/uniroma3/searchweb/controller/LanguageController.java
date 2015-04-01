@@ -2,11 +2,10 @@ package it.uniroma3.searchweb.controller;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
-import it.uniroma3.searchweb.model.LanguagesForm;
+import it.uniroma3.searchweb.model.LanguageForm;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,11 +18,10 @@ public class LanguageController {
 	private Map<String, String> langOptions;
 	
 	@RequestMapping(value = "/select/language", method=RequestMethod.GET)
-	public String getLanguageForm(@ModelAttribute LanguagesForm form, Model model, HttpSession session) {
-		@SuppressWarnings("unchecked")
-		Set<String> langs = (Set<String>) session.getAttribute("langs");
-		if (langs != null && !langs.isEmpty())
-			form.setLanguages(langs);
+	public String getLanguageForm(@ModelAttribute LanguageForm form, Model model, HttpSession session) {
+		String lang = (String) session.getAttribute("lang");
+		if (lang != null && !lang.isEmpty())
+			form.setLanguage(lang);
 		
 		model.addAttribute("languageForm", form);
 		model.addAttribute("langOptions", this.getLanguages());
@@ -31,18 +29,17 @@ public class LanguageController {
 	}
 	
 	@RequestMapping(value = "/select/language", method=RequestMethod.POST)
-	public String setLanguage(@ModelAttribute LanguagesForm form, HttpSession session) {
-		session.setAttribute("langs", form.getLanguages());
-		
+	public String setLanguage(@ModelAttribute LanguageForm form, HttpSession session) {
+		session.setAttribute("lang", form.getLanguage());
 		return "redirect:/";
 	}
 	
 	public Map<String, String> getLanguages() {
 		if (this.langOptions == null) {
 			this.langOptions = new HashMap<String, String>();
-			this.langOptions.put("th", "ไทย&");
-			this.langOptions.put("it", "Italiano");
-			this.langOptions.put("fr", "Français");
+			this.langOptions.put("th", "Thai");
+			this.langOptions.put("it", "Italian");
+			this.langOptions.put("fr", "French");
 			this.langOptions.put("en", "English");
 			
 			// TODO en it es fr jp de ko
