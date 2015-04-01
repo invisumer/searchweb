@@ -35,21 +35,17 @@ public class Main2 {
 
 				String context = doc.get("context");
 				String type = doc.get("type");
-				String writerType = null;
-				if (context.equals("text") && type.equals("html"))
-					writerType = "html";
-				if (context.equals("audio"))
-					writerType = "audio";
-				if (context.equals("image"))
-					writerType = "image";
-				if (context.equals("video"))
-					writerType = "video";
-				writer = mapper.pickWriter(writerType);
+				writer = mapper.pickWriter(context, type);
 				if (writer == null)
 					continue;
+				
 				if (type.equals("html")) {
-				writer.addDocument(doc, analyzers.pickAnalyzer(doc.getField("lang").stringValue())); // TODO analyzer depending on language
+					String lang = doc.getField("lang").stringValue();
+					writer.addDocument(doc, analyzers.pickAnalyzer(lang));
+				} else {
+					writer.addDocument(doc);
 				}
+				
 				System.out.println(counter);
 				counter++;
 

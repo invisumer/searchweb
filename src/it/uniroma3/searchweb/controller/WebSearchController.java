@@ -60,7 +60,6 @@ public class WebSearchController {
 				Locale locale = RequestContextUtils.getLocale(request);
 				lang = locale.getLanguage();
 			}
-			System.out.println(lang); // TODO che ci faccio?
 			
 			session.setAttribute("queryForm", query);
 			
@@ -126,6 +125,9 @@ public class WebSearchController {
 		fields[4] = "lang";
 		String contentType = "html";
 		query = handler.analyzeQuery(query);
+		
+		System.out.println("Language selected: " + lang);
+		
 		return this.engine.getResults(query, fields, contentType, enableSpellChecker, lang);
 	}
 

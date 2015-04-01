@@ -36,8 +36,21 @@ public class IndexerMapper {
 		// TODO other formats
 	}
 	
-	public IndexWriter pickWriter(String context) {
-		return this.mapper.get(context);
+	public IndexWriter pickWriter(String context, String type) {
+		String writerType = "";
+		
+		if (context.equals("text") && type.equals("html"))
+			writerType = "html";
+		if (context.equals("audio"))
+			writerType = "audio";
+		if (context.equals("image"))
+			writerType = "image";
+		if (context.equals("video"))
+			writerType = "video";
+		
+		IndexWriter writer = this.mapper.get(writerType);
+		
+		return writer;
 	}
 	
 	private IndexWriter buildWriter(String context) {
@@ -62,6 +75,11 @@ public class IndexerMapper {
 		}
 		
 		return writer;
+	}
+	
+	public void close() throws IOException {
+		for (IndexWriter writer : this.mapper.values())
+			writer.close();
 	}
 
 }

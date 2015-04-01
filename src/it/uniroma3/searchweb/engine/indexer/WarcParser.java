@@ -84,8 +84,8 @@ public class WarcParser {
 		WarcParser parser = new WarcParser();
 		String[] files = config.getWarcFiles();
 
-		System.out.println("Parsing: " + parser.getDatasetPath() + "/text-en" 
-				+ files[0] + "\n"); // TODO change dinamically directory
+		System.out.println("Parsing: " + parser.getDatasetPath() + "/html" 
+				+ files[0] + "\n"); // TODO change directory
 		parser.open(files[0]);
 
 		int i = 0;
@@ -95,7 +95,8 @@ public class WarcParser {
 		Document doc = null;
 		while ((doc = parser.next())!= null && i<limit) {
 			if (doc != null) {
-				System.out.println("[" + (i+1) + "] " + doc.get("dec") + ", " + doc.get("enc") + ", " + 
+				if (!doc.get("lang").equals("en"))
+					System.out.println("[" + (i+1) + ", " + doc.get("lang") + "] " + doc.get("dec") + ", " + doc.get("enc") + ", " + 
 								   doc.get("context") + ", " + doc.get("type") + ", " +
 								   "[ " + doc.get("title") + " ] " + doc.get("url"));
 				

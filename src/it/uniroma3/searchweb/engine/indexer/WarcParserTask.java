@@ -1,6 +1,8 @@
 package it.uniroma3.searchweb.engine.indexer;
 
 import it.uniroma3.searchweb.config.EngineConfig;
+import it.uniroma3.searchweb.engine.mapper.AnalyzerMapper;
+import it.uniroma3.searchweb.engine.mapper.IndexerMapper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,14 +15,16 @@ import org.apache.lucene.index.IndexWriter;
 public class WarcParserTask implements Callable<Integer> {
 	private static final Logger logger = Logger.getLogger(WarcParserTask.class.getName());
 	private long id;
-	private IndexWriter writer;
+	private IndexerMapper indexers;
+	private AnalyzerMapper analyzers;
 	private WarcParser parser;
 	private String[] files;
 	private int start;
 	private int stop;
 	
-	public WarcParserTask(IndexWriter writer, int start, int stop) {
-		this.writer = writer;
+	public WarcParserTask(IndexerMapper indexers, AnalyzerMapper analyzers, int start, int stop) {
+		this.indexers = indexers;
+		this.analyzers = analyzers;
 		this.parser = new WarcParser();
 		EngineConfig config = EngineConfig.getInstance();
 		this.files = config.getWarcFiles();
@@ -28,8 +32,9 @@ public class WarcParserTask implements Callable<Integer> {
 		this.stop = stop;
 	}
 	
-	public WarcParserTask(IndexWriter writer, int start, int stop, String[] files) {
-		this.writer = writer;
+	public WarcParserTask(IndexerMapper indexers, AnalyzerMapper analyzers, int start, int stop, String[] files) {
+		this.indexers = indexers;
+		this.analyzers = analyzers;
 		this.parser = new WarcParser();
 		this.files = files;
 		this.start = start;
@@ -67,14 +72,29 @@ public class WarcParserTask implements Callable<Integer> {
 		int counter = 1;
 		
 		parser.open(file);
+		IndexWriter writer = null;
 		while ((doc = parser.next()) != null) {
-			writer.addDocument(doc);
+			
+			String context = doc.get("context");
+			String type = doc.get("type");
+			writer = indexers.pickWriter(context, type);
+			if (writer == null)
+				continue;
+			
+			if (type.equals("html")) {
+				String lang = doc.getField("lang").stringValue();
+				writer.addDocument(doc, analyzers.pickAnalyzer(lang));
+			} else {
+				writer.addDocument(doc);
+			}
+
 			counter++;
 		}
 		parser.close();
 		
 		logger.info("["+id+"] " + "Parsed '"+file+"' with "+counter+" docs");
-		writer.commit();
+		if (writer != null)
+			writer.commit();
 		
 		return counter;
 	}
