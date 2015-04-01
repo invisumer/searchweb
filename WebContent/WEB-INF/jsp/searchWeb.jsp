@@ -50,13 +50,14 @@
 		</c:if>
 		
 		<c:if test="${originalQuery != null && executedQuery != null}">
+			<br>
 			<div class="row">
 				<div class="col-md-12">
 					<c:url var="url" value="/search/web" />
 					<form:form action="${url}" method="get" modelAttribute="queryForm">
 						<form:hidden path="query" value="${executedQuery.query}"/>
 						<form:hidden path="spellCheckerActive" value="${originalQuery.spellCheckerActive}"/>
-						Results for <a href="#" onclick="$(this).closest('form').submit()">${executedQuery.query}</a>
+						Showing results for <a href="#" onclick="$(this).closest('form').submit()"><b>${executedQuery.query}</b></a>
 					</form:form>
 				</div>
 			</div>
@@ -66,10 +67,11 @@
 					<form:form action="${url}" method="get" modelAttribute="queryForm">
 						<form:hidden path="query" value="${originalQuery.query}"/>
 						<form:hidden path="spellCheckerActive" value="${originalQuery.spellCheckerActive}"/>
-						Did you mean <a href="#" onclick="$(this).closest('form').submit()">${originalQuery.query}</a>?
+						Search instead for <a href="#" onclick="$(this).closest('form').submit()"><b>${originalQuery.query}</b></a>
 					</form:form>
 				</div>
 			</div>
+			<br>
 		</c:if>
 		
 		<div class="row">
