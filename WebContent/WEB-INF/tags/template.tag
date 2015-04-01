@@ -75,7 +75,7 @@
 					<li><a href="#">Music</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li class="active"><a href="#">Help</a></li>
+					<li class="active"><a href="<c:url value="/select/language" />">Language</a></li>
 				</ul>
 			</nav>
 		</div>
