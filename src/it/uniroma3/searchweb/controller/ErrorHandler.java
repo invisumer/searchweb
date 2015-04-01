@@ -23,6 +23,9 @@ public class ErrorHandler {
 		invalid.add(":");
 		invalid.add("^");
 		invalid.add("!!");
+		invalid.add(" ?");
+		invalid.add("/");
+		invalid.add("\\");
 		return invalid;
 	}
 	
@@ -30,7 +33,6 @@ public class ErrorHandler {
 		List<String> invalid = new ArrayList<String>();
 		invalid.add(" +");
 		invalid.add(" -");
-		invalid.add(" ?");
 		invalid.add("!");
 		invalid.add(" &&");
 		invalid.add(" !!");

@@ -46,19 +46,6 @@ public class QueryResults {
 	public void setFields(String[] fields) {
 		this.fields = fields;
 	}
-	
-	public String QueryToString() {
-		Set<Term> terms = new HashSet<Term>();
-		query.extractTerms(terms);
-		String result = "";
-		int i=0;
-		for (Term t : terms) {
-			if (i%2==0)
-				result = result.concat(t.text()+ " ");
-			i++;
-		}
-		return result;
-	}
 
 	public String getStartQuery() {
 		return startQuery;
