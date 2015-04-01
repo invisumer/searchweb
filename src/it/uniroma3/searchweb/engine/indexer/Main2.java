@@ -47,7 +47,7 @@ public class Main2 {
 				if (writer == null)
 					continue;
 				writer.addDocument(doc); // TODO analyzer depending on language
-//				System.out.println(counter);
+				System.out.println(counter);
 				counter++;
 
 				if (counter % batch == 0)
