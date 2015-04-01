@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 @Controller
-public class SearchController {
+public class WebSearchController {
 	private static final String INVALID_QUERY = "The query is not valid.";
 	private static final String INVALID_PAGE = "The page is not valid.";
 	
