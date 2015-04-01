@@ -13,6 +13,7 @@ import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.SearcherManager;
 
 public abstract class DebuggerSearchEngine implements SearchEngine {
 	private static final Logger logger = Logger.getLogger(DebuggerSearchEngine.class.getName());
@@ -31,16 +32,18 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 		ResultsPager pager = null;
 		
 		try {
-			IndexSearcher searcher = this.getSearcher(contentType);
+			SearcherManager manager = this.getSearcherManager(contentType);
 			Analyzer analyzer = this.getAnalyzer(lang);
-			QueryResults queryResults = this.makeQuery(stringQuery, fields, analyzer, searcher, lang);
-			ResultsExtractor e = this.getExtractor(searcher, 
+			QueryResults queryResults = this.makeQuery(stringQuery, fields, analyzer, manager, lang);
+			ResultsExtractor e = this.getExtractor(manager, 
 					analyzer, queryResults.getQuery(), SNIPPET_FIELD);
 			pager = new ResultsPager(e, queryResults.getDocs(),queryResults.getStartQuery(),queryResults.getQueryExecuted(),queryResults.isSuggestionOccurred());
 			if (debugMode) {
+				IndexSearcher searcher = manager.acquire();
 				logger.info("Selected searcher: " + searcher.getIndexReader().numDocs());
 				logger.info("Selected analyzer: " + analyzer.getClass().getName());
 				this.explain(searcher, queryResults.getQuery(), queryResults.getDocs());
+				manager.release(searcher);
 			}
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
@@ -51,14 +54,14 @@ public abstract class DebuggerSearchEngine implements SearchEngine {
 		return pager;
 	}
 	
-	public abstract IndexSearcher getSearcher(String lang);
+	public abstract SearcherManager getSearcherManager(String lang);
 	
 	public abstract Analyzer getAnalyzer(String lang);
 	
-	public abstract QueryResults makeQuery(String query, String[] fields, Analyzer analyzer, IndexSearcher searcher, 
+	public abstract QueryResults makeQuery(String query, String[] fields, Analyzer analyzer, SearcherManager manager, 
 			String lang) throws IOException, ParseException;
 	
-	public abstract ResultsExtractor getExtractor(IndexSearcher s, Analyzer a, Query q, String snippetField);
+	public abstract ResultsExtractor getExtractor(SearcherManager manager, Analyzer a, Query q, String snippetField);
 	
 	public void explain(IndexSearcher searcher, Query query, ScoreDoc[] hits) throws IOException {
 		for (int i=0; i<NUM_EXPLANATIONS && i< hits.length; i++) {

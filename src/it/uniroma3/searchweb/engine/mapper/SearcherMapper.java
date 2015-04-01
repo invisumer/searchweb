@@ -11,12 +11,14 @@ import java.util.logging.Logger;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.SearcherFactory;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 public class SearcherMapper {
 	private static final Logger logger = Logger.getLogger(SearcherMapper.class.getName());
-	private Map<String, IndexSearcher> mapper;
+	private Map<String, SearcherManager> mapper;
 	EngineConfig engineConfig = EngineConfig.getInstance();
 	
 	public SearcherMapper() {
@@ -24,32 +26,29 @@ public class SearcherMapper {
 	}
 	
 	private void open() {
-		this.mapper = new HashMap<String, IndexSearcher>();
+		this.mapper = new HashMap<String, SearcherManager>();
 		this.mapper.put("html", this.buildIndexSearcher("html"));
 		// TODO other formats
 	}
 	
-	public IndexSearcher pickSearcher(String contentType) {
+	public SearcherManager pickSearcher(String contentType) {
 		return this.mapper.get(contentType);
 	}
 	
-	public IndexSearcher buildIndexSearcher(String path) {
-		// TODO Use searcher manager
-		IndexSearcher searcher = null;
-		
+	public SearcherManager buildIndexSearcher(String path) {
+		SearcherManager manager = null;
 		try {
 			File dir = new File(engineConfig.getIndexPath() + "/" + path);
 			if (!dir.exists())
 				return null;
 			Directory index = FSDirectory.open(dir);
-			IndexReader reader = DirectoryReader.open(index);
-			searcher = new IndexSearcher(reader);
+			manager = new SearcherManager(index, new SearcherFactory());
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 			e.printStackTrace();
-		}
+		} 
 		
-		return searcher;
+		return manager;
 	}
 	
 	public void refresh() {

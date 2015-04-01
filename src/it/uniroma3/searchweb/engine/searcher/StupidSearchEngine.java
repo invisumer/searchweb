@@ -17,6 +17,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopScoreDocCollector;
 
 public class StupidSearchEngine extends DebuggerSearchEngine {
@@ -41,8 +42,9 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 	
 	@Override
-	public IndexSearcher getSearcher(String contentType) {
-		return this.searcherMapper.pickSearcher(contentType);
+	public SearcherManager getSearcherManager(String contentType) {
+		SearcherManager manager = this.searcherMapper.pickSearcher(contentType);
+		return manager;
 	}
 
 	@Override
@@ -51,10 +53,10 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 	
 	@Override
-	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, IndexSearcher searcher, String lang) throws IOException, ParseException {
+	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, SearcherManager manager, String lang) throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
 		Query query  = this.parseAndQuery(fields, analyzer, stringQuery);
-		ScoreDoc[] docs = this.search(searcher, query);
+		ScoreDoc[] docs = this.search(manager, query);
 		QueryResults queryResults = new QueryResults(query, docs, fields,lang, stringQuery);
 		if (docs.length>=config.getScoreThreshold()) {
 			queryResults.setQueryExecuted(stringQuery);
@@ -62,20 +64,20 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		}
 		boolean flag = true;
 		if (!stringQuery.contains("\"")) {
-			queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
+			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag);
 			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
 				queryResults.setSuggestionOccurred(true);
 				return queryResults;
 			}
 			flag = false;
-			queryResults = this.searchForBetterQuery(searcher, stringQuery, queryResults, flag);
+			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag);
 			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
 				queryResults.setSuggestionOccurred(true);
 				return queryResults;
 			}
 		}
 		query = this.parseOrQuery(fields, analyzer, stringQuery);
-		docs = this.search(searcher, query);
+		docs = this.search(manager, query);
 		queryResults.setDocs(docs);
 		queryResults.setQuery(query);
 		queryResults.setQueryExecuted(stringQuery);
@@ -96,16 +98,18 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		return q;
 	}
 
-	public ScoreDoc[] search(IndexSearcher searcher, Query query) throws IOException {
+	public ScoreDoc[] search(SearcherManager manager, Query query) throws IOException {
 		int maxHits = this.getConfig().getMaxHits();
+		IndexSearcher searcher = manager.acquire();
 		TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true);
 		TopScoreDocCollector.create(maxHits, true);
 		searcher.search(query, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
+		manager.release(searcher);
 		return hits;
 	}
 	
-	public QueryResults searchForBetterQuery(IndexSearcher searcher, String query, QueryResults queryResults, boolean flag) 
+	public QueryResults searchForBetterQuery(SearcherManager manager, String query, QueryResults queryResults, boolean flag) 
 			throws IOException, ParseException {
 		ScoreDoc[] newHits;
 		Query tmp;
@@ -115,7 +119,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 				tmp = this.parseAndQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
 			else
 				tmp = this.parseOrQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
-			newHits = this.search(searcher, tmp);
+			newHits = this.search(manager, tmp);
 			if (queryResults.getDocs().length<newHits.length) {
 				queryResults.setDocs(newHits);
 				queryResults.setQuery(tmp);
@@ -127,9 +131,9 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 
 	@Override
-	public ResultsExtractor getExtractor(IndexSearcher s, Analyzer a, Query q,
+	public ResultsExtractor getExtractor(SearcherManager manager, Analyzer a, Query q,
 			String snippetField) {
-		ResultsExtractor e = new ResultsExtractor(s, a, q, snippetField);
+		ResultsExtractor e = new ResultsExtractor(manager, a, q, snippetField);
 		return e;
 	}
 	

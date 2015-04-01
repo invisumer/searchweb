@@ -13,6 +13,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.search.highlight.QueryScorer;
@@ -22,14 +23,14 @@ import org.apache.lucene.search.highlight.TokenSources;
 
 public class ResultsExtractor {
 	private static final Logger logger = Logger.getLogger(ResultsExtractor.class.getName());
-	private IndexSearcher searcher;
+	private SearcherManager manager;
 	private Analyzer analyzer;
 	private Query query;
 	private String field;
 
-	public ResultsExtractor(IndexSearcher searcher, Analyzer analyzer,
+	public ResultsExtractor(SearcherManager manager, Analyzer analyzer,
 			Query query, String field) {
-		this.searcher = searcher;
+		this.manager = manager;
 		this.analyzer = analyzer;
 		this.query = query;
 		this.field = field;
@@ -45,10 +46,11 @@ public class ResultsExtractor {
 			
 			for (int i = start; i < end; i++) {
 				int id = docs[i].doc;
-				Document doc = this.searcher.doc(id);
+				IndexSearcher searcher = manager.acquire();
+				Document doc = searcher.doc(id);
 				String text = doc.get(this.field);
 				TokenStream tokenStream = TokenSources.getAnyTokenStream(
-						this.searcher.getIndexReader(), id, this.field, this.analyzer);
+						searcher.getIndexReader(), id, this.field, this.analyzer);
 				TextFragment[] frag = highlighter.getBestTextFragments(
 						tokenStream, text, false, 2);
 				String snippet = "";
@@ -57,7 +59,7 @@ public class ResultsExtractor {
 						snippet += frag[j].toString().trim() + "... ";
 					}
 				}
-				
+				manager.release(searcher);
 				Result result = new Result();
 				result.setTitle(doc.get("title").trim());
 				result.setUrl(doc.get("url").trim());
