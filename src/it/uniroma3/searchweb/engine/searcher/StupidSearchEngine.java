@@ -53,7 +53,8 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 	
 	@Override
-	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, SearcherManager manager, String lang) throws IOException, ParseException {
+	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, SearcherManager manager, String lang, boolean spellCheckerEnabled)
+			throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
 		Query query  = this.parseAndQuery(fields, analyzer, stringQuery);
 		ScoreDoc[] docs = this.search(manager, query);
@@ -63,7 +64,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			return queryResults;
 		}
 		boolean flag = true;
-		if (!stringQuery.contains("\"")) {
+		if (!stringQuery.contains("\"") && spellCheckerEnabled) {
 			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag);
 			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
 				queryResults.setSuggestionOccurred(true);

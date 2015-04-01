@@ -50,7 +50,7 @@ public class WebSearchController {
 			session.setAttribute("queryForm", query);
 			
 			long start = System.currentTimeMillis();
-			ResultsPager pager = this.getPager(query.getQuery());
+			ResultsPager pager = this.getPager(query.getQuery(),true); //TODO per kri, sostituire col flag
 			session.setAttribute("pager", pager);
 			long stop = System.currentTimeMillis();
 			
@@ -93,7 +93,7 @@ public class WebSearchController {
 		return "searchWeb";
 	}
 	
-	private ResultsPager getPager(String query) {
+	private ResultsPager getPager(String query, boolean enableSpellChecker) {
 		String[] fields = new String[4];
 		fields[0] = "title";
 		fields[1] = "body";
@@ -101,7 +101,7 @@ public class WebSearchController {
 		fields[3] = "domain2";
 		String contentType = "html";
 		String lang = "en";  // TODO prendere da spring la location
-		return this.engine.getResults(query, fields, contentType, lang);
+		return this.engine.getResults(query, fields, contentType, lang,enableSpellChecker);
 	}
 
 }
