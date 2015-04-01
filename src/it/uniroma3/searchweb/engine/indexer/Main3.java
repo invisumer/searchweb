@@ -25,22 +25,19 @@ public class Main3 {
 			AnalyzerMapper analyzers = new AnalyzerMapper();
 
 			int nfiles = engineConfig.getWarcFiles().length;
-			int filePerThread = (int) Math.ceil(nfiles / (poolSize + 0.0));
-			
 			pool = Executors.newFixedThreadPool(poolSize);
 			executor = new ExecutorCompletionService<Integer>(pool);
 			long startTime = System.currentTimeMillis();
 			
-			for (int i=0; i<nfiles; i+=(filePerThread)) {
+			for (int i=0; i<nfiles; i++) {
 				int start = i;
-				int stop = (i+filePerThread) > nfiles ? nfiles : i+filePerThread;
-				
+				int stop = i+1;
 				WarcParserTask task = new WarcParserTask(indexers, analyzers, start, stop);
 				executor.submit(task);
 			}
 			
 			int counter = 0;
-			for (int i=0; i<nfiles; i+=(filePerThread))
+			for (int i=0; i<nfiles; i++)
 				counter += executor.take().get();
 			
 			indexers.close();
