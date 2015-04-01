@@ -30,6 +30,7 @@ public class WebSearchController {
 	
 	@Resource(name="searcher")
 	private SearchEngine engine;
+	private ErrorHandler handler = new ErrorHandler();
 	private DecimalFormat df = new DecimalFormat("0.000"); 
 	
 	@RequestMapping(value="/search/web", method=RequestMethod.GET)
@@ -88,7 +89,6 @@ public class WebSearchController {
 	public String getPage(@PathVariable int n, HttpSession session, ModelMap model) {
 		ResultsPager pager = (ResultsPager) session.getAttribute("pager");
 		QueryForm form = (QueryForm) session.getAttribute("queryForm");
-		
 		if (pager == null || form == null) {
 			model.addAttribute("error", INVALID_QUERY);
 			model.addAttribute("queryForm", new QueryForm());
@@ -118,6 +118,7 @@ public class WebSearchController {
 		fields[3] = "domain2";
 		String contentType = "html";
 		String lang = "en";  // TODO prendere da spring la location
+		query = handler.analyzeQuery(query);
 		return this.engine.getResults(query, fields, contentType, lang, enableSpellChecker);
 	}
 

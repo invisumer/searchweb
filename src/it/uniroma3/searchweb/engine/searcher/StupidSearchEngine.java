@@ -73,10 +73,12 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			flag = false;
 			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag);
 			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
-				queryResults.setSuggestionOccurred(true);
+				if (!queryResults.getQueryExecuted().equals(queryResults.getStartQuery()))
+					queryResults.setSuggestionOccurred(true);
 				return queryResults;
 			}
 		}
+		
 		query = this.parseOrQuery(fields, analyzer, stringQuery);
 		docs = this.search(manager, query);
 		queryResults.setDocs(docs);
@@ -125,9 +127,12 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 				tmp = this.parseOrQuery(queryResults.getFields(), getAnalyzer(queryResults.getLang()), corrections.get(i));
 			newHits = this.search(manager, tmp);
 			if (queryResults.getDocs().length<newHits.length) {
+				String q = corrections.get(i);
+				if (q.endsWith(" "));
+					q = q.substring(0, q.length()-1);
 				queryResults.setDocs(newHits);
 				queryResults.setQuery(tmp);
-				queryResults.setQueryExecuted(corrections.get(i));
+				queryResults.setQueryExecuted(q);
 			}
 		}
 		
