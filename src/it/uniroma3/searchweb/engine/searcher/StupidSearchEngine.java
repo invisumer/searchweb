@@ -7,6 +7,7 @@ import it.uniroma3.searchweb.engine.mapper.SpellCheckerMapper;
 import it.uniroma3.searchweb.model.QueryResults;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -88,7 +89,9 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 	
 	public Query parseOrQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
+		HashMap<String,Float> boosts = new HashMap<String,Float>();
+		boosts.put("lang", 100f);
+		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer, boosts);
 		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
 		Query q = mfqp.parse(query);
 		return q;
