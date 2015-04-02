@@ -6,9 +6,14 @@ import it.uniroma3.searchweb.engine.mapper.IndexerMapper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 
@@ -83,7 +88,15 @@ public class WarcParserTask implements Callable<Integer> {
 			
 			if (type.equals("html")) {
 				String lang = doc.getField("lang").stringValue();
-				writer.addDocument(doc, analyzers.pickAnalyzer(lang));
+				Analyzer analyzer = analyzers.pickAnalyzer(lang);
+				Map<String, Analyzer> map = new HashMap<String, Analyzer>();
+				map.put("domain", new KeywordAnalyzer());
+				map.put("domain2", new KeywordAnalyzer());
+				map.put("title", analyzer);
+				map.put("body", analyzer);
+				map.put("lang", new KeywordAnalyzer());
+				PerFieldAnalyzerWrapper analyzerWrapper = new PerFieldAnalyzerWrapper(analyzer, map);
+				writer.addDocument(doc, analyzerWrapper);
 			} else {
 				writer.addDocument(doc);
 			}

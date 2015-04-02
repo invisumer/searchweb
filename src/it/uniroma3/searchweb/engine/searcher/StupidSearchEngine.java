@@ -9,9 +9,13 @@ import it.uniroma3.searchweb.model.QueryResults;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.AnalyzerWrapper;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -54,10 +58,11 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	}
 	
 	@Override
-	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, SearcherManager manager, boolean spellCheckerEnabled)
+	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, SearcherManager manager, 
+			boolean spellCheckerEnabled, String lang)
 			throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
-		Query query  = this.parseAndQuery(fields, analyzer, stringQuery);
+		Query query  = this.parseAndQuery(fields, analyzer, stringQuery, lang);
 		ScoreDoc[] docs = this.search(manager, query);
 		QueryResults queryResults = new QueryResults(query, docs, fields, stringQuery);
 		if (docs.length>=config.getScoreThreshold()) {
@@ -66,13 +71,13 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		}
 		boolean flag = true;
 		if (!stringQuery.contains("\"") && spellCheckerEnabled) {
-			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag);
+			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag, lang);
 			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
 				queryResults.setSuggestionOccurred(true);
 				return queryResults;
 			}
 			flag = false;
-			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag);
+			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag, lang);
 			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
 				if (!queryResults.getQueryExecuted().equals(queryResults.getStartQuery()))
 					queryResults.setSuggestionOccurred(true);
@@ -80,7 +85,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			}
 		}
 		
-		query = this.parseOrQuery(fields, analyzer, stringQuery);
+		query = this.parseOrQuery(fields, analyzer, stringQuery, lang);
 		docs = this.search(manager, query);
 		queryResults.setDocs(docs);
 		queryResults.setQuery(query);
@@ -88,19 +93,35 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		return queryResults;
 	}
 	
-	public Query parseOrQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
+	public Query parseOrQuery(String[] fields, Analyzer analyzer, String query, String lang) throws ParseException {
 		HashMap<String,Float> boosts = new HashMap<String,Float>();
 		boosts.put("lang", 100f);
-		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer, boosts);
+		Map<String, Analyzer> map = new HashMap<String, Analyzer>();
+		map.put("domain", new KeywordAnalyzer());
+		map.put("domain2", new KeywordAnalyzer());
+		map.put("title", analyzer);
+		map.put("body", analyzer);
+		map.put("lang", new KeywordAnalyzer());
+		PerFieldAnalyzerWrapper analyzerWrapper = new PerFieldAnalyzerWrapper(analyzer, map);
+		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzerWrapper, boosts);
 		mfqp.setDefaultOperator(QueryParser.OR_OPERATOR);
-		Query q = mfqp.parse(query);
+		Query q = mfqp.parse(query + " lang:" + lang);
 		return q;
 	}
 
-	public Query parseAndQuery(String[] fields, Analyzer analyzer, String query) throws ParseException {
-		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzer);
+	public Query parseAndQuery(String[] fields, Analyzer analyzer, String query, String lang) throws ParseException {
+		HashMap<String,Float> boosts = new HashMap<String,Float>();
+		boosts.put("lang", 100f);
+		Map<String, Analyzer> map = new HashMap<String, Analyzer>();
+		map.put("domain", new KeywordAnalyzer());
+		map.put("domain2", new KeywordAnalyzer());
+		map.put("title", analyzer);
+		map.put("body", analyzer);
+		map.put("lang", new KeywordAnalyzer());
+		PerFieldAnalyzerWrapper analyzerWrapper = new PerFieldAnalyzerWrapper(analyzer, map);
+		MultiFieldQueryParser mfqp = new MultiFieldQueryParser(EngineConfig.getVersion(), fields, analyzerWrapper, boosts);
 		mfqp.setDefaultOperator(QueryParser.AND_OPERATOR);
-		Query q = mfqp.parse(query);
+		Query q = mfqp.parse(query + " lang:" + lang);
 		return q;
 	}
 
@@ -118,16 +139,16 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 		}
 	}
 	
-	public QueryResults searchForBetterQuery(SearcherManager manager, String query, QueryResults queryResults, boolean flag) 
+	public QueryResults searchForBetterQuery(SearcherManager manager, String query, QueryResults queryResults, boolean flag, String lang) 
 			throws IOException, ParseException {
 		ScoreDoc[] newHits;
 		Query tmp;
 		List<String> corrections = spellCheckers.getSuggestions(query);
 		for (int i=0; i<corrections.size();i++) {
 			if (flag)
-				tmp = this.parseAndQuery(queryResults.getFields(), getAnalyzer(queryResults.getFields()[4]), corrections.get(i));
+				tmp = this.parseAndQuery(queryResults.getFields(), getAnalyzer(lang), corrections.get(i), lang);
 			else
-				tmp = this.parseOrQuery(queryResults.getFields(), getAnalyzer(queryResults.getFields()[4]), corrections.get(i));
+				tmp = this.parseOrQuery(queryResults.getFields(), getAnalyzer(lang), corrections.get(i), lang);
 			newHits = this.search(manager, tmp);
 			if (queryResults.getDocs().length<newHits.length) {
 				String q = corrections.get(i);
