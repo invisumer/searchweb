@@ -1,7 +1,7 @@
 package it.uniroma3.searchweb.controller;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpSession;
 
@@ -36,13 +36,15 @@ public class LanguageController {
 	
 	public Map<String, String> getLanguages() {
 		if (this.langOptions == null) {
-			this.langOptions = new HashMap<String, String>();
-			this.langOptions.put("th", "Thai");
-			this.langOptions.put("it", "Italian");
-			this.langOptions.put("fr", "French");
+			this.langOptions = new TreeMap<String, String>();
+			this.langOptions.put("th", "ไทย");
+			this.langOptions.put("it", "Italiano");
+			this.langOptions.put("fr", "Française");
 			this.langOptions.put("en", "English");
-			
-			// TODO en it es fr jp de ko
+			this.langOptions.put("es", "Español");
+			this.langOptions.put("jp", "日本語");
+			this.langOptions.put("de", "Deutsch");
+			this.langOptions.put("ko", "한국어, 조선어");
 		}
 		
 		return this.langOptions;
