@@ -58,8 +58,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	
 	@Override
 	public QueryResults makeQuery(String stringQuery, String[] fields, Analyzer analyzer, SearcherManager manager, 
-			boolean spellCheckerEnabled, String lang)
-			throws IOException, ParseException {
+			boolean spellCheckerEnabled, String lang) throws IOException, ParseException {
 		EngineConfig config = EngineConfig.getInstance();
 		Query query  = this.parseAndQuery(fields, analyzer, stringQuery, lang);
 		ScoreDoc[] docs = this.search(manager, query);
@@ -69,7 +68,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			return queryResults;
 		}
 		boolean flag = true;
-		if (!stringQuery.contains("\"") && spellCheckerEnabled) {
+		if (!stringQuery.contains("\"") && spellCheckerEnabled) { // TODO error handling?
 			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag, lang);
 			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
 				queryResults.setSuggestionOccurred(true);
@@ -78,7 +77,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			flag = false;
 			queryResults = this.searchForBetterQuery(manager, stringQuery, queryResults, flag, lang);
 			if (queryResults.getDocs().length>=config.getScoreThreshold()) {
-				if (!queryResults.getQueryExecuted().equals(queryResults.getStartQuery()))
+				if (!queryResults.getQueryExecuted().equals(queryResults.getStartQuery())) // TODO ???
 					queryResults.setSuggestionOccurred(true);
 				return queryResults;
 			}
@@ -127,15 +126,19 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 	public ScoreDoc[] search(SearcherManager manager, Query query) throws IOException {
 		int maxHits = this.getConfig().getMaxHits();
 		IndexSearcher searcher = manager.acquire();
+		ScoreDoc[] hits = null;
+		
 		try {
-		TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true);
-		TopScoreDocCollector.create(maxHits, true);
-		searcher.search(query, collector);
-		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		return hits;
+			TopScoreDocCollector collector = TopScoreDocCollector.create(maxHits, true); // TODO un create di troppo
+			searcher.search(query, collector);
+			hits = collector.topDocs().scoreDocs;
 		} finally {
 			manager.release(searcher);
 		}
+		
+		System.out.println(query); // for debugging
+		
+		return hits;
 	}
 	
 	public QueryResults searchForBetterQuery(SearcherManager manager, String query, QueryResults queryResults, boolean flag, String lang) 
@@ -151,8 +154,9 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			newHits = this.search(manager, tmp);
 			if (queryResults.getDocs().length<newHits.length) {
 				String q = corrections.get(i);
-				if (q.endsWith(" "));
-					q = q.substring(0, q.length()-1);
+//				if (q.endsWith(" "));                   // TODO trim? c'e' un ';' dopo l'if
+//					q = q.substring(0, q.length()-1);
+				q = q.trim();                           // TODO forse intendevi un trim?
 				queryResults.setDocs(newHits);
 				queryResults.setQuery(tmp);
 				queryResults.setQueryExecuted(q);

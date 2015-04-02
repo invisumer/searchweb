@@ -117,12 +117,12 @@ public class WebSearchController {
 	}
 	
 	private ResultsPager getPager(String query, boolean enableSpellChecker, String lang) {
-		String[] fields = new String[5];
+		String[] fields = new String[4];
 		fields[0] = "title";
 		fields[1] = "body";
 		fields[2] = "domain";
 		fields[3] = "domain2";
-		fields[4] = "lang";
+//		fields[4] = "lang";      // Query on title, body, domain and domain2... not on language
 		String contentType = "html";
 		query = handler.analyzeQuery(query);
 		
