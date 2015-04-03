@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -14,6 +13,7 @@ import it.uniroma3.searchweb.model.QueryForm;
 import it.uniroma3.searchweb.model.Result;
 import it.uniroma3.searchweb.model.ResultsPager;
 
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 @Controller
 public class WebSearchController {
@@ -35,7 +34,7 @@ public class WebSearchController {
 	
 	@RequestMapping(value="/search/web", method=RequestMethod.GET)
 	public String submitRequest(@Valid @ModelAttribute QueryForm query, BindingResult result, 
-			ModelMap model, HttpSession session, HttpServletRequest request) {
+			ModelMap model, HttpSession session) {
 		
 		if (result.hasErrors()) {
 			model.addAttribute("error", INVALID_QUERY);
@@ -57,7 +56,7 @@ public class WebSearchController {
 			if (langPreference != null && !langPreference.isEmpty())
 				lang = langPreference;
 			else {
-				Locale locale = RequestContextUtils.getLocale(request);
+				Locale locale = LocaleContextHolder.getLocale();
 				lang = locale.getLanguage();
 			}
 			
