@@ -12,10 +12,10 @@ public class SpeedTest extends Thread {
 		fields[0] = "url";
 		fields[1] = "title";
 		fields[2] = "body";
+		int attempt = 56;
 		DebuggerSearchEngine dse = new StupidSearchEngine();
 		String contentType = "html";
-		dse.getResults(query, fields, contentType, false, "en");
-		for (int i=0; i<28;i++)
+		for (int i=0; i<attempt;i++)
 			dse.getResults(query, fields, contentType, false, "en");
 	}
 	

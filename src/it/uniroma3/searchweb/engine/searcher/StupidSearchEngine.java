@@ -136,7 +136,7 @@ public class StupidSearchEngine extends DebuggerSearchEngine {
 			manager.release(searcher);
 		}
 		
-		System.out.println(query); // for debugging
+//		System.out.println(query); // for debugging
 		
 		return hits;
 	}
