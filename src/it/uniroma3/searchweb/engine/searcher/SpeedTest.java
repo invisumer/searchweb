@@ -28,8 +28,8 @@ public class SpeedTest extends Thread {
 		DebuggerSearchEngine dse = new StupidSearchEngine();
 		String contentType = "html";
 		dse.getResults(query, fields, contentType, false, "en");
-		
-		SpeedTest[] tests = new SpeedTest[Runtime.getRuntime().availableProcessors()];
+		int numCpu = Runtime.getRuntime().availableProcessors();
+		SpeedTest[] tests = new SpeedTest[numCpu];
 		for (int i=0; i<tests.length;i++) {
 			tests[i] = new SpeedTest();
 		}
@@ -38,11 +38,11 @@ public class SpeedTest extends Thread {
 			tests[i].start();
 		}
 		for (int i=0; i<tests.length;i++) {
-			tests[i].join();;
+			tests[i].join();
 		}
 		
 		double stop = System.currentTimeMillis();
 		double time = stop-start;
-		System.out.println(attempt*4+" query executed in : "+time);
+		System.out.println(attempt*numCpu+" query executed in : "+time);
 	}
 }
