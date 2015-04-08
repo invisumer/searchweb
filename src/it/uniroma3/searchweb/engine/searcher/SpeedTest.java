@@ -1,7 +1,7 @@
 package it.uniroma3.searchweb.engine.searcher;
 
 public class SpeedTest extends Thread {
-	private static final int attempt = 56;
+	private static final int attempt = 57;
 	
 	public void run() {
 		makeTest();
@@ -43,6 +43,6 @@ public class SpeedTest extends Thread {
 		
 		double stop = System.currentTimeMillis();
 		double time = stop-start;
-		System.out.println(time);
+		System.out.println(attempt*4+" query executed in : "+time);
 	}
 }
