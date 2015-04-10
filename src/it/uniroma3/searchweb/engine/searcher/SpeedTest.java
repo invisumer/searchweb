@@ -1,7 +1,7 @@
 package it.uniroma3.searchweb.engine.searcher;
 
 public class SpeedTest extends Thread {
-	private static final int attempt = 57;
+	private static final int attempt = 65;
 	
 	public void run() {
 		makeTest();
