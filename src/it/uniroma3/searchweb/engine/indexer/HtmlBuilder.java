@@ -109,8 +109,7 @@ public class HtmlBuilder implements DocumentBuilder {
 		String body = bodyEl.text();
 
 		Document record = new Document();
-		record.add(new StringField("enc", enc, Store.YES)); // TODO and
-															// language?
+		record.add(new StringField("enc", enc, Store.YES));
 		record.add(new StringField("dec", decoder, Store.YES));
 		record.add(new StringField("url", url, Store.YES));
 
@@ -261,8 +260,8 @@ public class HtmlBuilder implements DocumentBuilder {
 
 		detector.setText(htmlStream);
 		CharsetMatch match = detector.detect();
-		// if (match != null && (match.getConfidence() > 10)) // TODO
-		// Confidence?
+		// if (match != null && (match.getConfidence() > 10))
+		// confidence is too strict
 		lang = match.getLanguage();
 
 		return lang;

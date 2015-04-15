@@ -52,7 +52,6 @@ public class WarcConverter {
 			doc = this.imgBuilder.build(url, httpResponse, htmlStream);
 		if (contentType[0].equals("audio"))
 			doc = this.mp3Builder.build(url, httpResponse, htmlStream);
-		// TODO and video?
 		
 		if (doc != null) {
 			this.contextField.setStringValue(contentType[0]);

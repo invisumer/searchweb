@@ -76,7 +76,6 @@ public class ResultsExtractor {
 			try {
 				manager.release(searcher);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
